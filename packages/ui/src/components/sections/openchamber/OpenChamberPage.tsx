@@ -1,20 +1,19 @@
 import React from 'react';
-import {OpenChamberVisualSettings} from './OpenChamberVisualSettings';
-import {AboutSettings} from './AboutSettings';
-import {SessionRetentionSettings} from './SessionRetentionSettings';
-import {MemoryLimitsSettings} from './MemoryLimitsSettings';
-import {DefaultsSettings} from './DefaultsSettings';
-import {GitSettings} from './GitSettings';
-import {NotificationSettings} from './NotificationSettings';
-import {GitHubSettings} from './GitHubSettings';
-import {VoiceSettings} from './VoiceSettings';
-import {TunnelSettings} from './TunnelSettings';
-import {OpenCodeCliSettings} from './OpenCodeCliSettings';
-import {KeyboardShortcutsSettings} from './KeyboardShortcutsSettings';
-import {ScrollableOverlay} from '@/components/ui/ScrollableOverlay';
-import {useDeviceInfo} from '@/lib/device';
-import {isVSCodeRuntime, isWebRuntime} from '@/lib/desktop';
-import type {OpenChamberSection} from './types';
+import { OpenChamberVisualSettings } from './OpenChamberVisualSettings';
+import { AboutSettings } from './AboutSettings';
+import { SessionRetentionSettings } from './SessionRetentionSettings';
+import { DefaultsSettings } from './DefaultsSettings';
+import { GitSettings } from './GitSettings';
+import { NotificationSettings } from './NotificationSettings';
+import { GitHubSettings } from './GitHubSettings';
+import { VoiceSettings } from './VoiceSettings';
+import { TunnelSettings } from './TunnelSettings';
+import { OpenCodeCliSettings } from './OpenCodeCliSettings';
+import { KeyboardShortcutsSettings } from './KeyboardShortcutsSettings';
+import { ScrollableOverlay } from '@/components/ui/ScrollableOverlay';
+import { useDeviceInfo } from '@/lib/device';
+import { isVSCodeRuntime, isWebRuntime } from '@/lib/desktop';
+import type { OpenChamberSection } from './types';
 
 interface OpenChamberPageProps {
     /** Which section to display. If undefined, shows all sections (mobile/legacy behavior) */
@@ -116,12 +115,12 @@ const VisualSectionContent: React.FC = () => {
     ]} />;
 };
 
-// Chat section: Default Tool Output, User message rendering, Diff layout, Mobile status bar, Show reasoning traces, Justification activity, Activity header timestamps, Queue mode, Persist draft
+// Chat section: User message rendering, Diff layout, Mobile status bar, Show reasoning traces, Queue mode, Persist draft
 const ChatSectionContent: React.FC = () => {
-    return <OpenChamberVisualSettings visibleSettings={['toolOutput', 'mermaidRendering', 'userMessageRendering', 'stickyUserHeader', 'diffLayout', 'mobileStatusBar', 'dotfiles', 'reasoning', 'textJustificationActivity', 'activityHeaderTimestamps', 'queueMode', 'persistDraft', 'inputSpellcheck']} />;
+    return <OpenChamberVisualSettings visibleSettings={['chatRenderMode', 'activityRenderMode', 'userMessageRendering', 'mermaidRendering', 'reasoning', 'showToolFileIcons', 'expandedTools', 'stickyUserHeader', 'diffLayout', 'mobileStatusBar', 'dotfiles', 'queueMode', 'persistDraft', 'inputSpellcheck']} />;
 };
 
-// Sessions section: Default model & agent, Session retention, Memory limits
+// Sessions section: Default model & agent, Session retention
 const SessionsSectionContent: React.FC = () => {
     const isVSCode = isVSCodeRuntime();
     return (
@@ -134,9 +133,6 @@ const SessionsSectionContent: React.FC = () => {
             )}
             <div className="border-t border-border/40 pt-6">
                 <SessionRetentionSettings />
-            </div>
-            <div className="border-t border-border/40 pt-6">
-                <MemoryLimitsSettings />
             </div>
         </div>
     );

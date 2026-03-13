@@ -316,6 +316,7 @@ export const SessionSidebar: React.FC<SessionSidebarProps> = ({
     worktreeMetadata,
     pinnedSessionIds,
     gitDirectories,
+    isVSCode,
   });
 
   const { scheduleCollapsedProjectsPersist } = useSidebarPersistence({
