@@ -1,12 +1,12 @@
 import React from 'react';
-import { cn, getModifierLabel } from '@/lib/utils';
-import { useUIStore } from '@/stores/useUIStore';
-import { useProjectsStore } from '@/stores/useProjectsStore';
-import { useAgentsStore } from '@/stores/useAgentsStore';
-import { useCommandsStore } from '@/stores/useCommandsStore';
-import { useMcpConfigStore } from '@/stores/useMcpConfigStore';
-import { useSkillsStore } from '@/stores/useSkillsStore';
-import { useSkillsCatalogStore } from '@/stores/useSkillsCatalogStore';
+import {cn, getModifierLabel} from '@/lib/utils';
+import {useUIStore} from '@/stores/useUIStore';
+import {useProjectsStore} from '@/stores/useProjectsStore';
+import {reloadOpenCodeConfiguration, useAgentsStore} from '@/stores/useAgentsStore';
+import {useCommandsStore} from '@/stores/useCommandsStore';
+import {useMcpConfigStore} from '@/stores/useMcpConfigStore';
+import {useSkillsStore} from '@/stores/useSkillsStore';
+import {useSkillsCatalogStore} from '@/stores/useSkillsCatalogStore';
 import {
   RiAiAgentLine,
   RiArrowLeftSLine,
@@ -16,53 +16,55 @@ import {
   RiChatAi3Line,
   RiChatHistoryLine,
   RiCloseLine,
-  RiCommandLine,
   RiCloudLine,
+  RiCommandLine,
   RiFoldersLine,
   RiGitBranchLine,
   RiGlobalLine,
+  RiListUnordered,
   RiMicLine,
   RiNotification3Line,
   RiPaletteLine,
-  RiListUnordered,
-  RiRobot2Line,
   RiRestartLine,
+  RiRobot2Line,
   RiServerLine,
   RiSlashCommands2,
 } from '@remixicon/react';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
-import { AgentsSidebar } from '@/components/sections/agents/AgentsSidebar';
-import { AgentsPage } from '@/components/sections/agents/AgentsPage';
-import { CommandsSidebar } from '@/components/sections/commands/CommandsSidebar';
-import { CommandsPage } from '@/components/sections/commands/CommandsPage';
-import { McpSidebar } from '@/components/sections/mcp/McpSidebar';
-import { McpPage } from '@/components/sections/mcp/McpPage';
-import { SkillsSidebar } from '@/components/sections/skills/SkillsSidebar';
-import { SkillsPage } from '@/components/sections/skills/SkillsPage';
-import { ProjectsSidebar } from '@/components/sections/projects/ProjectsSidebar';
-import { ProjectsPage } from '@/components/sections/projects/ProjectsPage';
-import { RemoteInstancesSidebar } from '@/components/sections/remote-instances/RemoteInstancesSidebar';
-import { RemoteInstancesPage } from '@/components/sections/remote-instances/RemoteInstancesPage';
-import { ProvidersSidebar } from '@/components/sections/providers/ProvidersSidebar';
-import { ProvidersPage } from '@/components/sections/providers/ProvidersPage';
-import { UsageSidebar } from '@/components/sections/usage/UsageSidebar';
-import { UsagePage } from '@/components/sections/usage/UsagePage';
-import { GitPage } from '@/components/sections/git-identities/GitPage';
-import type { OpenChamberSection } from '@/components/sections/openchamber/types';
-import { OpenChamberPage } from '@/components/sections/openchamber/OpenChamberPage';
-import { AboutSettings } from '@/components/sections/openchamber/AboutSettings';
-import { McpIcon } from '@/components/icons/McpIcon';
-import { useDeviceInfo } from '@/lib/device';
-import { isDesktopShell, isVSCodeRuntime, isWebRuntime } from '@/lib/desktop';
-import { reloadOpenCodeConfiguration } from '@/stores/useAgentsStore';
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
+import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
+import {ErrorBoundary} from '@/components/ui/ErrorBoundary';
+import {useI18n} from '@/contexts/useI18n';
+import {AgentsSidebar} from '@/components/sections/agents/AgentsSidebar';
+import {AgentsPage} from '@/components/sections/agents/AgentsPage';
+import {CommandsSidebar} from '@/components/sections/commands/CommandsSidebar';
+import {CommandsPage} from '@/components/sections/commands/CommandsPage';
+import {McpSidebar} from '@/components/sections/mcp/McpSidebar';
+import {McpPage} from '@/components/sections/mcp/McpPage';
+import {SkillsSidebar} from '@/components/sections/skills/SkillsSidebar';
+import {SkillsPage} from '@/components/sections/skills/SkillsPage';
+import {ProjectsSidebar} from '@/components/sections/projects/ProjectsSidebar';
+import {ProjectsPage} from '@/components/sections/projects/ProjectsPage';
+import {RemoteInstancesSidebar} from '@/components/sections/remote-instances/RemoteInstancesSidebar';
+import {RemoteInstancesPage} from '@/components/sections/remote-instances/RemoteInstancesPage';
+import {ProvidersSidebar} from '@/components/sections/providers/ProvidersSidebar';
+import {ProvidersPage} from '@/components/sections/providers/ProvidersPage';
+import {UsageSidebar} from '@/components/sections/usage/UsageSidebar';
+import {UsagePage} from '@/components/sections/usage/UsagePage';
+import {GitPage} from '@/components/sections/git-identities/GitPage';
+import type {OpenChamberSection} from '@/components/sections/openchamber/types';
+import {OpenChamberPage} from '@/components/sections/openchamber/OpenChamberPage';
+import {AboutSettings} from '@/components/sections/openchamber/AboutSettings';
+import {McpIcon} from '@/components/icons/McpIcon';
+import {useDeviceInfo} from '@/lib/device';
+import {isDesktopShell, isVSCodeRuntime, isWebRuntime} from '@/lib/desktop';
 import {
-  SETTINGS_PAGE_METADATA,
   getSettingsPageMeta,
+  getSettingsPageTitle,
   resolveSettingsSlug,
+  SETTINGS_PAGE_METADATA,
+  type SettingsPageMeta,
   type SettingsPageSlug,
   type SettingsRuntimeContext,
-  type SettingsPageMeta,
 } from '@/lib/settings/metadata';
 
 // Same constraints as main sidebar
@@ -161,12 +163,36 @@ function getSettingsNavIcon(slug: SettingsPageSlug): React.ComponentType<{ class
 }
 
 const SettingsHome: React.FC<{ onOpen: (slug: SettingsPageSlug) => void }> = ({ onOpen }) => {
+    const {t, locale, setLocale} = useI18n();
+
+    const handleLocaleChange = React.useCallback((value: string) => {
+        if (value === 'en' || value === 'zh-CN') {
+            setLocale(value);
+        }
+    }, [setLocale]);
+
   return (
     <div className="h-full overflow-auto">
       <div className="mx-auto w-full max-w-3xl px-6 py-6 space-y-6">
         <div className="space-y-1">
-          <h1 className="typography-ui-header font-semibold text-foreground">Settings</h1>
-          <p className="typography-ui text-muted-foreground">Jump to common pages.</p>
+            <h1 className="typography-ui-header font-semibold text-foreground">{t('settings.title')}</h1>
+            <p className="typography-ui text-muted-foreground">{t('settings.home.subtitle')}</p>
+        </div>
+
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-8">
+              <div className="flex min-w-0 flex-col sm:w-56 sm:shrink-0">
+                  <span className="typography-ui-label text-foreground">{t('settings.language.label')}</span>
+                  <span className="typography-meta text-muted-foreground">{t('settings.language.helper')}</span>
+              </div>
+              <Select value={locale} onValueChange={handleLocaleChange}>
+                  <SelectTrigger aria-label={t('settings.language.label')} className="w-48">
+                      <SelectValue placeholder={t('settings.language.placeholder')}/>
+                  </SelectTrigger>
+                  <SelectContent>
+                      <SelectItem value="en">{t('settings.language.option.en')}</SelectItem>
+                      <SelectItem value="zh-CN">{t('settings.language.option.zhCN')}</SelectItem>
+                  </SelectContent>
+              </Select>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
@@ -178,8 +204,9 @@ const SettingsHome: React.FC<{ onOpen: (slug: SettingsPageSlug) => void }> = ({ 
               'hover:bg-[var(--interactive-hover)] transition-colors'
             )}
           >
-            <div className="typography-ui-label text-foreground">Providers</div>
-            <div className="typography-micro text-muted-foreground/70">Connect models + credentials</div>
+              <div className="typography-ui-label text-foreground">{t('settings.page.providers')}</div>
+              <div
+                  className="typography-micro text-muted-foreground/70">{t('settings.home.providers.description')}</div>
           </button>
 
           <button
@@ -190,8 +217,8 @@ const SettingsHome: React.FC<{ onOpen: (slug: SettingsPageSlug) => void }> = ({ 
               'hover:bg-[var(--interactive-hover)] transition-colors'
             )}
           >
-            <div className="typography-ui-label text-foreground">Agents</div>
-            <div className="typography-micro text-muted-foreground/70">Prompts, tools, permissions</div>
+              <div className="typography-ui-label text-foreground">{t('settings.page.agents')}</div>
+              <div className="typography-micro text-muted-foreground/70">{t('settings.home.agents.description')}</div>
           </button>
 
           <button
@@ -202,8 +229,9 @@ const SettingsHome: React.FC<{ onOpen: (slug: SettingsPageSlug) => void }> = ({ 
               'hover:bg-[var(--interactive-hover)] transition-colors'
             )}
           >
-            <div className="typography-ui-label text-foreground">Skills Catalog</div>
-            <div className="typography-micro text-muted-foreground/70">Install skills from catalogs</div>
+              <div className="typography-ui-label text-foreground">{t('settings.page.skillsCatalog')}</div>
+              <div
+                  className="typography-micro text-muted-foreground/70">{t('settings.home.skillsCatalog.description')}</div>
           </button>
 
           <button
@@ -214,8 +242,8 @@ const SettingsHome: React.FC<{ onOpen: (slug: SettingsPageSlug) => void }> = ({ 
               'hover:bg-[var(--interactive-hover)] transition-colors'
             )}
           >
-            <div className="typography-ui-label text-foreground">MCP</div>
-            <div className="typography-micro text-muted-foreground/70">Configure MCP servers + connections</div>
+              <div className="typography-ui-label text-foreground">{t('settings.page.mcp')}</div>
+              <div className="typography-micro text-muted-foreground/70">{t('settings.home.mcp.description')}</div>
           </button>
 
           <button
@@ -226,8 +254,8 @@ const SettingsHome: React.FC<{ onOpen: (slug: SettingsPageSlug) => void }> = ({ 
               'hover:bg-[var(--interactive-hover)] transition-colors'
             )}
           >
-            <div className="typography-ui-label text-foreground">Usage</div>
-            <div className="typography-micro text-muted-foreground/70">Quota + spend visibility</div>
+              <div className="typography-ui-label text-foreground">{t('settings.page.usage')}</div>
+              <div className="typography-micro text-muted-foreground/70">{t('settings.home.usage.description')}</div>
           </button>
         </div>
       </div>
@@ -238,6 +266,7 @@ const SettingsHome: React.FC<{ onOpen: (slug: SettingsPageSlug) => void }> = ({ 
 export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile, isWindowed }) => {
   const deviceInfo = useDeviceInfo();
   const isMobile = forceMobile ?? deviceInfo.isMobile;
+    const {t} = useI18n();
 
   const settingsPageRaw = useUIStore((state) => state.settingsPage);
   const setSettingsPage = useUIStore((state) => state.setSettingsPage);
@@ -377,12 +406,12 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
     return (
       <div className="flex h-full items-center justify-center px-6">
         <div className="max-w-md text-center">
-          <div className="typography-ui-header font-semibold text-foreground">Not available</div>
-          <p className="typography-ui text-muted-foreground mt-1">This settings page is not available in this runtime.</p>
+            <div className="typography-ui-header font-semibold text-foreground">{t('settings.notAvailable.title')}</div>
+            <p className="typography-ui text-muted-foreground mt-1">{t('settings.notAvailable.description')}</p>
         </div>
       </div>
     );
-  }, []);
+  }, [t]);
 
   const renderPageSidebar = React.useCallback((slug: SettingsPageSlug, opts: { onItemSelect?: () => void }) => {
     switch (slug) {
@@ -493,6 +522,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
             {sortedFilteredPages.map((page) => {
               const selected = settingsSlug === page.slug;
               const Icon = getSettingsNavIcon(page.slug);
+                const pageTitle = getSettingsPageTitle(page, t);
               if (!Icon) return null;
 
               return (
@@ -515,10 +545,10 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
                           collapsed ? 'opacity-0' : 'opacity-100'
                         )}
                       >
-                        <span className="typography-ui-label font-normal truncate">{page.title}</span>
+                        <span className="typography-ui-label font-normal truncate">{pageTitle}</span>
                         {(page.slug === 'voice' || page.slug === 'tunnel') && (
                           <span className="shrink-0 typography-micro px-1 rounded leading-none pb-px text-[var(--status-warning)] bg-[var(--status-warning)]/10">
-                            beta
+                            {t('settings.label.beta')}
                           </span>
                         )}
                       </span>
@@ -526,7 +556,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
                   </TooltipTrigger>
                   {collapsed && (
                     <TooltipContent side="right" sideOffset={8}>
-                      {page.title}
+                        {pageTitle}
                     </TooltipContent>
                   )}
                 </Tooltip>
@@ -553,14 +583,18 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
                       'text-sm font-semibold text-sidebar-foreground/90',
                       'hover:text-sidebar-foreground hover:bg-interactive-hover',
                     )}
-                    onClick={() => void reloadOpenCodeConfiguration({ message: 'Restarting OpenCode…', mode: 'projects', scopes: ['all'] })}
+                    onClick={() => void reloadOpenCodeConfiguration({
+                        message: t('settings.reloadOpenCode.toast'),
+                        mode: 'projects',
+                        scopes: ['all']
+                    })}
                   >
                     <RiRestartLine className="h-4 w-4 shrink-0" />
-                    <span>Reload OpenCode</span>
+                      <span>{t('settings.reloadOpenCode.button')}</span>
                   </button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  Restart OpenCode and reload its configuration.
+                    {t('settings.reloadOpenCode.tooltip')}
                 </TooltipContent>
               </Tooltip>
             )}
@@ -656,25 +690,25 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
           style={{ borderColor: 'var(--interactive-border)' }}
         >
           <button
-            type="button"
-            onClick={showBackButton ? handleBack : onClose}
-            aria-label={showBackButton ? 'Back to Settings' : 'Close settings'}
-            className="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg p-2 text-muted-foreground hover:text-foreground hover:bg-interactive-hover/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              type="button"
+              onClick={showBackButton ? handleBack : onClose}
+              aria-label={showBackButton ? t('settings.nav.back') : t('settings.nav.close')}
+              className="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg p-2 text-muted-foreground hover:text-foreground hover:bg-interactive-hover/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
             <RiArrowLeftSLine className="h-5 w-5" />
           </button>
 
           <div className="min-w-0 flex-1 typography-ui-label font-medium text-foreground truncate">
             {mobileStage === 'nav'
-              ? 'Settings'
-              : (activePageMeta?.title ?? 'Settings')}
+                ? t('settings.title')
+                : (activePageMeta ? getSettingsPageTitle(activePageMeta, t) : t('settings.title'))}
           </div>
 
           {mobileStage === 'page-content' && activePageMeta?.kind === 'split' && (
             <button
               type="button"
               onClick={handleOpenPageSidebar}
-              aria-label="Open section list"
+              aria-label={t('settings.nav.openSectionList')}
               className="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg p-2 text-muted-foreground hover:text-foreground hover:bg-interactive-hover/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               <RiListUnordered className="h-5 w-5" />
@@ -685,8 +719,8 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
             <button
               type="button"
               onClick={onClose}
-              aria-label="Close settings"
-              title={`Close Settings (${shortcutKey}+,)`}
+              aria-label={t('settings.nav.close')}
+              title={t('settings.nav.closeTitle', {shortcutKey})}
               className="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg p-2 text-muted-foreground hover:text-foreground hover:bg-interactive-hover/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               <RiCloseLine className="h-5 w-5" />
@@ -700,7 +734,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
               <button
                 type="button"
                 onClick={handleBack}
-                aria-label="Back"
+                aria-label={t('settings.nav.back')}
                 className="inline-flex h-9 w-9 items-center justify-center rounded-lg p-2 text-muted-foreground hover:text-foreground hover:bg-interactive-hover/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               >
                 <RiArrowLeftSLine className="h-5 w-5" />
@@ -713,8 +747,8 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close settings"
-            title={`Close Settings (${shortcutKey}+,)`}
+            aria-label={t('settings.nav.close')}
+            title={t('settings.nav.closeTitle', {shortcutKey})}
             className="inline-flex h-7 w-7 items-center justify-center rounded-md p-0.5 text-muted-foreground hover:text-foreground hover:bg-interactive-hover/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
             <RiCloseLine className="h-5 w-5" />
@@ -754,7 +788,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
                   onPointerDown={handlePointerDown}
                   role="separator"
                   aria-orientation="vertical"
-                  aria-label="Resize settings navigation"
+                  aria-label={t('settings.nav.resize')}
                 />
               )}
               <ErrorBoundary>

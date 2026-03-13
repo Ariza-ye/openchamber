@@ -1,6 +1,7 @@
 import React from 'react';
-import { cn } from '@/lib/utils';
-import { useUIStore } from '@/stores/useUIStore';
+import {cn} from '@/lib/utils';
+import {useUIStore} from '@/stores/useUIStore';
+import {useI18n} from '@/contexts/useI18n';
 
 const RIGHT_SIDEBAR_MIN_WIDTH = 400;
 const RIGHT_SIDEBAR_MAX_WIDTH = 860;
@@ -11,6 +12,7 @@ interface RightSidebarProps {
 }
 
 export const RightSidebar: React.FC<RightSidebarProps> = ({ isOpen, children }) => {
+    const {t} = useI18n();
   const rightSidebarWidth = useUIStore((state) => state.rightSidebarWidth);
   const setRightSidebarWidth = useUIStore((state) => state.setRightSidebarWidth);
   const [isResizing, setIsResizing] = React.useState(false);
@@ -126,7 +128,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({ isOpen, children }) 
           onPointerCancel={handlePointerEnd}
           role="separator"
           aria-orientation="vertical"
-          aria-label="Resize right panel"
+          aria-label={t('Resize right panel')}
         />
       )}
       <div

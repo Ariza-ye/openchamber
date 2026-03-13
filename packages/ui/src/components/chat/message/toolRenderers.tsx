@@ -1,9 +1,10 @@
-import { RiCheckLine } from '@remixicon/react';
+import {RiCheckLine} from '@remixicon/react';
 
-import { cn } from '@/lib/utils';
-import { typography } from '@/lib/typography';
-import { formatToolInput, detectToolOutputLanguage } from '@/lib/toolHelpers';
-import { SimpleMarkdownRenderer } from '../MarkdownRenderer';
+import {cn} from '@/lib/utils';
+import {typography} from '@/lib/typography';
+import {detectToolOutputLanguage, formatToolInput} from '@/lib/toolHelpers';
+import {SimpleMarkdownRenderer} from '../MarkdownRenderer';
+import type {TranslateFn} from '@/lib/i18n/messages';
 
 const cleanOutput = (output: string) => {
     let cleaned = output.replace(/^<file>\s*\n?/, '').replace(/\n?<\/file>\s*$/, '');
@@ -291,12 +292,13 @@ type Todo = {
     priority?: 'high' | 'medium' | 'low';
 };
 
-export const renderTodoOutput = (output: string, options?: { unstyled?: boolean }) => {
+export const renderTodoOutput = (output: string, options?: { unstyled?: boolean }, t?: TranslateFn) => {
     try {
         const todos = JSON.parse(output) as Todo[];
         if (!Array.isArray(todos)) {
             return null;
         }
+        const translate = (key: string, vars?: Record<string, string | number>) => (t ? t(key, vars) : key);
 
         const todosByStatus = {
             in_progress: todos.filter((t) => t.status === 'in_progress'),
@@ -328,18 +330,28 @@ export const renderTodoOutput = (output: string, options?: { unstyled?: boolean 
                 style={typography.tool.popup}
             >
                 <div className="flex gap-4 typography-meta pb-2 border-b border-border/20">
-                    <span className="font-medium" style={{ color: 'var(--muted-foreground)' }}>Total: {todos.length}</span>
+                    <span className="font-medium" style={{color: 'var(--muted-foreground)'}}>
+                        {translate('Total: {count}', {count: todos.length})}
+                    </span>
                     {todosByStatus.in_progress.length > 0 && (
-                        <span className="font-medium" style={{ color: 'var(--foreground)' }}>In Progress: {todosByStatus.in_progress.length}</span>
+                        <span className="font-medium" style={{color: 'var(--foreground)'}}>
+                            {translate('In Progress: {count}', {count: todosByStatus.in_progress.length})}
+                        </span>
                     )}
                     {todosByStatus.pending.length > 0 && (
-                        <span style={{ color: 'var(--muted-foreground)' }}>Pending: {todosByStatus.pending.length}</span>
+                        <span style={{color: 'var(--muted-foreground)'}}>
+                            {translate('Pending: {count}', {count: todosByStatus.pending.length})}
+                        </span>
                     )}
                     {todosByStatus.completed.length > 0 && (
-                        <span style={{ color: 'var(--status-success)' }}>Completed: {todosByStatus.completed.length}</span>
+                        <span style={{color: 'var(--status-success)'}}>
+                            {translate('Completed: {count}', {count: todosByStatus.completed.length})}
+                        </span>
                     )}
                     {todosByStatus.cancelled.length > 0 && (
-                        <span style={{ color: 'var(--muted-foreground)', opacity: 0.5 }}>Cancelled: {todosByStatus.cancelled.length}</span>
+                        <span style={{color: 'var(--muted-foreground)', opacity: 0.5}}>
+                            {translate('Cancelled: {count}', {count: todosByStatus.cancelled.length})}
+                        </span>
                     )}
                 </div>
 
@@ -347,7 +359,9 @@ export const renderTodoOutput = (output: string, options?: { unstyled?: boolean 
                     <div className="space-y-2">
                         <div className="flex items-center gap-2">
                             <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: 'var(--foreground)' }} />
-                            <span className="typography-meta font-semibold text-foreground uppercase tracking-wide">In Progress</span>
+                            <span className="typography-meta font-semibold text-foreground uppercase tracking-wide">
+                                {translate('In Progress')}
+                            </span>
                         </div>
                         <div className="space-y-1.5 pl-4">
                             {todosByStatus.in_progress.map((todo, idx) => (
@@ -364,7 +378,10 @@ export const renderTodoOutput = (output: string, options?: { unstyled?: boolean 
                     <div className="space-y-2">
                         <div className="flex items-center gap-2">
                             <div className="w-2 h-2 rounded-full bg-muted-foreground/50" />
-                            <span className="typography-meta font-semibold text-muted-foreground uppercase tracking-wide">Pending</span>
+                            <span
+                                className="typography-meta font-semibold text-muted-foreground uppercase tracking-wide">
+                                {translate('Pending')}
+                            </span>
                         </div>
                         <div className="space-y-1.5 pl-4">
                             {todosByStatus.pending.map((todo, idx) => (
@@ -381,7 +398,10 @@ export const renderTodoOutput = (output: string, options?: { unstyled?: boolean 
                     <div className="space-y-2">
                         <div className="flex items-center gap-2">
                             <RiCheckLine className="w-3 h-3" style={{ color: 'var(--status-success)' }} />
-                            <span className="typography-meta font-semibold uppercase tracking-wide" style={{ color: 'var(--status-success)' }}>Completed</span>
+                            <span className="typography-meta font-semibold uppercase tracking-wide"
+                                  style={{color: 'var(--status-success)'}}>
+                                {translate('Completed')}
+                            </span>
                         </div>
                         <div className="space-y-1.5 pl-4">
                             {todosByStatus.completed.map((todo, idx) => (
@@ -398,7 +418,10 @@ export const renderTodoOutput = (output: string, options?: { unstyled?: boolean 
                     <div className="space-y-2">
                         <div className="flex items-center gap-2">
                             <span className="w-3 h-3 text-muted-foreground/50">×</span>
-                            <span className="typography-meta font-semibold text-muted-foreground/50 uppercase tracking-wide">Cancelled</span>
+                            <span
+                                className="typography-meta font-semibold text-muted-foreground/50 uppercase tracking-wide">
+                                {translate('Cancelled')}
+                            </span>
                         </div>
                         <div className="space-y-1.5 pl-4">
                             {todosByStatus.cancelled.map((todo, idx) => (

@@ -1,16 +1,26 @@
 import React from 'react';
-import { RiArrowLeftRightLine, RiChat4Line, RiCloseLine, RiDonutChartFill, RiFileTextLine, RiFullscreenExitLine, RiFullscreenLine } from '@remixicon/react';
+import {
+  RiArrowLeftRightLine,
+  RiChat4Line,
+  RiCloseLine,
+  RiDonutChartFill,
+  RiFileTextLine,
+  RiFullscreenExitLine,
+  RiFullscreenLine
+} from '@remixicon/react';
 
-import { FileTypeIcon } from '@/components/icons/FileTypeIcon';
-import { Button } from '@/components/ui/button';
-import { SortableTabsStrip } from '@/components/ui/sortable-tabs-strip';
-import { DiffView, FilesView, PlanView } from '@/components/views';
-import { useThemeSystem } from '@/contexts/useThemeSystem';
-import { useEffectiveDirectory } from '@/hooks/useEffectiveDirectory';
-import { cn } from '@/lib/utils';
-import { useFilesViewTabsStore } from '@/stores/useFilesViewTabsStore';
-import { useUIStore } from '@/stores/useUIStore';
-import { ContextPanelContent } from './ContextSidebarTab';
+import {FileTypeIcon} from '@/components/icons/FileTypeIcon';
+import {Button} from '@/components/ui/button';
+import {SortableTabsStrip} from '@/components/ui/sortable-tabs-strip';
+import {DiffView, FilesView, PlanView} from '@/components/views';
+import {useThemeSystem} from '@/contexts/useThemeSystem';
+import {useI18n} from '@/contexts/useI18n';
+import type {TranslateFn} from '@/lib/i18n/messages';
+import {useEffectiveDirectory} from '@/hooks/useEffectiveDirectory';
+import {cn} from '@/lib/utils';
+import {useFilesViewTabsStore} from '@/stores/useFilesViewTabsStore';
+import {useUIStore} from '@/stores/useUIStore';
+import {ContextPanelContent} from './ContextSidebarTab';
 
 const CONTEXT_PANEL_MIN_WIDTH = 360;
 const CONTEXT_PANEL_MAX_WIDTH = 1400;
@@ -56,12 +66,12 @@ const getRelativePathLabel = (filePath: string | null, directory: string): strin
   return normalizedFile;
 };
 
-const getModeLabel = (mode: 'diff' | 'file' | 'context' | 'plan' | 'chat'): string => {
-  if (mode === 'chat') return 'Chat';
-  if (mode === 'file') return 'Files';
-  if (mode === 'diff') return 'Diff';
-  if (mode === 'plan') return 'Plan';
-  return 'Context';
+const getModeLabel = (t: TranslateFn, mode: 'diff' | 'file' | 'context' | 'plan' | 'chat'): string => {
+    if (mode === 'chat') return t('Chat');
+    if (mode === 'file') return t('Files');
+    if (mode === 'diff') return t('Diff');
+    if (mode === 'plan') return t('Plan');
+    return t('Context');
 };
 
 const getFileNameFromPath = (path: string | null): string | null => {
@@ -82,16 +92,20 @@ const getFileNameFromPath = (path: string | null): string | null => {
   return segments[segments.length - 1] || null;
 };
 
-const getTabLabel = (tab: { mode: 'diff' | 'file' | 'context' | 'plan' | 'chat'; label: string | null; targetPath: string | null }): string => {
+const getTabLabel = (t: TranslateFn, tab: {
+    mode: 'diff' | 'file' | 'context' | 'plan' | 'chat';
+    label: string | null;
+    targetPath: string | null
+}): string => {
   if (tab.label) {
     return tab.label;
   }
 
   if (tab.mode === 'file') {
-    return getFileNameFromPath(tab.targetPath) || 'Files';
+      return getFileNameFromPath(tab.targetPath) || t('Files');
   }
 
-  return getModeLabel(tab.mode);
+    return getModeLabel(t, tab.mode);
 };
 
 const getTabIcon = (tab: { mode: 'diff' | 'file' | 'context' | 'plan' | 'chat'; targetPath: string | null }): React.ReactNode | undefined => {
@@ -156,6 +170,7 @@ const truncateTabLabel = (value: string, maxChars: number): string => {
 };
 
 export const ContextPanel: React.FC = () => {
+    const {t} = useI18n();
   const effectiveDirectory = useEffectiveDirectory() ?? '';
   const directoryKey = React.useMemo(() => normalizeDirectoryKey(effectiveDirectory), [effectiveDirectory]);
 
@@ -395,17 +410,17 @@ export const ContextPanel: React.FC = () => {
   }, [darkThemeId, lightThemeId, postEmbeddedVisibilityToChats, postThemeSyncToEmbeddedChat, tabs, themeMode]);
 
   const tabItems = React.useMemo(() => tabs.map((tab) => {
-    const rawLabel = getTabLabel(tab);
+      const rawLabel = getTabLabel(t, tab);
     const label = truncateTabLabel(rawLabel, CONTEXT_TAB_LABEL_MAX_CHARS);
     const tabPathLabel = getRelativePathLabel(tab.targetPath, effectiveDirectory);
     return {
       id: tab.id,
       label,
       icon: getTabIcon(tab),
-      title: tabPathLabel ? `${rawLabel}: ${tabPathLabel}` : rawLabel,
-      closeLabel: `Close ${label} tab`,
+        title: tabPathLabel ? t('{label}: {path}', {label: rawLabel, path: tabPathLabel}) : rawLabel,
+        closeLabel: t('Close {label} tab', {label}),
     };
-  }), [effectiveDirectory, tabs]);
+  }), [effectiveDirectory, tabs, t]);
 
   const activeNonChatContent = activeTab?.mode === 'diff'
     ? <DiffView hideStackedFileSidebar stackedDefaultCollapsedAll hideFileSelector pinSelectedFileHeaderToTopOnNavigate showOpenInEditorAction />
@@ -458,8 +473,8 @@ export const ContextPanel: React.FC = () => {
           size="sm"
           onClick={handleToggleExpanded}
           className="h-7 w-7 p-0"
-          title={isExpanded ? 'Collapse panel' : 'Expand panel'}
-          aria-label={isExpanded ? 'Collapse panel' : 'Expand panel'}
+          title={isExpanded ? t('Collapse panel') : t('Expand panel')}
+          aria-label={isExpanded ? t('Collapse panel') : t('Expand panel')}
         >
           {isExpanded ? <RiFullscreenExitLine className="h-3.5 w-3.5" /> : <RiFullscreenLine className="h-3.5 w-3.5" />}
         </Button>
@@ -469,8 +484,8 @@ export const ContextPanel: React.FC = () => {
           size="sm"
           onClick={handleClose}
           className="h-7 w-7 p-0"
-          title="Close panel"
-          aria-label="Close panel"
+          title={t('Close panel')}
+          aria-label={t('Close panel')}
         >
           <RiCloseLine className="h-3.5 w-3.5" />
         </Button>
@@ -524,7 +539,7 @@ export const ContextPanel: React.FC = () => {
           onPointerCancel={handleResizeEnd}
           role="separator"
           aria-orientation="vertical"
-          aria-label="Resize context panel"
+          aria-label={t('Resize context panel')}
         />
       )}
       {header}
@@ -556,7 +571,7 @@ export const ContextPanel: React.FC = () => {
                 chatFrameRefs.current.set(tab.id, node);
               }}
               src={src}
-              title={`Session chat ${sessionID}`}
+              title={t('Session chat {sessionID}', {sessionID})}
               className={cn(
                 'absolute inset-0 h-full w-full border-0 bg-background',
                 activeChatTabID === tab.id ? 'block' : 'hidden'

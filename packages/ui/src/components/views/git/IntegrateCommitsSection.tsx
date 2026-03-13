@@ -1,35 +1,25 @@
 import * as React from 'react';
-import { RiArrowDownSLine, RiLoader4Line, RiSplitCellsHorizontal, RiSparklingLine } from '@remixicon/react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@/components/ui/command';
-import { toast } from '@/components/ui';
-import { useSessionStore } from '@/stores/useSessionStore';
-import { useUIStore } from '@/stores/useUIStore';
-import { execCommand } from '@/lib/execCommands';
+import {RiArrowDownSLine, RiLoader4Line, RiSparklingLine, RiSplitCellsHorizontal} from '@remixicon/react';
+import {DropdownMenu, DropdownMenuContent, DropdownMenuTrigger,} from '@/components/ui/dropdown-menu';
+import {Button} from '@/components/ui/button';
+import {Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList,} from '@/components/ui/command';
+import {toast} from '@/components/ui';
+import {useSessionStore} from '@/stores/useSessionStore';
+import {useUIStore} from '@/stores/useUIStore';
+import {execCommand} from '@/lib/execCommands';
+import {useI18n} from '@/contexts/useI18n';
 import {
   abortIntegrate,
   computeIntegratePlan,
   continueIntegrate,
-  integrateWorktreeCommits,
   getIntegrateConflictDetails,
-  isCherryPickInProgress,
   type IntegrateConflictDetails,
   type IntegrateInProgress,
   type IntegratePlan,
+  integrateWorktreeCommits,
+  isCherryPickInProgress,
 } from '@/lib/git/integrateWorktreeCommits';
-import type { WorktreeMetadata } from '@/types/worktree';
+import type {WorktreeMetadata} from '@/types/worktree';
 
 type IntegrateUiState =
   | { kind: 'idle' }
@@ -57,6 +47,7 @@ export const IntegrateCommitsSection: React.FC<{
   onRefresh,
   variant = 'framed',
 }) => {
+    const {t} = useI18n();
   const currentSessionId = useSessionStore((s) => s.currentSessionId);
   const setActiveMainTab = useUIStore((s) => s.setActiveMainTab);
   const [branchDropdownOpen, setBranchDropdownOpen] = React.useState(false);
@@ -388,7 +379,7 @@ Important:
                 className="w-72 p-0 max-h-(--radix-dropdown-menu-content-available-height) flex flex-col overflow-hidden"
               >
                 <Command className="h-full min-h-0">
-                  <CommandInput ref={searchInputRef} placeholder="Search branches..." />
+                    <CommandInput ref={searchInputRef} placeholder={t('Search branches...')}/>
                   <CommandList
                     className="h-full min-h-0"
                     scrollbarClassName="overlay-scrollbar--flush overlay-scrollbar--dense overlay-scrollbar--zero"

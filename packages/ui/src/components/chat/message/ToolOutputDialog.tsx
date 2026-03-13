@@ -1,29 +1,49 @@
 import React from 'react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { RiArrowLeftSLine, RiArrowRightSLine, RiBrainAi3Line, RiCloseLine, RiFileImageLine, RiFileList2Line, RiFilePdfLine, RiFileSearchLine, RiFolder6Line, RiGitBranchLine, RiGlobalLine, RiListCheck3, RiLoader4Line, RiPencilAiLine, RiSearchLine, RiTaskLine, RiTerminalBoxLine, RiToolsLine } from '@remixicon/react';
-import { File as PierreFile, PatchDiff } from '@pierre/diffs/react';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { createPortal } from 'react-dom';
-
-import { cn } from '@/lib/utils';
-import { SimpleMarkdownRenderer } from '../MarkdownRenderer';
-import { toolDisplayStyles } from '@/lib/typography';
-import { getLanguageFromExtension } from '@/lib/toolHelpers';
-import { useOptionalThemeSystem } from '@/contexts/useThemeSystem';
-import { ensurePierreThemeRegistered } from '@/lib/shiki/appThemeRegistry';
-import { getDefaultTheme } from '@/lib/theme/themes';
+import {Dialog, DialogContent} from '@/components/ui/dialog';
 import {
-    renderTodoOutput,
-    renderListOutput,
-    renderGrepOutput,
-    renderGlobOutput,
-    renderWebSearchOutput,
+    RiArrowLeftSLine,
+    RiArrowRightSLine,
+    RiBrainAi3Line,
+    RiCloseLine,
+    RiFileImageLine,
+    RiFileList2Line,
+    RiFilePdfLine,
+    RiFileSearchLine,
+    RiFolder6Line,
+    RiGitBranchLine,
+    RiGlobalLine,
+    RiListCheck3,
+    RiLoader4Line,
+    RiPencilAiLine,
+    RiSearchLine,
+    RiTaskLine,
+    RiTerminalBoxLine,
+    RiToolsLine
+} from '@remixicon/react';
+import {File as PierreFile, PatchDiff} from '@pierre/diffs/react';
+import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
+import {createPortal} from 'react-dom';
+
+import {cn} from '@/lib/utils';
+import {SimpleMarkdownRenderer} from '../MarkdownRenderer';
+import {toolDisplayStyles} from '@/lib/typography';
+import {getLanguageFromExtension} from '@/lib/toolHelpers';
+import {useOptionalThemeSystem} from '@/contexts/useThemeSystem';
+import {useI18n} from '@/contexts/useI18n';
+import {ensurePierreThemeRegistered} from '@/lib/shiki/appThemeRegistry';
+import {getDefaultTheme} from '@/lib/theme/themes';
+import {
     formatInputForDisplay,
     parseReadToolOutput,
+    renderGlobOutput,
+    renderGrepOutput,
+    renderListOutput,
+    renderTodoOutput,
+    renderWebSearchOutput,
 } from './toolRenderers';
-import type { ToolPopupContent, DiffViewMode } from './types';
-import { DiffViewToggle } from './DiffViewToggle';
-import { VirtualizedCodeBlock, type CodeLine } from './parts/VirtualizedCodeBlock';
+import type {DiffViewMode, ToolPopupContent} from './types';
+import {DiffViewToggle} from './DiffViewToggle';
+import {type CodeLine, VirtualizedCodeBlock} from './parts/VirtualizedCodeBlock';
 
 interface ToolOutputDialogProps {
     popup: ToolPopupContent;
@@ -300,6 +320,7 @@ const ImagePreviewDialog: React.FC<{
     onOpenChange: (open: boolean) => void;
     isMobile: boolean;
 }> = ({ popup, onOpenChange, isMobile }) => {
+    const {t} = useI18n();
     const gallery = React.useMemo(() => {
         const baseImage = popup.image;
         if (!baseImage) return [] as Array<{ url: string; mimeType?: string; filename?: string; size?: number }>;
@@ -432,7 +453,7 @@ const ImagePreviewDialog: React.FC<{
                         onMouseDown={(event) => event.stopPropagation()}
                         onClick={showPrevious}
                         className="absolute left-3 top-1/2 -translate-y-1/2 z-10 h-10 w-10 flex items-center justify-center rounded-full bg-black/25 text-foreground/90 backdrop-blur-sm hover:bg-black/35 focus:outline-none focus:ring-2 focus:ring-primary/60"
-                        aria-label="Previous image"
+                        aria-label={t('Previous image')}
                     >
                         <RiArrowLeftSLine className="h-6 w-6" />
                     </button>
@@ -441,7 +462,7 @@ const ImagePreviewDialog: React.FC<{
                         onMouseDown={(event) => event.stopPropagation()}
                         onClick={showNext}
                         className="absolute right-3 top-1/2 -translate-y-1/2 z-10 h-10 w-10 flex items-center justify-center rounded-full bg-black/25 text-foreground/90 backdrop-blur-sm hover:bg-black/35 focus:outline-none focus:ring-2 focus:ring-primary/60"
-                        aria-label="Next image"
+                        aria-label={t('Next image')}
                     >
                         <RiArrowRightSLine className="h-6 w-6" />
                     </button>
@@ -470,7 +491,7 @@ const ImagePreviewDialog: React.FC<{
                             type="button"
                             className="h-8 w-8 flex items-center justify-center rounded-lg text-muted-foreground/80 hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary/60"
                             onClick={() => onOpenChange(false)}
-                            aria-label="Close image preview"
+                            aria-label={t('Close image preview')}
                         >
                             <RiCloseLine className="h-4 w-4" />
                         </button>
@@ -630,6 +651,7 @@ const MermaidPreviewDialog: React.FC<{
     onOpenChange: (open: boolean) => void;
     isMobile: boolean;
 }> = ({ popup, onOpenChange, isMobile }) => {
+    const {t} = useI18n();
     const [source, setSource] = React.useState<string>(popup.mermaid?.source || '');
     const [status, setStatus] = React.useState<'idle' | 'loading' | 'ready' | 'error'>(popup.mermaid?.source ? 'ready' : 'idle');
     const [errorMessage, setErrorMessage] = React.useState<string>('');
@@ -728,12 +750,12 @@ const MermaidPreviewDialog: React.FC<{
         } else if (target.url.toLowerCase().startsWith('file://')) {
             const normalizedPath = normalizeFilePath(target.url);
             if (!normalizedPath) {
-                sourcePromise = Promise.reject(new Error('Invalid local file path for Mermaid preview.'));
+                sourcePromise = Promise.reject(new Error(t('Invalid local file path for Mermaid preview.')));
             } else {
                 sourcePromise = fetch(`/api/fs/raw?path=${encodeURIComponent(normalizedPath)}`)
                     .then((response) => {
                         if (!response.ok) {
-                            return Promise.reject(new Error(`Failed to read diagram file (${response.status})`));
+                            return Promise.reject(new Error(t('Failed to read diagram file ({status})', {status: response.status})));
                         }
                         return response.text();
                     });
@@ -745,12 +767,12 @@ const MermaidPreviewDialog: React.FC<{
             const resolvedUrl = canParse ? new URL(target.url, window.location.origin) : null;
 
             if (!resolvedUrl || (resolvedUrl.protocol !== 'http:' && resolvedUrl.protocol !== 'https:')) {
-                sourcePromise = Promise.reject(new Error('Unsupported Mermaid URL protocol.'));
+                sourcePromise = Promise.reject(new Error(t('Unsupported Mermaid URL protocol.')));
             } else {
                 sourcePromise = fetch(resolvedUrl.toString())
                     .then((response) => {
                         if (!response.ok) {
-                            return Promise.reject(new Error(`Failed to load diagram (${response.status})`));
+                            return Promise.reject(new Error(t('Failed to load diagram ({status})', {status: response.status})));
                         }
                         return response.text();
                     });
@@ -771,9 +793,9 @@ const MermaidPreviewDialog: React.FC<{
                     return;
                 }
                 setStatus('error');
-                setErrorMessage(error instanceof Error ? error.message : 'Unable to load Mermaid diagram.');
+                setErrorMessage(error instanceof Error ? error.message : t('Unable to load Mermaid diagram.'));
             });
-    }, [decodeDataUrl, normalizeFilePath, popup.mermaid]);
+    }, [decodeDataUrl, normalizeFilePath, popup.mermaid, t]);
 
     React.useEffect(() => {
         if (!popup.open || !popup.mermaid) {
@@ -916,7 +938,7 @@ const MermaidPreviewDialog: React.FC<{
                             type="button"
                             className="h-8 w-8 flex items-center justify-center rounded-lg text-muted-foreground/80 hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary/60"
                             onClick={() => onOpenChange(false)}
-                            aria-label="Close diagram preview"
+                            aria-label={t('Close diagram preview')}
                         >
                             <RiCloseLine className="h-4 w-4" />
                         </button>
@@ -929,14 +951,14 @@ const MermaidPreviewDialog: React.FC<{
                             {status === 'loading' && (
                                 <div className="h-full min-h-28 flex items-center justify-center gap-2 text-muted-foreground typography-meta">
                                     <RiLoader4Line className="h-4 w-4 animate-spin" />
-                                    <span>Loading diagram...</span>
+                                    <span>{t('Loading diagram...')}</span>
                                 </div>
                             )}
 
                             {status === 'error' && (
                                 <div className="rounded-xl border border-border/30 bg-muted/20 p-3 space-y-3">
                                     <p className="typography-markdown" style={{ color: 'var(--status-error)' }}>
-                                        {errorMessage || 'Unable to render Mermaid diagram.'}
+                                        {errorMessage || t('Unable to render Mermaid diagram.')}
                                     </p>
                                     <button
                                         type="button"
@@ -949,7 +971,7 @@ const MermaidPreviewDialog: React.FC<{
                                             color: 'var(--surface-foreground)',
                                         }}
                                     >
-                                        Retry
+                                        {t('Retry')}
                                     </button>
                                 </div>
                             )}
@@ -981,6 +1003,7 @@ const MermaidPreviewDialog: React.FC<{
 };
 
 const ToolOutputDialog: React.FC<ToolOutputDialogProps> = ({ popup, onOpenChange, syntaxTheme, isMobile }) => {
+    const {t} = useI18n();
     const [diffViewMode, setDiffViewMode] = React.useState<DiffViewMode>('unified');
     const pierreThemeConfig = usePierreThemeConfig();
 
@@ -1110,7 +1133,7 @@ const ToolOutputDialog: React.FC<ToolOutputDialogProps> = ({ popup, onOpenChange
 
                                 if (tool === 'todowrite' || tool === 'todoread') {
                                     return (
-                                        renderTodoOutput(popup.content) || (
+                                        renderTodoOutput(popup.content, undefined, t) || (
                                             <SyntaxHighlighter
                                                 style={syntaxTheme}
                                                 language="json"
@@ -1200,8 +1223,8 @@ const ToolOutputDialog: React.FC<ToolOutputDialogProps> = ({ popup, onOpenChange
                         </div>
                     ) : (
                         <div className="p-8 text-muted-foreground typography-ui-header">
-                            <div className="mb-2">Command completed successfully</div>
-                            <div className="typography-meta">No output was produced</div>
+                            <div className="mb-2">{t('Command completed successfully')}</div>
+                            <div className="typography-meta">{t('No output was produced')}</div>
                         </div>
                     )}
                     </div>

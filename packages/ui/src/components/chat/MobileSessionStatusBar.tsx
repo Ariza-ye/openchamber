@@ -1,29 +1,29 @@
 import React from 'react';
-import { useSessionStore } from '@/stores/useSessionStore';
-import { useConfigStore } from '@/stores/useConfigStore';
-import { useUIStore } from '@/stores/useUIStore';
-import { useProjectsStore } from '@/stores/useProjectsStore';
-import type { Session } from '@opencode-ai/sdk/v2';
-import type { ProjectEntry } from '@/lib/api/types';
-import { cn, formatDirectoryName } from '@/lib/utils';
-import { getAgentColor } from '@/lib/agentColors';
+import {useSessionStore} from '@/stores/useSessionStore';
+import {useConfigStore} from '@/stores/useConfigStore';
+import {useUIStore} from '@/stores/useUIStore';
+import {useProjectsStore} from '@/stores/useProjectsStore';
+import type {Session} from '@opencode-ai/sdk/v2';
+import type {ProjectEntry} from '@/lib/api/types';
+import {cn, formatDirectoryName} from '@/lib/utils';
+import {getAgentColor} from '@/lib/agentColors';
 import {
-  RiLoader4Line,
   RiAddLine,
-  RiDragMove2Line,
-  RiDeleteBinLine,
-  RiEditLine,
-  RiArrowUpLine,
   RiArrowDownLine,
+  RiArrowUpLine,
+  RiDeleteBinLine,
+  RiDragMove2Line,
+  RiEditLine,
+  RiLoader4Line,
 } from '@remixicon/react';
 import {
-  DndContext,
   closestCenter,
+  DndContext,
+  type DragEndEvent,
   KeyboardSensor,
   PointerSensor,
   useSensor,
   useSensors,
-  type DragEndEvent,
 } from '@dnd-kit/core';
 import {
   arrayMove,
@@ -32,13 +32,14 @@ import {
   useSortable,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-import type { SessionContextUsage } from '@/stores/types/sessionTypes';
-import { PROJECT_ICON_MAP, PROJECT_COLOR_MAP, getProjectIconImageUrl } from '@/lib/projectMeta';
-import { useDirectoryStore } from '@/stores/useDirectoryStore';
-import { toast } from '@/components/ui';
-import { isTauriShell, isDesktopLocalOriginActive, requestDirectoryAccess } from '@/lib/desktop';
-import { sessionEvents } from '@/lib/sessionEvents';
+import {CSS} from '@dnd-kit/utilities';
+import type {SessionContextUsage} from '@/stores/types/sessionTypes';
+import {getProjectIconImageUrl, PROJECT_COLOR_MAP, PROJECT_ICON_MAP} from '@/lib/projectMeta';
+import {useDirectoryStore} from '@/stores/useDirectoryStore';
+import {toast} from '@/components/ui';
+import {isDesktopLocalOriginActive, isTauriShell, requestDirectoryAccess} from '@/lib/desktop';
+import {useI18n} from '@/contexts/useI18n';
+import {sessionEvents} from '@/lib/sessionEvents';
 import {
   Dialog,
   DialogContent,
@@ -47,11 +48,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { ProjectEditDialog } from '@/components/layout/ProjectEditDialog';
-import { useDrawerSwipe } from '@/hooks/useDrawerSwipe';
-import { MobileOverlayPanel } from '@/components/ui/MobileOverlayPanel';
-import { useThemeSystem } from '@/contexts/useThemeSystem';
+import {Button} from '@/components/ui/button';
+import {ProjectEditDialog} from '@/components/layout/ProjectEditDialog';
+import {useDrawerSwipe} from '@/hooks/useDrawerSwipe';
+import {MobileOverlayPanel} from '@/components/ui/MobileOverlayPanel';
+import {useThemeSystem} from '@/contexts/useThemeSystem';
 
 interface MobileSessionStatusBarProps {
   onSessionSwitch?: (sessionId: string) => void;
@@ -957,6 +958,7 @@ function ProjectBar({
   onRemoveProject,
   homeDirectory
 }: ProjectBarProps) {
+    const {t} = useI18n();
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const [editPanelOpen, setEditPanelOpen] = React.useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
@@ -1011,12 +1013,12 @@ function ProjectBar({
   if (projects.length === 0) {
     return (
       <div className="flex items-center gap-2 px-2 py-1 border-b border-[var(--interactive-border)] bg-transparent">
-        <span className="text-[11px] text-[var(--surface-mutedForeground)]">No projects</span>
+          <span className="text-[11px] text-[var(--surface-mutedForeground)]">{t('No projects')}</span>
         <button
           type="button"
           onClick={onAddProject}
           className="flex items-center justify-center !py-1.5 px-2 rounded-md border border-[var(--primary-base)]/60 bg-[var(--primary-base)]/5 text-[var(--primary-base)]/80 hover:text-[var(--primary-base)] hover:bg-[var(--primary-base)]/10 !min-h-0"
-          aria-label="Add project"
+          aria-label={t('Add project')}
         >
           <RiAddLine className="h-3 w-3" />
         </button>
@@ -1092,7 +1094,7 @@ function ProjectBar({
         type="button"
         onClick={onAddProject}
         className="flex items-center justify-center !py-1.5 px-2 rounded-md border border-[var(--primary-base)]/60 bg-[var(--primary-base)]/5 text-[var(--primary-base)]/80 hover:text-[var(--primary-base)] hover:bg-[var(--primary-base)]/10 shrink-0 !min-h-0"
-        aria-label="Add project"
+        aria-label={t('Add project')}
       >
         <RiAddLine className="h-3.5 w-3.5" />
       </button>
@@ -1101,17 +1103,21 @@ function ProjectBar({
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle>Remove Project</DialogTitle>
+              <DialogTitle>{t('Remove Project')}</DialogTitle>
             <DialogDescription>
-              Are you sure you want to remove <span className="font-medium text-foreground">{projectToDelete?.label || formatDirectoryName(projectToDelete?.path || '', homeDirectory)}</span>?
+                {t('Are you sure you want to remove')}{' '}
+                <span className="font-medium text-foreground">
+                {projectToDelete?.label || formatDirectoryName(projectToDelete?.path || '', homeDirectory)}
+              </span>
+                ?
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="flex gap-2">
             <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
-              Cancel
+                {t('Cancel')}
             </Button>
             <Button variant="destructive" onClick={handleConfirmDelete}>
-              Remove
+                {t('Remove')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -1286,6 +1292,7 @@ function ExpandedView({
   homeDirectory: string | null;
   childIndicators?: Array<{ session: Session; isRunning: boolean }>;
 }) {
+    const {t} = useI18n();
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [collapsedHeight, setCollapsedHeight] = React.useState<number | null>(null);
   const [hasMeasured, setHasMeasured] = React.useState(false);
@@ -1379,7 +1386,7 @@ function ExpandedView({
             }}
             className="flex items-center gap-0.5 px-2 py-1 text-[12px] leading-tight !min-h-0 rounded border border-[var(--primary-base)]/60 bg-[var(--primary-base)]/5 text-[var(--primary-base)]/80 hover:text-[var(--primary-base)] hover:bg-[var(--primary-base)]/10 self-start"
           >
-            New
+              {t('New')}
           </button>
         </div>
       </div>
@@ -1403,7 +1410,7 @@ function ExpandedView({
       >
         {displaySessions.length === 0 ? (
           <div className="flex items-center justify-center py-3 text-[11px] text-[var(--surface-mutedForeground)]">
-            <span>No sessions in this project</span>
+              <span>{t('No sessions in this project')}</span>
           </div>
         ) : (
           displaySessions.map((session) => (

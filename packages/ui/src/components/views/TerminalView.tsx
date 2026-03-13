@@ -1,21 +1,31 @@
 import React from 'react';
-import { RiAddLine, RiArrowDownLine, RiArrowGoBackLine, RiArrowLeftLine, RiArrowRightLine, RiArrowUpLine, RiCloseLine, RiCommandLine } from '@remixicon/react';
+import {
+    RiAddLine,
+    RiArrowDownLine,
+    RiArrowGoBackLine,
+    RiArrowLeftLine,
+    RiArrowRightLine,
+    RiArrowUpLine,
+    RiCloseLine,
+    RiCommandLine
+} from '@remixicon/react';
 
-import { useSessionStore } from '@/stores/useSessionStore';
-import { useTerminalStore } from '@/stores/useTerminalStore';
-import { useEffectiveDirectory } from '@/hooks/useEffectiveDirectory';
-import { type TerminalStreamEvent } from '@/lib/api/types';
-import { useThemeSystem } from '@/contexts/useThemeSystem';
-import { useFontPreferences } from '@/hooks/useFontPreferences';
-import { CODE_FONT_OPTION_MAP, DEFAULT_MONO_FONT } from '@/lib/fontOptions';
-import { convertThemeToXterm } from '@/lib/terminalTheme';
-import { TerminalViewport, type TerminalController } from '@/components/terminal/TerminalViewport';
-import { cn } from '@/lib/utils';
-import { useUIStore } from '@/stores/useUIStore';
-import { Button } from '@/components/ui/button';
-import { useDeviceInfo } from '@/lib/device';
-import { useRuntimeAPIs } from '@/hooks/useRuntimeAPIs';
-import { primeTerminalInputTransport } from '@/lib/terminalApi';
+import {useSessionStore} from '@/stores/useSessionStore';
+import {useTerminalStore} from '@/stores/useTerminalStore';
+import {useEffectiveDirectory} from '@/hooks/useEffectiveDirectory';
+import {type TerminalStreamEvent} from '@/lib/api/types';
+import {useThemeSystem} from '@/contexts/useThemeSystem';
+import {useFontPreferences} from '@/hooks/useFontPreferences';
+import {CODE_FONT_OPTION_MAP, DEFAULT_MONO_FONT} from '@/lib/fontOptions';
+import {convertThemeToXterm} from '@/lib/terminalTheme';
+import {type TerminalController, TerminalViewport} from '@/components/terminal/TerminalViewport';
+import {cn} from '@/lib/utils';
+import {useUIStore} from '@/stores/useUIStore';
+import {Button} from '@/components/ui/button';
+import {useDeviceInfo} from '@/lib/device';
+import {useRuntimeAPIs} from '@/hooks/useRuntimeAPIs';
+import {primeTerminalInputTransport} from '@/lib/terminalApi';
+import {useI18n} from '@/contexts/useI18n';
 
 type Modifier = 'ctrl' | 'cmd';
 type MobileKey =
@@ -81,6 +91,7 @@ const getSequenceForKey = (key: MobileKey, modifier: Modifier | null): string | 
 };
 
 export const TerminalView: React.FC = () => {
+    const {t} = useI18n();
     const { terminal, runtime } = useRuntimeAPIs();
     const { currentTheme } = useThemeSystem();
     const { monoFont } = useFontPreferences();
@@ -1011,7 +1022,7 @@ export const TerminalView: React.FC = () => {
                                                     e.stopPropagation();
                                                     handleCloseTab(tab.id);
                                                 }}
-                                                title="Close tab"
+                                                title={t('Close tab')}
                                             >
                                                 {isMobile ? <span aria-hidden>×</span> : <RiCloseLine size={12} />}
                                             </button>
@@ -1026,7 +1037,7 @@ export const TerminalView: React.FC = () => {
                                         'ml-1 flex items-center justify-center rounded-md border border-[var(--interactive-border)] bg-transparent text-[var(--surface-muted-foreground)] hover:bg-[var(--interactive-hover)] hover:text-[var(--surface-foreground)]',
                                         isMobile ? '!min-h-0 !min-w-0 h-8 w-8' : 'h-6.5 w-6.5'
                                     )}
-                                    title="New tab"
+                                    title={t('New tab')}
                                 >
                                     <RiAddLine size={isMobile ? 18 : 16} />
                                 </button>
@@ -1084,10 +1095,10 @@ export const TerminalView: React.FC = () => {
                                 className="h-6 px-2 py-0 text-xs"
                                 onClick={handleHardRestart}
                                 disabled={isRestarting}
-                                title="Force kill and create fresh session"
+                                title={t('Force kill and create fresh session')}
                                 type="button"
                             >
-                                Hard Restart
+                                {t('Hard Restart')}
                             </Button>
                         )}
                     </div>

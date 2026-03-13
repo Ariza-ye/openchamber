@@ -1,14 +1,15 @@
 import React from 'react';
-import { RiArrowDownSLine, RiArrowRightSLine, RiStackLine } from '@remixicon/react';
-import { cn } from '@/lib/utils';
-import type { TurnActivityPart } from '../../hooks/useTurnGrouping';
-import type { ToolPart as ToolPartType } from '@opencode-ai/sdk/v2';
-import type { ContentChangeReason } from '@/hooks/useChatScrollManager';
-import type { ToolPopupContent } from '../types';
+import {RiArrowDownSLine, RiArrowRightSLine, RiStackLine} from '@remixicon/react';
+import {cn} from '@/lib/utils';
+import type {TurnActivityPart} from '../../hooks/useTurnGrouping';
+import type {ToolPart as ToolPartType} from '@opencode-ai/sdk/v2';
+import type {ContentChangeReason} from '@/hooks/useChatScrollManager';
+import type {ToolPopupContent} from '../types';
 import ToolPart from './ToolPart';
 import ReasoningPart from './ReasoningPart';
 import JustificationBlock from './JustificationBlock';
-import { FadeInOnReveal } from '../FadeInOnReveal';
+import {FadeInOnReveal} from '../FadeInOnReveal';
+import {useI18n} from '@/contexts/useI18n';
 
 const MAX_VISIBLE_COLLAPSED = 6;
 
@@ -73,6 +74,7 @@ const ProgressiveGroup: React.FC<ProgressiveGroupProps> = ({
     onContentChange,
     diffStats,
 }) => {
+    const {t} = useI18n();
     const previousExpandedRef = React.useRef<boolean | undefined>(isExpanded);
     // Track if we just expanded from collapsed state
     const [justExpandedFromCollapsed, setJustExpandedFromCollapsed] = React.useState(false);
@@ -208,7 +210,9 @@ const ProgressiveGroup: React.FC<ProgressiveGroupProps> = ({
                                 <RiStackLine className="h-3.5 w-3.5" style={{ color: 'var(--tools-icon)' }} />
                             )}
                         </div>
-                        <span className="typography-meta font-medium" style={{ color: 'var(--tools-title)' }}>Activity</span>
+                        <span className="typography-meta font-medium" style={{color: 'var(--tools-title)'}}>
+                            {t('Activity')}
+                        </span>
                     </div>
 
                     {diffStats && (diffStats.additions > 0 || diffStats.deletions > 0) && (

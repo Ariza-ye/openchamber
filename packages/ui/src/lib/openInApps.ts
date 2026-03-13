@@ -9,6 +9,7 @@ export const OPEN_IN_APPS: OpenInApp[] = [
   { id: 'terminal', label: 'Terminal', appName: 'Terminal' },
   { id: 'iterm2', label: 'iTerm2', appName: 'iTerm' },
   { id: 'ghostty', label: 'Ghostty', appName: 'Ghostty' },
+    {id: 'kitty', label: 'kitty', appName: 'kitty'},
   { id: 'vscode', label: 'VS Code', appName: 'Visual Studio Code' },
   { id: 'intellij', label: 'IntelliJ', appName: 'IntelliJ IDEA' },
   { id: 'visual-studio', label: 'Visual Studio', appName: 'Visual Studio' },
@@ -31,7 +32,7 @@ export const OPEN_IN_APPS: OpenInApp[] = [
 
 export const DEFAULT_OPEN_IN_APP_ID = 'finder';
 export const OPEN_IN_ALWAYS_AVAILABLE_APP_IDS = new Set(['finder', 'terminal']);
-export const OPEN_DIRECTORY_APP_IDS = new Set(['finder', 'terminal', 'iterm2', 'ghostty']);
+export const OPEN_DIRECTORY_APP_IDS = new Set(['finder', 'terminal', 'iterm2', 'ghostty', 'kitty']);
 
 export const getOpenInAppById = (id: string | null | undefined): OpenInApp | null => {
   if (!id) {

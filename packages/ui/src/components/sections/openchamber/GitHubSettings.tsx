@@ -1,14 +1,15 @@
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { ButtonSmall } from '@/components/ui/button-small';
-import { toast } from '@/components/ui';
-import { getRegisteredRuntimeAPIs } from '@/contexts/runtimeAPIRegistry';
-import { useGitHubAuthStore } from '@/stores/useGitHubAuthStore';
-import type { GitHubAuthStatus } from '@/lib/api/types';
-import { useDeviceInfo } from '@/lib/device';
-import { cn } from '@/lib/utils';
-import { RiGithubFill, RiInformationLine } from '@remixicon/react';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import {Button} from '@/components/ui/button';
+import {ButtonSmall} from '@/components/ui/button-small';
+import {toast} from '@/components/ui';
+import {getRegisteredRuntimeAPIs} from '@/contexts/runtimeAPIRegistry';
+import {useGitHubAuthStore} from '@/stores/useGitHubAuthStore';
+import type {GitHubAuthStatus} from '@/lib/api/types';
+import {useDeviceInfo} from '@/lib/device';
+import {cn} from '@/lib/utils';
+import {RiGithubFill, RiInformationLine} from '@remixicon/react';
+import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
+import {useI18n} from '@/contexts/useI18n';
 
 type GitHubUser = {
   login: string;
@@ -33,6 +34,7 @@ type DeviceFlowCompleteResponse =
   | { connected: false; status?: string; error?: string };
 
 export const GitHubSettings: React.FC = () => {
+    const {t} = useI18n();
   const { isMobile } = useDeviceInfo();
   const runtimeGitHub = getRegisteredRuntimeAPIs()?.github;
   const status = useGitHubAuthStore((state) => state.status);
@@ -120,11 +122,11 @@ export const GitHubSettings: React.FC = () => {
       void openExternal(url);
     } catch (error) {
       console.error('Failed to start GitHub connect:', error);
-      toast.error('Failed to start GitHub connect');
+        toast.error(t('Failed to start GitHub connect'));
     } finally {
       setIsBusy(false);
     }
-  }, [openExternal, runtimeGitHub]);
+  }, [openExternal, runtimeGitHub, t]);
 
   const pollOnce = React.useCallback(async (deviceCode: string) => {
     if (runtimeGitHub) {
@@ -160,7 +162,7 @@ export const GitHubSettings: React.FC = () => {
         try {
           const result = await pollOnce(flow.deviceCode);
             if (result.connected) {
-              toast.success('GitHub connected');
+                toast.success(t('GitHub connected'));
               setFlow(null);
               stopPolling();
               await refreshStatus(runtimeGitHub, { force: true });
@@ -188,7 +190,7 @@ export const GitHubSettings: React.FC = () => {
         pollTimerRef.current = null;
       }
     };
-  }, [flow, pollIntervalMs, pollOnce, refreshStatus, runtimeGitHub, stopPolling]);
+  }, [flow, pollIntervalMs, pollOnce, refreshStatus, runtimeGitHub, stopPolling, t]);
 
   const disconnect = React.useCallback(async () => {
     setIsBusy(true);
@@ -206,15 +208,15 @@ export const GitHubSettings: React.FC = () => {
           throw new Error(response.statusText);
         }
       }
-      toast.success('GitHub disconnected');
+        toast.success(t('GitHub disconnected'));
       await refreshStatus(runtimeGitHub, { force: true });
     } catch (error) {
       console.error('Failed to disconnect GitHub:', error);
-      toast.error('Failed to disconnect GitHub');
+        toast.error(t('Failed to disconnect GitHub'));
     } finally {
       setIsBusy(false);
     }
-  }, [refreshStatus, runtimeGitHub, stopPolling]);
+  }, [refreshStatus, runtimeGitHub, stopPolling, t]);
 
   const activateAccount = React.useCallback(async (accountId: string) => {
     if (!accountId) return;
@@ -239,14 +241,14 @@ export const GitHubSettings: React.FC = () => {
           })();
 
       setStatus(payload);
-      toast.success('GitHub account switched');
+        toast.success(t('GitHub account switched'));
     } catch (error) {
       console.error('Failed to switch GitHub account:', error);
-      toast.error('Failed to switch GitHub account');
+        toast.error(t('Failed to switch GitHub account'));
     } finally {
       setIsBusy(false);
     }
-  }, [runtimeGitHub, setStatus]);
+  }, [runtimeGitHub, setStatus, t]);
 
   if (isLoading) {
     return null;
@@ -260,7 +262,7 @@ export const GitHubSettings: React.FC = () => {
     <div className="mb-8">
       <div className="mb-3 px-1 flex items-start justify-between gap-4">
         <div className="flex items-center gap-2">
-          <h3 className="typography-ui-header font-semibold text-foreground">GitHub</h3>
+            <h3 className="typography-ui-header font-semibold text-foreground">{t('GitHub')}</h3>
           <Tooltip delayDuration={1000}>
             <TooltipTrigger asChild>
               <RiInformationLine className="h-3.5 w-3.5 text-muted-foreground/60 cursor-help" />
@@ -304,24 +306,22 @@ export const GitHubSettings: React.FC = () => {
               </div>
             </div>
 
-            <ButtonSmall variant="outline" onClick={disconnect} disabled={isBusy} className={cn("text-[var(--status-error)] hover:text-[var(--status-error)]", isMobile ? "w-full" : undefined)}>
-              Disconnect
-            </ButtonSmall>
+              <ButtonSmall variant="outline" onClick={disconnect} disabled={isBusy}
+                           className={cn("text-[var(--status-error)] hover:text-[var(--status-error)]", isMobile ? "w-full" : undefined)}>{t('Disconnect')}</ButtonSmall>
           </div>
         ) : (
           <div className="flex items-center justify-between gap-4 px-4 py-4">
             <div className="flex min-w-0 flex-col">
-              <span className="typography-ui-label text-foreground">Not Connected</span>
+                <span className="typography-ui-label text-foreground">{t('Not Connected')}</span>
             </div>
-            <ButtonSmall variant="default" onClick={startConnect} disabled={isBusy}>
-              Connect GitHub
-            </ButtonSmall>
+              <ButtonSmall variant="default" onClick={startConnect}
+                           disabled={isBusy}>{t('Connect GitHub')}</ButtonSmall>
           </div>
         )}
 
         {accounts.length > 1 && (
           <div className="mt-2 border-t border-[var(--surface-subtle)] pt-2 px-2 pb-1">
-            <div className="typography-micro text-muted-foreground mb-2 px-1">Other Accounts</div>
+              <div className="typography-micro text-muted-foreground mb-2 px-1">{t('Other Accounts')}</div>
             <div className="space-y-1">
               {accounts.map((account) => {
                 const accountUser = account.user;
@@ -357,15 +357,14 @@ export const GitHubSettings: React.FC = () => {
                       </div>
                     </div>
                     {isCurrent ? (
-                      <span className="typography-micro text-[var(--primary-base)] bg-[var(--primary-base)]/10 px-1.5 py-0.5 rounded">Active</span>
+                        <span
+                            className="typography-micro text-[var(--primary-base)] bg-[var(--primary-base)]/10 px-1.5 py-0.5 rounded">{t('Active')}</span>
                     ) : (
                       <ButtonSmall
                         variant="ghost"
                         onClick={() => activateAccount(account.id)}
                         disabled={isBusy}
-                      >
-                        Switch to
-                      </ButtonSmall>
+                      >{t('Switch to')}</ButtonSmall>
                     )}
                   </div>
                 );
@@ -383,16 +382,14 @@ export const GitHubSettings: React.FC = () => {
             onClick={startConnect}
             disabled={isBusy}
             className={cn(isMobile ? 'w-full' : undefined)}
-          >
-            Add Account
-          </ButtonSmall>
+          >{t('Add Account')}</ButtonSmall>
         </div>
       )}
 
       {flow && (
         <div className="mt-4 rounded-lg bg-[var(--surface-elevated)]/70 p-4 border border-[var(--interactive-border)]">
           <div className="space-y-1">
-            <h4 className="typography-ui-label text-foreground">Authorize OpenChamber</h4>
+              <h4 className="typography-ui-label text-foreground">{t('Authorize OpenChamber')}</h4>
             <p className="typography-meta text-muted-foreground">
               In GitHub, enter the following code to authorize this device:
             </p>
@@ -404,9 +401,7 @@ export const GitHubSettings: React.FC = () => {
                 href={flow.verificationUriComplete || flow.verificationUri}
                 target="_blank"
                 rel="noopener noreferrer"
-              >
-                Open GitHub
-              </a>
+              >{t('Open GitHub')}</a>
             </Button>
           </div>
           <div className="mt-4 flex items-center justify-between">
@@ -416,9 +411,7 @@ export const GitHubSettings: React.FC = () => {
             <ButtonSmall variant="ghost" disabled={isBusy} onClick={() => {
               stopPolling();
               setFlow(null);
-            }}>
-              Cancel
-            </ButtonSmall>
+            }}>{t('Cancel')}</ButtonSmall>
           </div>
         </div>
       )}

@@ -1,19 +1,20 @@
 import React from 'react';
 import {
+  closestCenter,
   DndContext,
   DragOverlay,
   KeyboardSensor,
   PointerSensor,
-  closestCenter,
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
-import { SortableContext, arrayMove, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { ScrollableOverlay } from '@/components/ui/ScrollableOverlay';
-import { formatDirectoryName, formatPathForDisplay, cn } from '@/lib/utils';
-import type { SessionGroup } from './types';
-import { SortableGroupItem, SortableProjectItem } from './sortableItems';
-import { formatProjectLabel } from './utils';
+import {arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy} from '@dnd-kit/sortable';
+import {ScrollableOverlay} from '@/components/ui/ScrollableOverlay';
+import {cn, formatDirectoryName, formatPathForDisplay} from '@/lib/utils';
+import type {SessionGroup} from './types';
+import {SortableGroupItem, SortableProjectItem} from './sortableItems';
+import {formatProjectLabel} from './utils';
+import {useI18n} from '@/contexts/useI18n';
 
 type ProjectSection = {
   project: {
@@ -63,6 +64,7 @@ type Props = {
 };
 
 export function SidebarProjectsList(props: Props): React.ReactNode {
+    const {t} = useI18n();
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
@@ -91,7 +93,8 @@ export function SidebarProjectsList(props: Props): React.ReactNode {
               ?? activeSection.groups.find((candidate) => candidate.isMain)
               ?? activeSection.groups[0];
             if (!group) {
-              return <div className="py-1 text-left typography-micro text-muted-foreground">No sessions yet.</div>;
+                return <div
+                    className="py-1 text-left typography-micro text-muted-foreground">{t('No sessions yet.')}</div>;
             }
             const groupKey = `${activeSection.project.id}:${group.id}`;
             return props.renderGroupSessions(group, groupKey, activeSection.project.id, props.showOnlyMainWorkspace);
@@ -194,7 +197,8 @@ export function SidebarProjectsList(props: Props): React.ReactNode {
                         <DragOverlay dropAnimation={null} />
                       </DndContext>
                     ) : (
-                      <div className="py-1 text-left typography-micro text-muted-foreground">No sessions yet.</div>
+                        <div
+                            className="py-1 text-left typography-micro text-muted-foreground">{t('No sessions yet.')}</div>
                     )}
                   </div>
                 ) : null}

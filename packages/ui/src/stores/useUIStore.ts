@@ -1,9 +1,10 @@
-import { create } from 'zustand';
-import { devtools, persist, createJSONStorage } from 'zustand/middleware';
-import type { SidebarSection } from '@/constants/sidebar';
-import { getSafeStorage } from './utils/safeStorage';
-import { SEMANTIC_TYPOGRAPHY, getTypographyVariable, type SemanticTypographyKey } from '@/lib/typography';
-import type { ShortcutCombo } from '@/lib/shortcuts';
+import {create} from 'zustand';
+import {createJSONStorage, devtools, persist} from 'zustand/middleware';
+import type {SidebarSection} from '@/constants/sidebar';
+import {getSafeStorage} from './utils/safeStorage';
+import {getTypographyVariable, SEMANTIC_TYPOGRAPHY, type SemanticTypographyKey} from '@/lib/typography';
+import type {ShortcutCombo} from '@/lib/shortcuts';
+import {getDefaultLocale, type Locale, normalizeLocale} from '@/lib/i18n/messages';
 
 export type MainTab = 'chat' | 'plan' | 'git' | 'diff' | 'terminal' | 'files';
 export type RightSidebarTab = 'git' | 'files';
@@ -455,6 +456,7 @@ const clampContextPanelRoots = (
 interface UIStore {
 
   theme: 'light' | 'dark' | 'system';
+    locale: Locale;
   isMultiRunLauncherOpen: boolean;
   multiRunLauncherPrefillPrompt: string;
   isSidebarOpen: boolean;
@@ -563,6 +565,7 @@ interface UIStore {
   shortcutOverrides: Record<string, ShortcutCombo>;
 
   setTheme: (theme: 'light' | 'dark' | 'system') => void;
+    setLocale: (locale: Locale) => void;
   toggleSidebar: () => void;
   setSidebarOpen: (open: boolean) => void;
   setSidebarWidth: (width: number) => void;
@@ -684,6 +687,7 @@ export const useUIStore = create<UIStore>()(
       (set, get) => ({
 
         theme: 'system',
+          locale: getDefaultLocale(),
         isMultiRunLauncherOpen: false,
         multiRunLauncherPrefillPrompt: '',
         isSidebarOpen: true,
@@ -785,6 +789,10 @@ export const useUIStore = create<UIStore>()(
           set({ theme });
           get().applyTheme();
         },
+
+          setLocale: (locale) => {
+              set({locale: normalizeLocale(locale)});
+          },
 
         toggleSidebar: () => {
           set((state) => {
@@ -1806,6 +1814,7 @@ export const useUIStore = create<UIStore>()(
         },
         partialize: (state) => ({
           theme: state.theme,
+            locale: state.locale,
           isSidebarOpen: state.isSidebarOpen,
           sidebarWidth: state.sidebarWidth,
           isRightSidebarOpen: state.isRightSidebarOpen,

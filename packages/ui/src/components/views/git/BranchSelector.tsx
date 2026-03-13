@@ -1,18 +1,14 @@
 import React from 'react';
 import {
-  RiGitBranchLine,
-  RiArrowDownSLine,
   RiAddLine,
-  RiCloseLine,
-  RiLoader4Line,
+  RiArrowDownSLine,
   RiArrowLeftLine,
+  RiCloseLine,
+  RiGitBranchLine,
+  RiLoader4Line,
 } from '@remixicon/react';
-import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import {Button} from '@/components/ui/button';
+import {DropdownMenu, DropdownMenuContent, DropdownMenuTrigger,} from '@/components/ui/dropdown-menu';
 import {
   Command,
   CommandEmpty,
@@ -22,8 +18,9 @@ import {
   CommandList,
   CommandSeparator,
 } from '@/components/ui/command';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import type { GitRemote } from '@/lib/api/types';
+import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
+import type {GitRemote} from '@/lib/api/types';
+import {useI18n} from '@/contexts/useI18n';
 
 interface BranchInfo {
   ahead?: number;
@@ -66,6 +63,7 @@ export const BranchSelector: React.FC<BranchSelectorProps> = ({
   disabled = false,
   tooltipDelayMs = 1000,
 }) => {
+    const {t} = useI18n();
   const [isOpen, setIsOpen] = React.useState(false);
   const [search, setSearch] = React.useState('');
   const [showCreate, setShowCreate] = React.useState(false);
@@ -189,7 +187,7 @@ export const BranchSelector: React.FC<BranchSelectorProps> = ({
       <DropdownMenuContent align="start" className="w-72 p-0 max-h-[60vh] flex flex-col">
         <Command className="h-full min-h-0">
           <CommandInput
-            placeholder="Search branches..."
+              placeholder={t('Search branches...')}
             value={search}
             onValueChange={setSearch}
           />
@@ -247,7 +245,7 @@ export const BranchSelector: React.FC<BranchSelectorProps> = ({
                 <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg">
                   <input
                     ref={createInputRef}
-                    placeholder="New branch name"
+                    placeholder={t('New branch name')}
                     value={newBranchName}
                     onChange={(e) => setNewBranchName(e.target.value)}
                     onKeyDown={(e) => {

@@ -1,6 +1,7 @@
 import React from 'react';
-import { RiGitBranchLine, RiEditLine, RiCheckLine, RiCloseLine, RiLoader4Line } from '@remixicon/react';
-import { Button } from '@/components/ui/button';
+import {RiCheckLine, RiCloseLine, RiEditLine, RiGitBranchLine, RiLoader4Line} from '@remixicon/react';
+import {Button} from '@/components/ui/button';
+import {useI18n} from '@/contexts/useI18n';
 
 interface WorktreeBranchDisplayProps {
   currentBranch: string | null | undefined;
@@ -26,6 +27,7 @@ export const WorktreeBranchDisplay: React.FC<WorktreeBranchDisplayProps> = ({
   onRename,
   showEditButton = true,
 }) => {
+    const {t} = useI18n();
   const [isEditing, setIsEditing] = React.useState(false);
   const [editBranchName, setEditBranchName] = React.useState(currentBranch || '');
   const [isRenaming, setIsRenaming] = React.useState(false);
@@ -90,7 +92,7 @@ export const WorktreeBranchDisplay: React.FC<WorktreeBranchDisplayProps> = ({
             value={editBranchName}
             onChange={(e) => setEditBranchName(e.target.value)}
             className="flex-1 min-w-0 bg-transparent typography-ui-label outline-none placeholder:text-muted-foreground"
-            placeholder="Branch name"
+            placeholder={t('Branch name')}
             onKeyDown={handleKeyDown}
             autoFocus
           />
@@ -131,7 +133,7 @@ export const WorktreeBranchDisplay: React.FC<WorktreeBranchDisplayProps> = ({
             size="sm"
             className="h-7 w-7 p-0 shrink-0"
             onClick={handleStartEdit}
-            title="Rename branch"
+            title={t('Rename branch')}
           >
             <RiEditLine className="size-4" />
           </Button>

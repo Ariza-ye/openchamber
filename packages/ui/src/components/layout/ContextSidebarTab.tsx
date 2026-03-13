@@ -1,14 +1,16 @@
 import React from 'react';
-import type { Message, Part } from '@opencode-ai/sdk/v2';
-import { RiCheckLine, RiFileCopyLine } from '@remixicon/react';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import type {Message, Part} from '@opencode-ai/sdk/v2';
+import {RiCheckLine, RiFileCopyLine} from '@remixicon/react';
+import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 
-import { deriveMessageRole } from '@/components/chat/message/messageRole';
-import { useThemeSystem } from '@/contexts/useThemeSystem';
-import { generateSyntaxTheme } from '@/lib/theme/syntaxThemeGenerator';
-import { useConfigStore } from '@/stores/useConfigStore';
-import { useSessionStore } from '@/stores/useSessionStore';
-import { copyTextToClipboard } from '@/lib/clipboard';
+import {deriveMessageRole} from '@/components/chat/message/messageRole';
+import {useThemeSystem} from '@/contexts/useThemeSystem';
+import {useI18n} from '@/contexts/useI18n';
+import type {TranslateFn} from '@/lib/i18n/messages';
+import {generateSyntaxTheme} from '@/lib/theme/syntaxThemeGenerator';
+import {useConfigStore} from '@/stores/useConfigStore';
+import {useSessionStore} from '@/stores/useSessionStore';
+import {copyTextToClipboard} from '@/lib/clipboard';
 
 type SessionMessage = { info: Message; parts: Part[] };
 
@@ -229,21 +231,24 @@ const formatMoney = (value: number): string => {
   return `$${value.toFixed(2)}`;
 };
 
-const formatDateTime = (timestamp: number | null): string => {
+const formatDateTime = (timestamp: number | null, locale?: string): string => {
   if (!timestamp || !Number.isFinite(timestamp)) return '-';
-  const value = new Date(timestamp).toLocaleString(undefined, {
+    const value = new Date(timestamp).toLocaleString(locale, {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
     hour: 'numeric',
     minute: '2-digit',
   });
+    if (locale && !locale.toLowerCase().startsWith('en')) {
+        return value;
+    }
   return value.replace(/, (\d{1,2}:\d{2} [AP]M)$/, ' at $1');
 };
 
-const formatMessageDateMeta = (timestamp: number | null): string => {
+const formatMessageDateMeta = (timestamp: number | null, locale?: string): string => {
   if (!timestamp || !Number.isFinite(timestamp)) return '-';
-  return new Date(timestamp).toLocaleString(undefined, {
+    return new Date(timestamp).toLocaleString(locale, {
     month: 'short',
     day: 'numeric',
     hour: 'numeric',
@@ -251,9 +256,13 @@ const formatMessageDateMeta = (timestamp: number | null): string => {
   });
 };
 
-const capitalizeRole = (role: string): string => {
-  if (!role) return role;
-  return `${role[0].toUpperCase()}${role.slice(1)}`;
+const getRoleLabel = (t: TranslateFn, role: string): string => {
+    if (role === 'assistant') return t('Assistant');
+    if (role === 'user') return t('User');
+    if (role === 'tool') return t('Tool');
+    if (role === 'system') return t('System');
+    if (!role) return '';
+    return role;
 };
 
 const resolveProviderAndModel = (
@@ -272,6 +281,7 @@ const resolveProviderAndModel = (
 };
 
 export const ContextPanelContent: React.FC = () => {
+    const {t, locale} = useI18n();
   const { currentTheme } = useThemeSystem();
   const syntaxTheme = React.useMemo(() => generateSyntaxTheme(currentTheme), [currentTheme]);
   const [expandedRawMessages, setExpandedRawMessages] = React.useState<Record<string, boolean>>({});
@@ -395,16 +405,16 @@ export const ContextPanelContent: React.FC = () => {
   if (!currentSessionId) {
     return (
       <div className="flex h-full items-center justify-center p-6 text-center typography-ui-label text-muted-foreground">
-        Open a session to inspect context.
+          {t('Open a session to inspect context.')}
       </div>
     );
   }
 
   const segments: Array<{ key: string; label: string; value: number; color: string }> = [
-    { key: 'user', label: 'User', value: viewModel.breakdown.user, color: 'var(--status-success)' },
-    { key: 'assistant', label: 'Assistant', value: viewModel.breakdown.assistant, color: 'var(--primary-base)' },
-    { key: 'tool', label: 'Tool Calls', value: viewModel.breakdown.tool, color: 'var(--status-warning)' },
-    { key: 'other', label: 'Other', value: viewModel.breakdown.other, color: 'var(--surface-muted-foreground)' },
+      {key: 'user', label: t('User'), value: viewModel.breakdown.user, color: 'var(--status-success)'},
+      {key: 'assistant', label: t('Assistant'), value: viewModel.breakdown.assistant, color: 'var(--primary-base)'},
+      {key: 'tool', label: t('Tool Calls'), value: viewModel.breakdown.tool, color: 'var(--status-warning)'},
+      {key: 'other', label: t('Other'), value: viewModel.breakdown.other, color: 'var(--surface-muted-foreground)'},
   ];
 
   return (
@@ -419,7 +429,7 @@ export const ContextPanelContent: React.FC = () => {
             {viewModel.createdAt && (
               <>
                 <span>&middot;</span>
-                <span>{formatDateTime(viewModel.createdAt)}</span>
+                  <span>{formatDateTime(viewModel.createdAt, locale)}</span>
               </>
             )}
           </div>
@@ -428,7 +438,7 @@ export const ContextPanelContent: React.FC = () => {
         {/* ── Context usage ── */}
         <div className="mb-5 rounded-lg bg-[var(--surface-elevated)]/70 px-4 py-3.5">
           <div className="flex items-baseline justify-between">
-            <span className="typography-micro text-muted-foreground">Context</span>
+              <span className="typography-micro text-muted-foreground">{t('Context')}</span>
             <span className="typography-micro tabular-nums text-muted-foreground/70">
               {formatNumber(viewModel.tokenBreakdown.total)}
               {viewModel.contextLimit ? ` / ${formatNumber(viewModel.contextLimit)}` : ''}
@@ -446,17 +456,17 @@ export const ContextPanelContent: React.FC = () => {
             )}
           </div>
           <div className="mt-1.5 typography-micro font-medium tabular-nums text-foreground/80">
-            {viewModel.usagePercent.toFixed(1)}% used
+              {t('{percent}% used', {percent: viewModel.usagePercent.toFixed(1)})}
           </div>
         </div>
 
         {/* ── Stat grid ── */}
         <div className="mb-5 grid grid-cols-2 gap-2">
           {([
-            { label: 'Messages', value: formatNumber(viewModel.messagesCount) },
-            { label: 'User', value: formatNumber(viewModel.userMessagesCount) },
-            { label: 'Assistant', value: formatNumber(viewModel.assistantMessagesCount) },
-            { label: 'Cost', value: formatMoney(viewModel.totalAssistantCost) },
+              {label: t('Messages'), value: formatNumber(viewModel.messagesCount)},
+              {label: t('User'), value: formatNumber(viewModel.userMessagesCount)},
+              {label: t('Assistant'), value: formatNumber(viewModel.assistantMessagesCount)},
+              {label: t('Cost'), value: formatMoney(viewModel.totalAssistantCost)},
           ] as const).map((item) => (
             <div key={item.label} className="rounded-lg bg-[var(--surface-elevated)]/70 px-3 py-2.5">
               <div className="typography-micro text-muted-foreground/70">{item.label}</div>
@@ -467,14 +477,14 @@ export const ContextPanelContent: React.FC = () => {
 
         {/* ── Last turn tokens ── */}
         <div className="mb-5 rounded-lg bg-[var(--surface-elevated)]/70 px-4 py-3.5">
-          <div className="typography-micro text-muted-foreground">Last Assistant Message</div>
+            <div className="typography-micro text-muted-foreground">{t('Last Assistant Message')}</div>
           <div className="mt-2.5 grid grid-cols-3 gap-x-4 gap-y-2.5">
             {([
-              { label: 'Input', value: viewModel.tokenBreakdown.input },
-              { label: 'Output', value: viewModel.tokenBreakdown.output },
-              { label: 'Reasoning', value: viewModel.tokenBreakdown.reasoning },
-              { label: 'Cache Read', value: viewModel.tokenBreakdown.cacheRead },
-              { label: 'Cache Write', value: viewModel.tokenBreakdown.cacheWrite },
+                {label: t('Input'), value: viewModel.tokenBreakdown.input},
+                {label: t('Output'), value: viewModel.tokenBreakdown.output},
+                {label: t('Reasoning'), value: viewModel.tokenBreakdown.reasoning},
+                {label: t('Cache Read'), value: viewModel.tokenBreakdown.cacheRead},
+                {label: t('Cache Write'), value: viewModel.tokenBreakdown.cacheWrite},
             ] as const).map((item) => (
               <div key={item.label}>
                 <div className="typography-micro text-muted-foreground/70">{item.label}</div>
@@ -517,7 +527,7 @@ export const ContextPanelContent: React.FC = () => {
 
         {/* ── Raw messages ── */}
         <div>
-          <div className="typography-micro text-muted-foreground">Raw Messages</div>
+            <div className="typography-micro text-muted-foreground">{t('Raw Messages')}</div>
           <div className="mt-2.5 space-y-1">
             {[...sessionMessages].reverse().map((message) => {
               const role = deriveMessageRole(message.info).role;
@@ -547,10 +557,11 @@ export const ContextPanelContent: React.FC = () => {
                   >
                     <div className="flex items-center justify-between gap-2 whitespace-nowrap overflow-hidden">
                       <span className="min-w-0 inline-flex items-center gap-1.5">
-                        <span className="typography-ui-label text-foreground shrink-0">{capitalizeRole(role)}</span>
+                        <span className="typography-ui-label text-foreground shrink-0">{getRoleLabel(t, role)}</span>
                         <span className="min-w-0 truncate typography-micro text-muted-foreground">{message.info.id}</span>
                       </span>
-                      <span className="typography-micro text-muted-foreground shrink-0">{formatMessageDateMeta(messageCreatedAt)}</span>
+                        <span
+                            className="typography-micro text-muted-foreground shrink-0">{formatMessageDateMeta(messageCreatedAt, locale)}</span>
                     </div>
                   </button>
 
@@ -565,8 +576,8 @@ export const ContextPanelContent: React.FC = () => {
                               event.stopPropagation();
                               void handleCopyRawMessage(message.info.id, jsonValue);
                             }}
-                            aria-label={isCopied ? 'Copied' : 'Copy JSON'}
-                            title={isCopied ? 'Copied' : 'Copy'}
+                            aria-label={isCopied ? t('Copied') : t('Copy JSON')}
+                            title={isCopied ? t('Copied') : t('Copy')}
                           >
                             {isCopied ? <RiCheckLine className="size-3.5" /> : <RiFileCopyLine className="size-3.5" />}
                           </button>

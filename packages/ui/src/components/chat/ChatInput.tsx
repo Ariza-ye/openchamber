@@ -1,5 +1,5 @@
 import React from 'react';
-import { Textarea } from '@/components/ui/textarea';
+import {Textarea} from '@/components/ui/textarea';
 import {
     RiAddCircleLine,
     RiAiAgentLine,
@@ -8,52 +8,48 @@ import {
     RiCommandLine,
     RiExternalLinkLine,
     RiFullscreenLine,
-    RiGitPullRequestLine,
     RiGithubLine,
+    RiGitPullRequestLine,
     RiSendPlane2Line,
 } from '@remixicon/react';
-import { BrowserVoiceButton } from '@/components/voice';
-import { useSessionStore } from '@/stores/useSessionStore';
-import { useConfigStore } from '@/stores/useConfigStore';
-import { useUIStore } from '@/stores/useUIStore';
-import { useMessageQueueStore, type QueuedMessage } from '@/stores/messageQueueStore';
-import type { AttachedFile } from '@/stores/types/sessionTypes';
-import { useInlineCommentDraftStore, type InlineCommentDraft } from '@/stores/useInlineCommentDraftStore';
-import { appendInlineComments } from '@/lib/messages/inlineComments';
-import { AttachedFilesList } from './FileAttachment';
-import { QueuedMessageChips } from './QueuedMessageChips';
-import { FileMentionAutocomplete, type FileMentionHandle } from './FileMentionAutocomplete';
-import { CommandAutocomplete, type CommandAutocompleteHandle } from './CommandAutocomplete';
-import { SkillAutocomplete, type SkillAutocompleteHandle } from './SkillAutocomplete';
-import { cn, isMacOS } from '@/lib/utils';
-import { ModelControls } from './ModelControls';
-import { UnifiedControlsDrawer } from './UnifiedControlsDrawer';
-import { parseAgentMentions } from '@/lib/messages/agentMentions';
-import { StatusRow } from './StatusRow';
-import { MobileAgentButton } from './MobileAgentButton';
-import { MobileModelButton } from './MobileModelButton';
-import { MobileSessionStatusBar } from './MobileSessionStatusBar';
-import { useAssistantStatus } from '@/hooks/useAssistantStatus';
-import { useCurrentSessionActivity } from '@/hooks/useSessionActivity';
-import { toast } from '@/components/ui';
-import { useFileStore } from '@/stores/fileStore';
-import { useMessageStore } from '@/stores/messageStore';
-import { isTauriShell, isVSCodeRuntime } from '@/lib/desktop';
-import { isIMECompositionEvent } from '@/lib/ime';
-import { StopIcon } from '@/components/icons/StopIcon';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import type { MobileControlsPanel } from './mobileControlsUtils';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { useThemeSystem } from '@/contexts/useThemeSystem';
-import { GitHubIssuePickerDialog } from '@/components/session/GitHubIssuePickerDialog';
-import { GitHubPrPickerDialog } from '@/components/session/GitHubPrPickerDialog';
-import { useChatSearchDirectory } from '@/hooks/useChatSearchDirectory';
-import { opencodeClient } from '@/lib/opencode/client';
+import {BrowserVoiceButton} from '@/components/voice';
+import {useSessionStore} from '@/stores/useSessionStore';
+import {useConfigStore} from '@/stores/useConfigStore';
+import {useUIStore} from '@/stores/useUIStore';
+import {useI18n} from '@/contexts/useI18n';
+import {type QueuedMessage, useMessageQueueStore} from '@/stores/messageQueueStore';
+import type {AttachedFile} from '@/stores/types/sessionTypes';
+import {type InlineCommentDraft, useInlineCommentDraftStore} from '@/stores/useInlineCommentDraftStore';
+import {appendInlineComments} from '@/lib/messages/inlineComments';
+import {AttachedFilesList} from './FileAttachment';
+import {QueuedMessageChips} from './QueuedMessageChips';
+import {FileMentionAutocomplete, type FileMentionHandle} from './FileMentionAutocomplete';
+import {CommandAutocomplete, type CommandAutocompleteHandle} from './CommandAutocomplete';
+import {SkillAutocomplete, type SkillAutocompleteHandle} from './SkillAutocomplete';
+import {cn, isMacOS} from '@/lib/utils';
+import {ModelControls} from './ModelControls';
+import {UnifiedControlsDrawer} from './UnifiedControlsDrawer';
+import {parseAgentMentions} from '@/lib/messages/agentMentions';
+import {StatusRow} from './StatusRow';
+import {MobileAgentButton} from './MobileAgentButton';
+import {MobileModelButton} from './MobileModelButton';
+import {MobileSessionStatusBar} from './MobileSessionStatusBar';
+import {useAssistantStatus} from '@/hooks/useAssistantStatus';
+import {useCurrentSessionActivity} from '@/hooks/useSessionActivity';
+import {toast} from '@/components/ui';
+import {useFileStore} from '@/stores/fileStore';
+import {useMessageStore} from '@/stores/messageStore';
+import {isTauriShell, isVSCodeRuntime} from '@/lib/desktop';
+import {isIMECompositionEvent} from '@/lib/ime';
+import {StopIcon} from '@/components/icons/StopIcon';
+import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
+import type {MobileControlsPanel} from './mobileControlsUtils';
+import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,} from '@/components/ui/dropdown-menu';
+import {useThemeSystem} from '@/contexts/useThemeSystem';
+import {GitHubIssuePickerDialog} from '@/components/session/GitHubIssuePickerDialog';
+import {GitHubPrPickerDialog} from '@/components/session/GitHubPrPickerDialog';
+import {useChatSearchDirectory} from '@/hooks/useChatSearchDirectory';
+import {opencodeClient} from '@/lib/opencode/client';
 
 const MAX_VISIBLE_TEXTAREA_LINES = 8;
 const EMPTY_QUEUE: QueuedMessage[] = [];
@@ -98,6 +94,7 @@ const saveStoredDraft = (sessionId: string | null, draft: string): void => {
 };
 
 export const ChatInput: React.FC<ChatInputProps> = ({ onOpenSettings, scrollToBottom }) => {
+    const {t} = useI18n();
     // Track if we restored a draft on mount (for text selection)
     const initialDraftRef = React.useRef<string | null>(null);
     // Track initial session ID (captured at mount time for draft restoration)
@@ -2413,7 +2410,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onOpenSettings, scrollToBo
                                 borderColor: currentTheme?.colors?.interactive?.border,
                             }}
                         >
-                            <span className="text-xs font-medium text-muted-foreground">Review comments:</span>
+                            <span className="text-xs font-medium text-muted-foreground">{t('Review comments:')}</span>
                             <span className="text-xs font-semibold" style={{ color: currentTheme?.colors?.status?.info }}>
                                 {draftCount}
                             </span>
@@ -2556,7 +2553,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onOpenSettings, scrollToBo
                                         <RiAttachment2 className={cn(iconSizeClass, 'text-current')} />
                                     </button>
                                 </div>
-                                <p className="mt-2 typography-ui-label text-muted-foreground">Drop files here to attach</p>
+                                <p className="mt-2 typography-ui-label text-muted-foreground">{t('Drop files here to attach')}</p>
                             </div>
                         </div>
                     )}
@@ -2779,7 +2776,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onOpenSettings, scrollToBo
                                         </TooltipTrigger>
                                         <TooltipContent side="top" sideOffset={8}>
                                             <div className="flex flex-col gap-0.5 text-center">
-                                                <span>Focus mode</span>
+                                                <span>{t('Focus mode')}</span>
                                                 <span className="font-mono opacity-60">
                                                     {isMacOS() ? '⌘⇧E' : 'Ctrl+Shift+E'}
                                                 </span>

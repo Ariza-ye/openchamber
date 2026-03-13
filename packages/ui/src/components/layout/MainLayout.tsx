@@ -1,29 +1,39 @@
-import React, { useRef, useEffect } from 'react';
-import { motion, useMotionValue, animate } from 'motion/react';
-import { Header } from './Header';
-import { BottomTerminalDock } from './BottomTerminalDock';
-import { Sidebar } from './Sidebar';
-import { NavRail } from './NavRail';
-import { RightSidebar } from './RightSidebar';
-import { RightSidebarTabs } from './RightSidebarTabs';
-import { ContextPanel } from './ContextPanel';
-import { ErrorBoundary } from '../ui/ErrorBoundary';
-import { CommandPalette } from '../ui/CommandPalette';
-import { HelpDialog } from '../ui/HelpDialog';
-import { OpenCodeStatusDialog } from '../ui/OpenCodeStatusDialog';
-import { SessionSidebar } from '@/components/session/SessionSidebar';
-import { SessionDialogs } from '@/components/session/SessionDialogs';
-import { DiffWorkerProvider } from '@/contexts/DiffWorkerProvider';
-import { MultiRunLauncher } from '@/components/multirun';
-import { DrawerProvider } from '@/contexts/DrawerContext';
+import React, {useEffect, useRef} from 'react';
+import {animate, motion, useMotionValue} from 'motion/react';
+import {Header} from './Header';
+import {BottomTerminalDock} from './BottomTerminalDock';
+import {Sidebar} from './Sidebar';
+import {NavRail} from './NavRail';
+import {RightSidebar} from './RightSidebar';
+import {RightSidebarTabs} from './RightSidebarTabs';
+import {ContextPanel} from './ContextPanel';
+import {ErrorBoundary} from '../ui/ErrorBoundary';
+import {CommandPalette} from '../ui/CommandPalette';
+import {HelpDialog} from '../ui/HelpDialog';
+import {OpenCodeStatusDialog} from '../ui/OpenCodeStatusDialog';
+import {SessionSidebar} from '@/components/session/SessionSidebar';
+import {SessionDialogs} from '@/components/session/SessionDialogs';
+import {DiffWorkerProvider} from '@/contexts/DiffWorkerProvider';
+import {MultiRunLauncher} from '@/components/multirun';
+import {DrawerProvider} from '@/contexts/DrawerContext';
 
-import { useUIStore } from '@/stores/useUIStore';
-import { useUpdateStore } from '@/stores/useUpdateStore';
-import { useDeviceInfo } from '@/lib/device';
-import { useEffectiveDirectory } from '@/hooks/useEffectiveDirectory';
-import { cn } from '@/lib/utils';
+import {useUIStore} from '@/stores/useUIStore';
+import {useUpdateStore} from '@/stores/useUpdateStore';
+import {useDeviceInfo} from '@/lib/device';
+import {useEffectiveDirectory} from '@/hooks/useEffectiveDirectory';
+import {cn} from '@/lib/utils';
+import {useI18n} from '@/contexts/useI18n';
 
-import { ChatView, PlanView, GitView, DiffView, TerminalView, FilesView, SettingsView, SettingsWindow } from '@/components/views';
+import {
+    ChatView,
+    DiffView,
+    FilesView,
+    GitView,
+    PlanView,
+    SettingsView,
+    SettingsWindow,
+    TerminalView
+} from '@/components/views';
 
 // Mobile drawer width as screen percentage
 const MOBILE_DRAWER_WIDTH_PERCENT = 85;
@@ -48,6 +58,7 @@ const normalizeDirectoryKey = (value: string): string => {
 };
 
 export const MainLayout: React.FC = () => {
+    const {t} = useI18n();
     const RIGHT_SIDEBAR_AUTO_CLOSE_WIDTH = 1140;
     const RIGHT_SIDEBAR_AUTO_OPEN_WIDTH = 1220;
     const BOTTOM_TERMINAL_AUTO_CLOSE_HEIGHT = 640;
@@ -630,7 +641,7 @@ export const MainLayout: React.FC = () => {
                             setMobileLeftDrawerOpen(false);
                             setRightSidebarOpen(false);
                         }}
-                        aria-label="Close drawer"
+                        aria-label={t('Close drawer')}
                     />
                     
                     {/* Left drawer (Session) */}

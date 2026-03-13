@@ -1,11 +1,18 @@
 import React from 'react';
-import { RiArrowDownSLine, RiArrowRightSLine, RiEditLine, RiGitCommitLine, RiLoader4Line, RiTextWrap } from '@remixicon/react';
+import {
+    RiArrowDownSLine,
+    RiArrowRightSLine,
+    RiEditLine,
+    RiGitCommitLine,
+    RiLoader4Line,
+    RiTextWrap
+} from '@remixicon/react';
 
-import { useUIStore } from '@/stores/useUIStore';
-import { useEffectiveDirectory } from '@/hooks/useEffectiveDirectory';
-import { useGitStore, useGitStatus, useIsGitRepo, useGitFileCount } from '@/stores/useGitStore';
-import { cn } from '@/lib/utils';
-import type { GitStatus } from '@/lib/api/types';
+import {useUIStore} from '@/stores/useUIStore';
+import {useEffectiveDirectory} from '@/hooks/useEffectiveDirectory';
+import {useGitFileCount, useGitStatus, useGitStore, useIsGitRepo} from '@/stores/useGitStore';
+import {cn} from '@/lib/utils';
+import type {GitStatus} from '@/lib/api/types';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -15,18 +22,19 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
-import { toast } from '@/components/ui';
+import {Button} from '@/components/ui/button';
+import {toast} from '@/components/ui';
+import {useI18n} from '@/contexts/useI18n';
 
-import { ScrollableOverlay } from '@/components/ui/ScrollableOverlay';
-import { getLanguageFromExtension, isImageFile } from '@/lib/toolHelpers';
-import { useRuntimeAPIs } from '@/hooks/useRuntimeAPIs';
-import { DiffViewToggle } from '@/components/chat/message/DiffViewToggle';
-import type { DiffViewMode } from '@/components/chat/message/types';
-import { PierreDiffViewer } from './PierreDiffViewer';
-import { useDeviceInfo } from '@/lib/device';
-import { FileTypeIcon } from '@/components/icons/FileTypeIcon';
-import { getContextFileOpenFailureMessage, validateContextFileOpen } from '@/lib/contextFileOpenGuard';
+import {ScrollableOverlay} from '@/components/ui/ScrollableOverlay';
+import {getLanguageFromExtension, isImageFile} from '@/lib/toolHelpers';
+import {useRuntimeAPIs} from '@/hooks/useRuntimeAPIs';
+import {DiffViewToggle} from '@/components/chat/message/DiffViewToggle';
+import type {DiffViewMode} from '@/components/chat/message/types';
+import {PierreDiffViewer} from './PierreDiffViewer';
+import {useDeviceInfo} from '@/lib/device';
+import {FileTypeIcon} from '@/components/icons/FileTypeIcon';
+import {getContextFileOpenFailureMessage, validateContextFileOpen} from '@/lib/contextFileOpenGuard';
 
 // Minimum width for side-by-side diff view (px)
 const SIDE_BY_SIDE_MIN_WIDTH = 1100;
@@ -624,6 +632,7 @@ const MultiFileDiffEntry = React.memo<MultiFileDiffEntryProps>(({
     isOpeningInEditor = false,
     onOpenInEditor,
 }) => {
+    const {t} = useI18n();
     const { git } = useRuntimeAPIs();
     const cachedDiff = useGitStore(
         React.useCallback((state) => {
@@ -830,7 +839,7 @@ const MultiFileDiffEntry = React.memo<MultiFileDiffEntryProps>(({
                                 variant="ghost"
                                 size="sm"
                                 className="h-5 w-5 p-0 opacity-70 hover:opacity-100"
-                                title="Open this file in editor at change"
+                                title={t('Open this file in editor at change')}
                                 onClick={(event) => {
                                     event.stopPropagation();
                                     onOpenInEditor(file.path, diffData);

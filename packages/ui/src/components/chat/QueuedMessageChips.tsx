@@ -1,8 +1,9 @@
-import React, { memo } from 'react';
-import { RiCloseLine, RiMessage2Line } from '@remixicon/react';
-import { useMessageQueueStore, type QueuedMessage } from '@/stores/messageQueueStore';
-import { useSessionStore } from '@/stores/useSessionStore';
-import { useFileStore } from '@/stores/fileStore';
+import React, {memo} from 'react';
+import {RiCloseLine, RiMessage2Line} from '@remixicon/react';
+import {type QueuedMessage, useMessageQueueStore} from '@/stores/messageQueueStore';
+import {useSessionStore} from '@/stores/useSessionStore';
+import {useFileStore} from '@/stores/fileStore';
+import {useI18n} from '@/contexts/useI18n';
 
 interface QueuedMessageChipProps {
     message: QueuedMessage;
@@ -12,6 +13,7 @@ interface QueuedMessageChipProps {
 
 const QueuedMessageChip = memo(({ message, sessionId, onEdit }: QueuedMessageChipProps) => {
     const removeFromQueue = useMessageQueueStore((state) => state.removeFromQueue);
+    const {t} = useI18n();
 
     // Get first line of message, truncated
     const firstLine = React.useMemo(() => {
@@ -25,6 +27,9 @@ const QueuedMessageChip = memo(({ message, sessionId, onEdit }: QueuedMessageChi
     }, [message.content]);
 
     const attachmentCount = message.attachments?.length ?? 0;
+    const attachmentLabel = attachmentCount > 1
+        ? t('Queued files count', {count: attachmentCount})
+        : t('Queued file count', {count: attachmentCount});
 
     return (
         <button
@@ -36,13 +41,13 @@ const QueuedMessageChip = memo(({ message, sessionId, onEdit }: QueuedMessageChi
                 className="h-4 w-4 flex-shrink-0 text-muted-foreground" 
             />
             <span className="text-muted-foreground flex-shrink-0">
-                Queued
+                {t('Queued')}
                 {attachmentCount > 0 && (
-                    <span className="ml-1">+{attachmentCount} file{attachmentCount > 1 ? 's' : ''}</span>
+                    <span className="ml-1">{attachmentLabel}</span>
                 )}
             </span>
             <span className="text-foreground truncate">
-                {firstLine || '(empty)'}
+                {firstLine || `(${t('Empty')})`}
             </span>
             <span
                 onClick={(e) => {
@@ -50,7 +55,7 @@ const QueuedMessageChip = memo(({ message, sessionId, onEdit }: QueuedMessageChi
                     removeFromQueue(sessionId, message.id);
                 }}
                 className="flex items-center justify-center h-6 w-6 flex-shrink-0 hover:bg-[var(--interactive-hover)] rounded-full transition-colors cursor-pointer"
-                aria-label="Remove from queue"
+                aria-label={t('Remove from queue')}
             >
                 <RiCloseLine className="h-4 w-4 text-muted-foreground" />
             </span>

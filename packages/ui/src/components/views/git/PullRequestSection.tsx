@@ -1,13 +1,13 @@
 import React from 'react';
 import {
-  RiChat4Line,
-  RiCheckLine,
-  RiCheckboxCircleLine,
   RiAiGenerate2,
   RiArrowDownSLine,
   RiArrowRightSLine,
+  RiChat4Line,
   RiCheckboxBlankLine,
+  RiCheckboxCircleLine,
   RiCheckboxLine,
+  RiCheckLine,
   RiCloseLine,
   RiEditLine,
   RiErrorWarningLine,
@@ -19,45 +19,31 @@ import {
   RiInformationLine,
   RiLoader4Line,
 } from '@remixicon/react';
-import { toast } from '@/components/ui';
-import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { ScrollShadow } from '@/components/ui/ScrollShadow';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible';
-import { generatePullRequestDescription } from '@/lib/gitApi';
-import { useRuntimeAPIs } from '@/hooks/useRuntimeAPIs';
-import { useDeviceInfo } from '@/lib/device';
-import { MobileOverlayPanel } from '@/components/ui/MobileOverlayPanel';
-import { SimpleMarkdownRenderer } from '@/components/chat/MarkdownRenderer';
-import { useUIStore } from '@/stores/useUIStore';
-import { useMessageStore } from '@/stores/messageStore';
-import { useSessionStore } from '@/stores/useSessionStore';
-import { useConfigStore } from '@/stores/useConfigStore';
-import { useGitHubAuthStore } from '@/stores/useGitHubAuthStore';
-import { getGitHubPrStatusKey, useGitHubPrStatusStore } from '@/stores/useGitHubPrStatusStore';
+import {toast} from '@/components/ui';
+import {Button} from '@/components/ui/button';
+import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,} from '@/components/ui/dialog';
+import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,} from '@/components/ui/dropdown-menu';
+import {Input} from '@/components/ui/input';
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
+import {Textarea} from '@/components/ui/textarea';
+import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
+import {ScrollShadow} from '@/components/ui/ScrollShadow';
+import {Collapsible, CollapsibleContent, CollapsibleTrigger,} from '@/components/ui/collapsible';
+import {generatePullRequestDescription} from '@/lib/gitApi';
+import {useRuntimeAPIs} from '@/hooks/useRuntimeAPIs';
+import {useDeviceInfo} from '@/lib/device';
+import {MobileOverlayPanel} from '@/components/ui/MobileOverlayPanel';
+import {SimpleMarkdownRenderer} from '@/components/chat/MarkdownRenderer';
+import {useUIStore} from '@/stores/useUIStore';
+import {useMessageStore} from '@/stores/messageStore';
+import {useSessionStore} from '@/stores/useSessionStore';
+import {useConfigStore} from '@/stores/useConfigStore';
+import {useGitHubAuthStore} from '@/stores/useGitHubAuthStore';
+import {getGitHubPrStatusKey, useGitHubPrStatusStore} from '@/stores/useGitHubPrStatusStore';
+import {useI18n} from '@/contexts/useI18n';
 import type {
-  GitHubPullRequest,
   GitHubCheckRun,
+  GitHubPullRequest,
   GitHubPullRequestContextResult,
   GitHubPullRequestStatus,
   GitRemote,
@@ -302,6 +288,7 @@ export const PullRequestSection: React.FC<{
   variant?: 'framed' | 'plain';
   onGeneratedDescription?: () => void;
 }> = ({ directory, branch, baseBranch, trackingBranch, remotes = [], remoteBranches = [], variant = 'framed', onGeneratedDescription }) => {
+    const {t} = useI18n();
   const { github } = useRuntimeAPIs();
   const githubAuthStatus = useGitHubAuthStore((state) => state.status);
   const githubAuthChecked = useGitHubAuthStore((state) => state.hasChecked);
@@ -1356,7 +1343,7 @@ export const PullRequestSection: React.FC<{
                     type="button"
                     className="inline-flex size-6 shrink-0 items-center justify-center rounded-md border border-border/60 bg-background/70 hover:bg-interactive-hover/60"
                     onClick={() => void openExternal(pr.url)}
-                    aria-label="Open PR on GitHub"
+                    aria-label={t('Open PR on GitHub')}
                   >
                     <PrStateIcon className="size-4 shrink-0" style={{ color: prColorVar }} />
                   </button>
@@ -1465,7 +1452,7 @@ export const PullRequestSection: React.FC<{
                         <Input
                           value={editTitle}
                           onChange={(e) => setEditTitle(e.target.value)}
-                          placeholder="PR title"
+                          placeholder={t('PR title')}
                           autoCorrect={hasTouchInput ? "on" : "off"}
                           autoCapitalize={hasTouchInput ? "sentences" : "off"}
                           spellCheck={hasTouchInput}
@@ -1474,7 +1461,7 @@ export const PullRequestSection: React.FC<{
                           value={editBody}
                           onChange={(e) => setEditBody(e.target.value)}
                           className="min-h-[120px] bg-background/80"
-                          placeholder="Describe this PR"
+                          placeholder={t('Describe this PR')}
                           autoCorrect={hasTouchInput ? "on" : "off"}
                           autoCapitalize={hasTouchInput ? "sentences" : "off"}
                           spellCheck={hasTouchInput}
@@ -1522,7 +1509,7 @@ export const PullRequestSection: React.FC<{
                                     setEditBody(pr.body || '');
                                   }}
                                   disabled={isUpdating}
-                                  aria-label="Cancel editing"
+                                  aria-label={t('Cancel editing')}
                                 >
                                   <RiCloseLine className="size-4" />
                                 </Button>
@@ -1536,7 +1523,7 @@ export const PullRequestSection: React.FC<{
                                   className="h-7 w-7 px-0"
                                   onClick={() => updatePr(pr)}
                                   disabled={isUpdating || !editTitle.trim()}
-                                  aria-label="Save PR title and description"
+                                  aria-label={t('Save PR title and description')}
                                 >
                                   {isUpdating ? <RiLoader4Line className="size-4 animate-spin" /> : <RiCheckLine className="size-4" />}
                                 </Button>
@@ -1552,7 +1539,7 @@ export const PullRequestSection: React.FC<{
                                 size="sm"
                                 className="h-7 w-7 px-0"
                                 onClick={() => setIsEditingPr(true)}
-                                aria-label="Edit PR title and description"
+                                aria-label={t('Edit PR title and description')}
                               >
                                 <RiEditLine className="size-4" />
                               </Button>
@@ -1571,7 +1558,7 @@ export const PullRequestSection: React.FC<{
                               className="h-7 w-7 px-0"
                               onClick={openChecksDialog}
                               disabled={isLoadingCheckDetails}
-                              aria-label="Open checks details"
+                              aria-label={t('Open checks details')}
                             >
                               {isLoadingCheckDetails ? <RiLoader4Line className="size-4 animate-spin" /> : <RiInformationLine className="size-4" />}
                             </Button>
@@ -1588,7 +1575,7 @@ export const PullRequestSection: React.FC<{
                               size="sm"
                               className="h-7 w-7 px-0 border-[var(--status-success-border)] bg-[var(--status-success-background)] text-[var(--status-success)]"
                               onClick={sendFailedChecksToChat}
-                              aria-label="Resolve failed checks with agent"
+                              aria-label={t('Resolve failed checks with agent')}
                             >
                               <RiErrorWarningLine className="size-4" />
                             </Button>
@@ -1604,7 +1591,7 @@ export const PullRequestSection: React.FC<{
                             size="sm"
                             className="h-7 w-7 px-0"
                             onClick={openCommentsDialog}
-                            aria-label="Open PR comments"
+                            aria-label={t('Open PR comments')}
                           >
                             <RiChat4Line className="size-4" />
                           </Button>
@@ -1619,7 +1606,7 @@ export const PullRequestSection: React.FC<{
                             size="sm"
                             className="h-7 w-7 px-0 border-[var(--status-success-border)] bg-[var(--status-success-background)] text-[var(--status-success)]"
                             onClick={sendCommentsToChat}
-                            aria-label="Share comments with agent"
+                            aria-label={t('Share comments with agent')}
                           >
                             <RiAiGenerate2 className="size-4" />
                           </Button>
@@ -1636,7 +1623,7 @@ export const PullRequestSection: React.FC<{
                               className="h-7 w-7 px-0"
                               onClick={() => markReady(pr)}
                               disabled={isMarkingReady || isMerging || isUpdating || isEditingPr}
-                              aria-label="Mark PR ready for review"
+                              aria-label={t('Mark PR ready for review')}
                             >
                               {isMarkingReady ? <RiLoader4Line className="size-4 animate-spin" /> : <RiCheckboxCircleLine className="size-4" />}
                             </Button>
@@ -1670,7 +1657,7 @@ export const PullRequestSection: React.FC<{
                                 className="h-7 w-7 px-0"
                                 onClick={() => mergePr(pr)}
                                 disabled={isMerging || isMarkingReady || pr.state !== 'open' || pr.draft || isUpdating || isEditingPr}
-                                aria-label="Merge pull request"
+                                aria-label={t('Merge pull request')}
                               >
                                 {isMerging ? <RiLoader4Line className="size-4 animate-spin" /> : <RiGitMergeLine className="size-4" />}
                               </Button>
@@ -1707,7 +1694,7 @@ export const PullRequestSection: React.FC<{
                   <Input
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    placeholder="PR title"
+                    placeholder={t('PR title')}
                     autoCorrect={hasTouchInput ? "on" : "off"}
                     autoCapitalize={hasTouchInput ? "sentences" : "off"}
                     spellCheck={hasTouchInput}
@@ -1719,7 +1706,7 @@ export const PullRequestSection: React.FC<{
                   {availableBaseBranches.length > 0 ? (
                     <Select value={targetBaseBranch} onValueChange={setTargetBaseBranch}>
                       <SelectTrigger className="h-9">
-                        <SelectValue placeholder="Select base branch" />
+                          <SelectValue placeholder={t('Select base branch')}/>
                       </SelectTrigger>
                       <SelectContent>
                         {availableBaseBranches.map((candidate) => (
@@ -1731,7 +1718,7 @@ export const PullRequestSection: React.FC<{
                     <Input
                       value={targetBaseBranch}
                       onChange={(e) => setTargetBaseBranch(e.target.value)}
-                      placeholder="main"
+                      placeholder={t('main')}
                     />
                   )}
                 </label>
@@ -1742,7 +1729,7 @@ export const PullRequestSection: React.FC<{
                     value={body}
                     onChange={(e) => setBody(e.target.value)}
                     className="min-h-[110px] bg-background/80"
-                    placeholder="What changed and why"
+                    placeholder={t('What changed and why')}
                     autoCorrect={hasTouchInput ? "on" : "off"}
                     autoCapitalize={hasTouchInput ? "sentences" : "off"}
                     spellCheck={hasTouchInput}
@@ -1769,7 +1756,7 @@ export const PullRequestSection: React.FC<{
                       e.stopPropagation();
                       setDraft((v) => !v);
                     }}
-                    aria-label="Toggle draft PR"
+                    aria-label={t('Toggle draft PR')}
                     className="flex size-5 shrink-0 items-center justify-center rounded text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                   >
                     {draft ? (
@@ -1820,7 +1807,7 @@ export const PullRequestSection: React.FC<{
                           value={additionalContext}
                           onChange={(e) => setAdditionalContext(e.target.value)}
                           className="min-h-[100px] bg-transparent"
-                          placeholder="Explain why this change is needed...&#10;Mention how to test (commands / steps)...&#10;Call out risks / rollout plan..."
+                          placeholder={t('Explain why this change is needed...\nMention how to test (commands / steps)...\nCall out risks / rollout plan...')}
                         />
                         <p className="typography-micro text-muted-foreground">
                           This text is only used to guide PR generation.
@@ -1834,7 +1821,7 @@ export const PullRequestSection: React.FC<{
                 <MobileOverlayPanel
                   open={isContextSheetOpen}
                   onClose={() => setIsContextSheetOpen(false)}
-                  title="Additional context"
+                  title={t('Additional context')}
                   footer={
                     <Button
                       size="sm"
@@ -1850,7 +1837,7 @@ export const PullRequestSection: React.FC<{
                       value={additionalContext}
                       onChange={(e) => setAdditionalContext(e.target.value)}
                       className="min-h-[200px] bg-transparent"
-                      placeholder="Explain why this change is needed...&#10;Mention how to test (commands / steps)...&#10;Call out risks / rollout plan..."
+                      placeholder={t('Explain why this change is needed...\nMention how to test (commands / steps)...\nCall out risks / rollout plan...')}
                       autoFocus
                     />
                     <p className="typography-micro text-muted-foreground">
@@ -1980,7 +1967,7 @@ export const PullRequestSection: React.FC<{
                                       size="sm"
                                       className="h-6 px-0 has-[>svg]:px-0 sm:px-2 sm:has-[>svg]:px-2.5 text-[var(--status-success)] hover:bg-[var(--status-success-background)] hover:text-[var(--status-success)] justify-start"
                                       onClick={() => sendSingleCommentToChat(comment)}
-                                      aria-label="Send this comment to agent"
+                                      aria-label={t('Send this comment to agent')}
                                     >
                                       <RiAiGenerate2 className="size-3.5" />
                                       Send to agent

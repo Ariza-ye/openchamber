@@ -1,7 +1,7 @@
 import React from 'react';
-import { useVirtualizer } from '@tanstack/react-virtual';
-import { RiCheckboxBlankLine, RiCheckboxLine } from '@remixicon/react';
-import { Button } from '@/components/ui/button';
+import {useVirtualizer} from '@tanstack/react-virtual';
+import {RiCheckboxBlankLine, RiCheckboxLine} from '@remixicon/react';
+import {Button} from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -10,11 +10,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { ScrollShadow } from '@/components/ui/ScrollShadow';
-import { OverlayScrollbar } from '@/components/ui/OverlayScrollbar';
-import { ChangeRow } from './ChangeRow';
-import type { GitStatus } from '@/lib/api/types';
-import { cn } from '@/lib/utils';
+import {ScrollShadow} from '@/components/ui/ScrollShadow';
+import {OverlayScrollbar} from '@/components/ui/OverlayScrollbar';
+import {ChangeRow} from './ChangeRow';
+import type {GitStatus} from '@/lib/api/types';
+import {cn} from '@/lib/utils';
+import {useI18n} from '@/contexts/useI18n';
 
 interface ChangesSectionProps {
   changeEntries: GitStatus['files'];
@@ -52,6 +53,7 @@ export const ChangesSection: React.FC<ChangesSectionProps> = ({
   maxListHeightClassName,
   onVisiblePathsChange,
 }) => {
+    const {t} = useI18n();
   const scrollRef = React.useRef<HTMLDivElement | null>(null);
   const selectedCount = selectedPaths.size;
   const totalCount = changeEntries.length;
@@ -200,7 +202,7 @@ export const ChangesSection: React.FC<ChangesSectionProps> = ({
                 })}
               </div>
             ) : (
-              <div role="list" aria-label="Changed files">
+                <div role="list" aria-label={t('Changed files')}>
                 {changeEntries.map((file, index) => (
                   <div
                     key={file.path}

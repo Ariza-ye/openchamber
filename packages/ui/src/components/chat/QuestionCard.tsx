@@ -1,10 +1,11 @@
 import React from 'react';
-import { RiArrowRightSLine, RiCheckLine, RiCloseLine, RiEditLine, RiListCheck3, RiQuestionLine } from '@remixicon/react';
-import { Checkbox } from '@/components/ui/checkbox';
+import {RiArrowRightSLine, RiCheckLine, RiCloseLine, RiEditLine, RiListCheck3, RiQuestionLine} from '@remixicon/react';
+import {Checkbox} from '@/components/ui/checkbox';
 
-import { cn } from '@/lib/utils';
-import type { QuestionRequest } from '@/types/question';
-import { useSessionStore } from '@/stores/useSessionStore';
+import {cn} from '@/lib/utils';
+import type {QuestionRequest} from '@/types/question';
+import {useSessionStore} from '@/stores/useSessionStore';
+import {useI18n} from '@/contexts/useI18n';
 
 interface QuestionCardProps {
   question: QuestionRequest;
@@ -14,6 +15,7 @@ type TabKey = string;
 const SUMMARY_TAB = 'summary';
 
 export const QuestionCard: React.FC<QuestionCardProps> = ({ question }) => {
+    const {t} = useI18n();
   const { respondToQuestion, rejectQuestion } = useSessionStore();
   const isFromSubagent = useSessionStore(
     React.useCallback((state) => {
@@ -30,6 +32,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ question }) => {
   const [selectedOptions, setSelectedOptions] = React.useState<Record<number, string[]>>({});
   const [customMode, setCustomMode] = React.useState<Record<number, boolean>>({});
   const [customText, setCustomText] = React.useState<Record<number, string>>({});
+    const noAnswerLabel = t('No answer');
 
   const questions = React.useMemo(() => question.questions ?? [], [question.questions]);
   const isSummaryTab = activeTab === SUMMARY_TAB;
@@ -52,25 +55,25 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ question }) => {
   const tabs = React.useMemo(() => {
     const questionTabs = questions.map((q, index) => ({
       value: String(index),
-      label: q.header?.trim() || `Q${index + 1}`,
+        label: q.header?.trim() || t('Q{index}', {index: index + 1}),
     }));
     // Add summary tab when multiple questions
     if (questions.length > 1) {
-      questionTabs.push({ value: SUMMARY_TAB, label: 'Summary' });
+        questionTabs.push({value: SUMMARY_TAB, label: t('Summary')});
     }
     return questionTabs;
-  }, [questions]);
+  }, [questions, t]);
 
   // Helper to get answer display for a question index
   const getAnswerDisplay = React.useCallback((index: number): string => {
     const isCustom = Boolean(customMode[index]);
     if (isCustom) {
       const value = (customText[index] ?? '').trim();
-      return value || '(no answer)';
+        return value || noAnswerLabel;
     }
     const answers = selectedOptions[index] ?? [];
-    return answers.length > 0 ? answers.join(', ') : '(no answer)';
-  }, [customMode, customText, selectedOptions]);
+      return answers.length > 0 ? answers.join(', ') : noAnswerLabel;
+  }, [customMode, customText, noAnswerLabel, selectedOptions]);
 
   const isMultiple = Boolean(activeQuestion?.multiple);
   const selectedForActive = selectedOptions[activeIndex] ?? [];
@@ -194,10 +197,10 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ question }) => {
           <div className="px-2 py-1.5 border-b border-border/20">
             <div className="flex items-center gap-2">
               <RiQuestionLine className="h-3.5 w-3.5 text-primary" />
-              <span className="typography-meta font-medium text-muted-foreground">Input needed</span>
+                <span className="typography-meta font-medium text-muted-foreground">{t('Input needed')}</span>
               {isFromSubagent ? (
                 <span className="typography-micro text-muted-foreground px-1.5 py-0.5 rounded bg-foreground/5">
-                  From subagent
+                  {t('From subagent')}
                 </span>
               ) : null}
               {activeHeader ? (
@@ -246,7 +249,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ question }) => {
               <div className="space-y-2">
                 {questions.map((q, index) => {
                   const answer = getAnswerDisplay(index);
-                  const hasAnswer = answer !== '(no answer)';
+                    const hasAnswer = answer !== noAnswerLabel;
                   return (
                     <button
                       key={index}
@@ -254,7 +257,9 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ question }) => {
                       onClick={() => setActiveTab(String(index))}
                       className="w-full text-left rounded px-1.5 py-1 hover:bg-interactive-hover/20 transition-colors"
                     >
-                      <div className="typography-micro text-muted-foreground">{q.header || `Question ${index + 1}`}</div>
+                        <div className="typography-micro text-muted-foreground">
+                            {q.header || t('Question {index}', {index: index + 1})}
+                        </div>
                       <div className={cn(
                         'typography-meta',
                         hasAnswer ? 'text-foreground' : 'text-muted-foreground/50 italic'
@@ -270,7 +275,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ question }) => {
                 <div className="typography-meta font-medium text-foreground mb-1.5">{activeQuestion.question}</div>
 
                 {isMultiple ? (
-                  <div className="typography-micro text-muted-foreground mb-1.5">Select multiple</div>
+                    <div className="typography-micro text-muted-foreground mb-1.5">{t('Select multiple')}</div>
                 ) : null}
 
                 <div className="space-y-0.5">
@@ -309,7 +314,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ question }) => {
                                 {option.label}
                               </span>
                               {recommended ? (
-                                <span className="typography-micro text-primary/80">recommended</span>
+                                  <span className="typography-micro text-primary/80">{t('recommended')}</span>
                               ) : null}
                             </div>
                             {option.description ? (
@@ -342,7 +347,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ question }) => {
                         'typography-meta',
                         isCustomActive ? 'text-foreground font-medium' : 'text-muted-foreground'
                       )}>
-                        Other…
+                        {t('Other…')}
                       </span>
                     </div>
                   </button>
@@ -369,7 +374,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ question }) => {
                           el.style.height = `${Math.min(Math.max(el.scrollHeight, minHeight), maxHeight)}px`;
                           setCustomText((prev) => ({ ...prev, [activeIndex]: el.value }));
                         }}
-                        placeholder="Your answer"
+                        placeholder={t('Your answer')}
                         disabled={isResponding}
                         rows={2}
                         className="w-full bg-transparent border border-border/30 focus:border-primary rounded px-2 py-1 outline-none typography-meta text-foreground placeholder:text-muted-foreground/50 transition-colors resize-none overflow-hidden"
@@ -395,7 +400,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ question }) => {
               )}
             >
               {requiredSatisfied ? <RiCheckLine className="h-3 w-3" /> : <RiArrowRightSLine className="h-3 w-3" />}
-              {requiredSatisfied ? 'Submit' : 'Next'}
+                {requiredSatisfied ? t('Submit') : t('Next')}
             </button>
 
             <button
@@ -409,7 +414,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ question }) => {
               )}
             >
               <RiCloseLine className="h-3 w-3" />
-              Dismiss
+                {t('Dismiss')}
             </button>
 
             {isResponding ? (

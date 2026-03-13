@@ -1,20 +1,22 @@
-import React, { useRef, memo } from 'react';
-import { RiAttachment2, RiCloseLine, RiFileImageLine, RiFileLine, RiFilePdfLine } from '@remixicon/react';
-import { useSessionStore, type AttachedFile } from '@/stores/useSessionStore';
-import { useUIStore } from '@/stores/useUIStore';
-import { toast } from '@/components/ui';
-import { cn } from '@/lib/utils';
-import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
-import { useIsVSCodeRuntime } from '@/hooks/useRuntimeAPIs';
-import { FileTypeIcon } from '@/components/icons/FileTypeIcon';
+import React, {memo, useRef} from 'react';
+import {RiAttachment2, RiCloseLine, RiFileImageLine, RiFileLine, RiFilePdfLine} from '@remixicon/react';
+import {type AttachedFile, useSessionStore} from '@/stores/useSessionStore';
+import {useUIStore} from '@/stores/useUIStore';
+import {toast} from '@/components/ui';
+import {cn} from '@/lib/utils';
+import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
+import {useIsVSCodeRuntime} from '@/hooks/useRuntimeAPIs';
+import {FileTypeIcon} from '@/components/icons/FileTypeIcon';
+import {useI18n} from '@/contexts/useI18n';
 
-import type { ToolPopupContent } from './message/types';
+import type {ToolPopupContent} from './message/types';
 
 export const FileAttachmentButton = memo(() => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { addAttachedFile } = useSessionStore();
   const { isMobile } = useUIStore();
   const isVSCodeRuntime = useIsVSCodeRuntime();
+    const {t} = useI18n();
   const buttonSizeClass = isMobile ? 'h-9 w-9' : 'h-7 w-7';
   const iconSizeClass = isMobile ? 'h-5 w-5' : 'h-[18px] w-[18px]';
 
@@ -31,11 +33,14 @@ export const FileAttachmentButton = memo(() => {
         }
       } catch (error) {
         console.error('File attach failed', error);
-        toast.error(error instanceof Error ? error.message : 'Failed to attach file');
+          toast.error(error instanceof Error ? error.message : t('Failed to attach file'));
       }
     }
     if (attachedCount > 0) {
-      toast.success(`Attached ${attachedCount} file${attachedCount > 1 ? 's' : ''}`);
+        const attachedLabel = attachedCount === 1
+            ? t('Attached {count} file', {count: attachedCount})
+            : t('Attached {count} files', {count: attachedCount});
+        toast.success(attachedLabel);
     }
   };
 
@@ -57,8 +62,10 @@ export const FileAttachmentButton = memo(() => {
       const skipped = Array.isArray(data?.skipped) ? data.skipped : [];
 
       if (skipped.length > 0) {
-        const summary = skipped.map((s: { name?: string; reason?: string }) => `${s?.name || 'file'}: ${s?.reason || 'skipped'}`).join('\n');
-        toast.error(`Some files were skipped:\n${summary}`);
+          const summary = skipped
+              .map((s: { name?: string; reason?: string }) => `${s?.name || t('file')}: ${s?.reason || t('skipped')}`)
+              .join('\n');
+          toast.error(t('Some files were skipped:\n{summary}', {summary}));
       }
 
       const asFiles = picked
@@ -87,7 +94,7 @@ export const FileAttachmentButton = memo(() => {
       }
     } catch (error) {
       console.error('VS Code file pick failed', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to pick files in VS Code');
+        toast.error(error instanceof Error ? error.message : t('Failed to pick files in VS Code'));
     }
   };
 
@@ -110,13 +117,13 @@ export const FileAttachmentButton = memo(() => {
               'hover:bg-muted text-muted-foreground',
               buttonSizeClass
             )}
-            aria-label="Attach files"
+            aria-label={t('Attach files')}
           >
             <RiAttachment2 className={iconSizeClass} />
           </button>
         </TooltipTrigger>
         <TooltipContent side="top">
-          <p>Attach files</p>
+            <p>{t('Attach files')}</p>
         </TooltipContent>
       </Tooltip>
     </>
@@ -131,6 +138,7 @@ interface ImagePreviewProps {
 }
 
 const ImagePreview = memo(({ file, onRemove }: ImagePreviewProps) => {
+    const {t} = useI18n();
   const isLocalImagePreview =
     file.source !== 'server' &&
     file.mimeType.startsWith('image/') &&
@@ -170,7 +178,7 @@ const ImagePreview = memo(({ file, onRemove }: ImagePreviewProps) => {
             onRemove();
           }}
           className="flex items-center justify-center h-5 w-5 flex-shrink-0 hover:bg-[var(--interactive-hover)] rounded-full transition-colors cursor-pointer"
-          aria-label={`Remove ${displayName}`}
+          aria-label={t('Remove {name}', {name: displayName})}
         >
           <RiCloseLine className="h-4 w-4 text-muted-foreground" />
         </span>
@@ -189,8 +197,8 @@ const ImagePreview = memo(({ file, onRemove }: ImagePreviewProps) => {
       <button
         onClick={onRemove}
         className="absolute top-0.5 right-0.5 h-4 w-4 rounded-full bg-background/80 text-foreground hover:text-destructive flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-        title="Remove image"
-        aria-label={`Remove ${displayName}`}
+        title={t('Remove image')}
+        aria-label={t('Remove {name}', {name: displayName})}
       >
         <RiCloseLine className="h-2.5 w-2.5" />
       </button>
@@ -206,6 +214,7 @@ interface FileChipProps {
 }
 
 const FileChip = memo(({ file, onRemove }: FileChipProps) => {
+    const {t} = useI18n();
   const getFileExtension = (filename: string): string => {
     const parts = filename.split('.');
     return parts.length > 1 ? parts[parts.length - 1].toLowerCase() : '';
@@ -252,7 +261,7 @@ const FileChip = memo(({ file, onRemove }: FileChipProps) => {
           onRemove();
         }}
         className="flex items-center justify-center h-5 w-5 flex-shrink-0 hover:bg-[var(--interactive-hover)] rounded-full transition-colors cursor-pointer"
-        aria-label={`Remove ${displayName}`}
+        aria-label={t('Remove {name}', {name: displayName})}
       >
         <RiCloseLine className="h-4 w-4 text-muted-foreground" />
       </span>
@@ -320,18 +329,19 @@ interface MessageFilesDisplayProps {
 }
 
 export const MessageFilesDisplay = memo(({ files, onShowPopup, compact = false }: MessageFilesDisplayProps) => {
+    const {t} = useI18n();
 
   const fileItems = files.filter(f => f.type === 'file' && (f.mime || f.url));
 
-  const extractFilename = (path?: string): string => {
-    if (!path) return 'Unnamed file';
+    const extractFilename = React.useCallback((path?: string): string => {
+        if (!path) return t('Unnamed file');
 
     const normalized = path.replace(/\\/g, '/');
     const parts = normalized.split('/');
     const filename = parts[parts.length - 1];
 
     return filename || path;
-  };
+    }, [t]);
 
   const formatFileSize = (bytes?: number) => {
     if (!bytes || !Number.isFinite(bytes) || bytes <= 0) return '';
@@ -347,7 +357,7 @@ export const MessageFilesDisplay = memo(({ files, onShowPopup, compact = false }
     () =>
       imageFiles.flatMap((file) => {
         if (!file.url) return [];
-        const filename = extractFilename(file.filename) || 'Image';
+          const filename = extractFilename(file.filename) || t('Image');
         return [{
           url: file.url,
           mimeType: file.mime,
@@ -355,7 +365,7 @@ export const MessageFilesDisplay = memo(({ files, onShowPopup, compact = false }
           size: file.size,
         }];
       }),
-    [imageFiles]
+      [extractFilename, imageFiles, t]
   );
 
   const handleImageClick = React.useCallback((index: number) => {
@@ -366,7 +376,7 @@ export const MessageFilesDisplay = memo(({ files, onShowPopup, compact = false }
     const file = imageGallery[index];
     if (!file?.url) return;
 
-    const filename = file.filename || 'Image';
+      const filename = file.filename || t('Image');
 
     onShowPopup({
       open: true,
@@ -387,7 +397,7 @@ export const MessageFilesDisplay = memo(({ files, onShowPopup, compact = false }
         index,
       },
     });
-  }, [imageGallery, onShowPopup]);
+  }, [imageGallery, onShowPopup, t]);
 
   if (fileItems.length === 0) return null;
 
@@ -426,7 +436,7 @@ export const MessageFilesDisplay = memo(({ files, onShowPopup, compact = false }
           <div className="overflow-x-auto -mx-1 px-1 py-0.5 scrollbar-thin">
             <div className="flex snap-x snap-mandatory gap-2">
               {imageFiles.map((file, index) => {
-                const filename = extractFilename(file.filename) || 'Image';
+                  const filename = extractFilename(file.filename) || t('Image');
 
                 return (
                   <Tooltip key={`img-${file.url || file.filename || index}`} delayDuration={1000}>
@@ -558,6 +568,7 @@ interface ImageGalleryProps {
 }
 
 export const ImageGallery = memo(({ urls, caption, onShowPopup }: ImageGalleryProps) => {
+    const {t} = useI18n();
   if (urls.length === 0) return null;
 
   const getGridCols = () => {
@@ -576,7 +587,7 @@ export const ImageGallery = memo(({ urls, caption, onShowPopup }: ImageGalleryPr
             type="button"
             onClick={() => onShowPopup?.({
               open: true,
-              title: caption || `Image ${index + 1} of ${urls.length}`,
+                title: caption || t('Image {index} of {total}', {index: index + 1, total: urls.length}),
               content: '',
               image: {
                 url,
@@ -588,7 +599,7 @@ export const ImageGallery = memo(({ urls, caption, onShowPopup }: ImageGalleryPr
           >
             <img
               src={url}
-              alt={caption || `Image ${index + 1}`}
+              alt={caption || t('Image {index}', {index: index + 1})}
               className="h-full w-full object-cover transition-transform group-hover:scale-105"
               loading="lazy"
             />

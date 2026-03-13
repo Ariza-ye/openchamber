@@ -1,29 +1,25 @@
 import React from 'react';
 import {
-  DndContext,
   closestCenter,
+  DndContext,
+  type DragEndEvent,
+  type Modifier,
   PointerSensor,
   useSensor,
   useSensors,
-  type DragEndEvent,
-  type Modifier,
 } from '@dnd-kit/core';
+import {SortableContext, useSortable, verticalListSortingStrategy,} from '@dnd-kit/sortable';
+import {CSS} from '@dnd-kit/utilities';
 import {
-  SortableContext,
-  useSortable,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-import {
-  RiFolderAddLine,
-  RiSettings3Line,
-  RiQuestionLine,
-  RiDownloadLine,
-  RiInformationLine,
-  RiPencilLine,
   RiCloseLine,
+  RiDownloadLine,
+  RiFolderAddLine,
+  RiInformationLine,
   RiMenuFoldLine,
   RiMenuUnfoldLine,
+  RiPencilLine,
+  RiQuestionLine,
+  RiSettings3Line,
 } from '@remixicon/react';
 import {
   DropdownMenu,
@@ -32,24 +28,25 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { toast } from '@/components/ui';
+import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
+import {toast} from '@/components/ui';
 
-import { UpdateDialog } from '@/components/ui/UpdateDialog';
-import { ProjectEditDialog } from '@/components/layout/ProjectEditDialog';
-import { useUIStore } from '@/stores/useUIStore';
-import { useProjectsStore } from '@/stores/useProjectsStore';
-import { useSessionStore } from '@/stores/useSessionStore';
-import { useDirectoryStore } from '@/stores/useDirectoryStore';
-import { useUpdateStore } from '@/stores/useUpdateStore';
-import { cn, formatDirectoryName, hasModifier } from '@/lib/utils';
-import { PROJECT_ICON_MAP, PROJECT_COLOR_MAP, getProjectIconImageUrl } from '@/lib/projectMeta';
-import { isDesktopLocalOriginActive, isDesktopShell, isTauriShell, requestDirectoryAccess } from '@/lib/desktop';
-import { useLongPress } from '@/hooks/useLongPress';
-import { formatShortcutForDisplay, getEffectiveShortcutCombo } from '@/lib/shortcuts';
-import { sessionEvents } from '@/lib/sessionEvents';
-import { useThemeSystem } from '@/contexts/useThemeSystem';
-import type { ProjectEntry } from '@/lib/api/types';
+import {UpdateDialog} from '@/components/ui/UpdateDialog';
+import {ProjectEditDialog} from '@/components/layout/ProjectEditDialog';
+import {useUIStore} from '@/stores/useUIStore';
+import {useProjectsStore} from '@/stores/useProjectsStore';
+import {useSessionStore} from '@/stores/useSessionStore';
+import {useDirectoryStore} from '@/stores/useDirectoryStore';
+import {useUpdateStore} from '@/stores/useUpdateStore';
+import {cn, formatDirectoryName, hasModifier} from '@/lib/utils';
+import {getProjectIconImageUrl, PROJECT_COLOR_MAP, PROJECT_ICON_MAP} from '@/lib/projectMeta';
+import {isDesktopLocalOriginActive, isDesktopShell, isTauriShell, requestDirectoryAccess} from '@/lib/desktop';
+import {useLongPress} from '@/hooks/useLongPress';
+import {formatShortcutForDisplay, getEffectiveShortcutCombo} from '@/lib/shortcuts';
+import {sessionEvents} from '@/lib/sessionEvents';
+import {useThemeSystem} from '@/contexts/useThemeSystem';
+import {useI18n} from '@/contexts/useI18n';
+import type {ProjectEntry} from '@/lib/api/types';
 
 const normalize = (value: string): string => {
   if (!value) return '';
@@ -258,6 +255,7 @@ const ProjectTile: React.FC<{
   onEdit: () => void;
   onClose: () => void;
 }> = ({ project, isActive, hasStreaming, hasUnread, label, expanded, projectTextVisible, onClick, onEdit, onClose }) => {
+    const {t} = useI18n();
   const { currentTheme } = useThemeSystem();
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [iconImageFailed, setIconImageFailed] = React.useState(false);
@@ -402,12 +400,12 @@ const ProjectTile: React.FC<{
     )}
     <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
       <DropdownMenuTrigger asChild>
-        <span className="sr-only">Project options</span>
+          <span className="sr-only">{t('Project options')}</span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" side="right" sideOffset={4} className="min-w-[160px]">
         <DropdownMenuItem onClick={onEdit} className="gap-2">
           <RiPencilLine className="h-4 w-4" />
-          Edit project
+            {t('Edit project')}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
@@ -415,7 +413,7 @@ const ProjectTile: React.FC<{
           className="text-destructive focus:text-destructive gap-2"
         >
           <RiCloseLine className="h-4 w-4" />
-          Close project
+            {t('Close project')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -465,6 +463,7 @@ interface NavRailProps {
 }
 
 export const NavRail: React.FC<NavRailProps> = ({ className, mobile }) => {
+    const {t} = useI18n();
   const projects = useProjectsStore((s) => s.projects);
   const activeProjectId = useProjectsStore((s) => s.activeProjectId);
   const setActiveProjectIdOnly = useProjectsStore((s) => s.setActiveProjectIdOnly);
@@ -641,19 +640,19 @@ export const NavRail: React.FC<NavRailProps> = ({ className, mobile }) => {
         if (result.success && result.path) {
           const added = addProject(result.path, { id: result.projectId });
           if (!added) {
-            toast.error('Failed to add project', {
-              description: 'Please select a valid directory.',
+              toast.error(t('Failed to add project'), {
+                  description: t('Please select a valid directory.'),
             });
           }
         } else if (result.error && result.error !== 'Directory selection cancelled') {
-          toast.error('Failed to select directory', { description: result.error });
+            toast.error(t('Failed to select directory'), {description: result.error});
         }
       })
       .catch((error) => {
         console.error('Failed to select directory:', error);
-        toast.error('Failed to select directory');
+          toast.error(t('Failed to select directory'));
       });
-  }, [addProject, tauriIpcAvailable]);
+  }, [addProject, tauriIpcAvailable, t]);
 
   const handleEditProject = React.useCallback(
     (projectId: string) => {
@@ -747,7 +746,7 @@ export const NavRail: React.FC<NavRailProps> = ({ className, mobile }) => {
           className,
         )}
         style={{ width: expanded ? NAV_RAIL_EXPANDED_WIDTH : NAV_RAIL_WIDTH }}
-        aria-label="Project navigation"
+        aria-label={t('Project navigation')}
       >
         {/* Projects list */}
         <div className="flex-1 min-h-0 w-full overflow-y-auto overflow-x-hidden scrollbar-none">
@@ -793,9 +792,9 @@ export const NavRail: React.FC<NavRailProps> = ({ className, mobile }) => {
               <NavRailActionButton
                 onClick={handleAddProject}
                 disabled={navRailInteractionBlocked}
-                ariaLabel="Add project"
                 icon={<RiFolderAddLine className={navRailActionIconClass} />}
-                tooltipLabel="Add project"
+                ariaLabel={t('Add project')}
+                tooltipLabel={t('Add project')}
                 buttonClassName={navRailActionButtonClass}
                 showExpandedContent={showExpandedContent}
                 actionTextVisible={actionTextVisible}
@@ -809,52 +808,52 @@ export const NavRail: React.FC<NavRailProps> = ({ className, mobile }) => {
           showExpandedContent ? 'items-stretch px-1' : 'items-center',
         )}>
           {(updateAvailable || updateDownloaded) && (
-            <NavRailActionButton
-              onClick={() => setUpdateDialogOpen(true)}
-              disabled={navRailInteractionBlocked}
-              ariaLabel="Update available"
-              icon={<RiDownloadLine className={navRailActionIconClass} />}
-              tooltipLabel="Update available"
-              buttonClassName={navRailActionButtonClass}
-              showExpandedContent={showExpandedContent}
-              actionTextVisible={actionTextVisible}
-            />
+              <NavRailActionButton
+                  onClick={() => setUpdateDialogOpen(true)}
+                  disabled={navRailInteractionBlocked}
+                  ariaLabel={t('Update available')}
+                  icon={<RiDownloadLine className={navRailActionIconClass}/>}
+                  tooltipLabel={t('Update available')}
+                  buttonClassName={navRailActionButtonClass}
+                  showExpandedContent={showExpandedContent}
+                  actionTextVisible={actionTextVisible}
+              />
           )}
 
           {!isDesktopApp && !(updateAvailable || updateDownloaded) && (
-            <NavRailActionButton
-              onClick={() => setAboutDialogOpen(true)}
-              disabled={navRailInteractionBlocked}
-              ariaLabel="About"
-              icon={<RiInformationLine className={navRailActionIconClass} />}
-              tooltipLabel="About OpenChamber"
-              buttonClassName={navRailActionButtonClass}
-              showExpandedContent={showExpandedContent}
-              actionTextVisible={actionTextVisible}
-            />
+              <NavRailActionButton
+                  onClick={() => setAboutDialogOpen(true)}
+                  disabled={navRailInteractionBlocked}
+                  ariaLabel={t('About')}
+                  icon={<RiInformationLine className={navRailActionIconClass}/>}
+                  tooltipLabel={t('About OpenChamber')}
+                  buttonClassName={navRailActionButtonClass}
+                  showExpandedContent={showExpandedContent}
+                  actionTextVisible={actionTextVisible}
+              />
           )}
 
           {!mobile && (
-            <NavRailActionButton
-              onClick={toggleHelpDialog}
-              disabled={navRailInteractionBlocked}
-              ariaLabel="Keyboard shortcuts"
-              icon={<RiQuestionLine className={navRailActionIconClass} />}
-              tooltipLabel="Shortcuts"
-              shortcutHint={shortcutLabel('open_help')}
-              showExpandedShortcutHint={false}
-              buttonClassName={navRailActionButtonClass}
-              showExpandedContent={showExpandedContent}
-              actionTextVisible={actionTextVisible}
-            />
+              <NavRailActionButton
+                  onClick={toggleHelpDialog}
+                  disabled={navRailInteractionBlocked}
+                  ariaLabel={t('Keyboard shortcuts')}
+                  icon={<RiQuestionLine className={navRailActionIconClass}/>}
+                  tooltipLabel={t('Shortcuts')}
+                  shortcutHint={shortcutLabel('open_help')}
+                  showExpandedShortcutHint={false}
+                  buttonClassName={navRailActionButtonClass}
+                  showExpandedContent={showExpandedContent}
+                  actionTextVisible={actionTextVisible}
+              />
           )}
 
           <NavRailActionButton
             onClick={() => setSettingsDialogOpen(true)}
             disabled={navRailInteractionBlocked}
-            ariaLabel="Settings"
+            ariaLabel={t('Settings')}
             icon={<RiSettings3Line className={navRailActionIconClass} />}
-            tooltipLabel="Settings"
+            tooltipLabel={t('Settings')}
             shortcutHint={shortcutLabel('open_settings')}
             showExpandedShortcutHint={false}
             buttonClassName={navRailActionButtonClass}
@@ -864,20 +863,20 @@ export const NavRail: React.FC<NavRailProps> = ({ className, mobile }) => {
 
           {/* Toggle expand/collapse (desktop only) */}
           {!mobile && (
-            <NavRailActionButton
-              onClick={toggleNavRail}
-              disabled={navRailInteractionBlocked}
-              ariaLabel={expanded ? 'Collapse sidebar' : 'Expand sidebar'}
-              icon={expanded
-                ? <RiMenuFoldLine className={navRailActionIconClass} />
-                : <RiMenuUnfoldLine className={navRailActionIconClass} />
-              }
-              tooltipLabel={expanded ? 'Collapse' : 'Expand'}
-              shortcutHint={shortcutLabel('toggle_nav_rail')}
-              showExpandedShortcutHint={false}
-              buttonClassName={navRailActionButtonClass}
-              showExpandedContent={showExpandedContent}
-              actionTextVisible={actionTextVisible}
+              <NavRailActionButton
+                  onClick={toggleNavRail}
+                  disabled={navRailInteractionBlocked}
+                  ariaLabel={expanded ? t('Collapse sidebar') : t('Expand sidebar')}
+                  icon={expanded
+                      ? <RiMenuFoldLine className={navRailActionIconClass}/>
+                      : <RiMenuUnfoldLine className={navRailActionIconClass}/>
+                  }
+                  tooltipLabel={expanded ? t('Collapse') : t('Expand')}
+                  shortcutHint={shortcutLabel('toggle_nav_rail')}
+                  showExpandedShortcutHint={false}
+                  buttonClassName={navRailActionButtonClass}
+                  showExpandedContent={showExpandedContent}
+                  actionTextVisible={actionTextVisible}
             />
           )}
         </div>

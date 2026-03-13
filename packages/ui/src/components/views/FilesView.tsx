@@ -1,32 +1,33 @@
 import React from 'react';
 
 import {
-  RiArrowLeftSLine,
   RiArrowDownSLine,
+  RiArrowLeftSLine,
+  RiCheckLine,
   RiClipboardLine,
   RiCloseLine,
+  RiDeleteBinLine,
+  RiEditLine,
+  RiFileAddLine,
   RiFileCopy2Line,
-  RiCheckLine,
+  RiFileCopyLine,
+  RiFileTransferLine,
   RiFolder3Fill,
+  RiFolderAddLine,
   RiFolderOpenFill,
   RiFolderReceivedLine,
   RiFullscreenExitLine,
   RiFullscreenLine,
   RiLoader4Line,
-  RiRefreshLine,
-  RiSearchLine,
-  RiSave3Line,
-  RiTextWrap,
   RiMore2Fill,
-  RiFileAddLine,
-  RiFolderAddLine,
-  RiDeleteBinLine,
-  RiEditLine,
-  RiFileCopyLine,
-  RiFileTransferLine,
+  RiRefreshLine,
+  RiSave3Line,
+  RiSearchLine,
+  RiTextWrap,
 } from '@remixicon/react';
-import { toast } from '@/components/ui';
-import { copyTextToClipboard } from '@/lib/clipboard';
+import {toast} from '@/components/ui';
+import {copyTextToClipboard} from '@/lib/clipboard';
+import {useI18n} from '@/contexts/useI18n';
 
 import {
   DropdownMenu,
@@ -35,15 +36,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ScrollableOverlay } from '@/components/ui/ScrollableOverlay';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { CodeMirrorEditor } from '@/components/ui/CodeMirrorEditor';
-import { PreviewToggleButton } from './PreviewToggleButton';
-import { SimpleMarkdownRenderer } from '@/components/chat/MarkdownRenderer';
-import { languageByExtension, loadLanguageByExtension } from '@/lib/codemirror/languageByExtension';
-import { createFlexokiCodeMirrorTheme } from '@/lib/codemirror/flexokiTheme';
-import { File as PierreFile } from '@pierre/diffs/react';
+import {ScrollableOverlay} from '@/components/ui/ScrollableOverlay';
+import {Input} from '@/components/ui/input';
+import {Button} from '@/components/ui/button';
+import {CodeMirrorEditor} from '@/components/ui/CodeMirrorEditor';
+import {PreviewToggleButton} from './PreviewToggleButton';
+import {SimpleMarkdownRenderer} from '@/components/chat/MarkdownRenderer';
+import {languageByExtension, loadLanguageByExtension} from '@/lib/codemirror/languageByExtension';
+import {createFlexokiCodeMirrorTheme} from '@/lib/codemirror/flexokiTheme';
+import {File as PierreFile} from '@pierre/diffs/react';
 import {
   Dialog,
   DialogContent,
@@ -52,31 +53,31 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { useDebouncedValue } from '@/hooks/useDebouncedValue';
-import { useFileSearchStore } from '@/stores/useFileSearchStore';
-import { useDeviceInfo } from '@/lib/device';
-import { cn, getModifierLabel, hasModifier } from '@/lib/utils';
-import { getLanguageFromExtension, getImageMimeType, isImageFile } from '@/lib/toolHelpers';
-import { useRuntimeAPIs } from '@/hooks/useRuntimeAPIs';
-import { EditorView } from '@codemirror/view';
-import type { Extension } from '@codemirror/state';
-import { convertFileSrc } from '@tauri-apps/api/core';
-import { useThemeSystem } from '@/contexts/useThemeSystem';
-import { useUIStore } from '@/stores/useUIStore';
-import { useFilesViewTabsStore } from '@/stores/useFilesViewTabsStore';
-import { useGitStatus } from '@/stores/useGitStore';
-import { buildCodeMirrorCommentWidgets, normalizeLineRange, useInlineCommentController } from '@/components/comments';
-import { opencodeClient } from '@/lib/opencode/client';
-import { useDirectoryShowHidden } from '@/lib/directoryShowHidden';
-import { useFilesViewShowGitignored } from '@/lib/filesViewShowGitignored';
-import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
-import { useEffectiveDirectory } from '@/hooks/useEffectiveDirectory';
-import { FileTypeIcon } from '@/components/icons/FileTypeIcon';
-import { ensurePierreThemeRegistered } from '@/lib/shiki/appThemeRegistry';
-import { getDefaultTheme } from '@/lib/theme/themes';
-import { openDesktopPath, openDesktopProjectInApp } from '@/lib/desktop';
-import { OPEN_DIRECTORY_APP_IDS } from '@/lib/openInApps';
-import { useOpenInAppsStore } from '@/stores/useOpenInAppsStore';
+import {useDebouncedValue} from '@/hooks/useDebouncedValue';
+import {useFileSearchStore} from '@/stores/useFileSearchStore';
+import {useDeviceInfo} from '@/lib/device';
+import {cn, getModifierLabel, hasModifier} from '@/lib/utils';
+import {getImageMimeType, getLanguageFromExtension, isImageFile} from '@/lib/toolHelpers';
+import {useRuntimeAPIs} from '@/hooks/useRuntimeAPIs';
+import {EditorView} from '@codemirror/view';
+import type {Extension} from '@codemirror/state';
+import {convertFileSrc} from '@tauri-apps/api/core';
+import {useThemeSystem} from '@/contexts/useThemeSystem';
+import {useUIStore} from '@/stores/useUIStore';
+import {useFilesViewTabsStore} from '@/stores/useFilesViewTabsStore';
+import {useGitStatus} from '@/stores/useGitStore';
+import {buildCodeMirrorCommentWidgets, normalizeLineRange, useInlineCommentController} from '@/components/comments';
+import {opencodeClient} from '@/lib/opencode/client';
+import {useDirectoryShowHidden} from '@/lib/directoryShowHidden';
+import {useFilesViewShowGitignored} from '@/lib/filesViewShowGitignored';
+import {ErrorBoundary} from '@/components/ui/ErrorBoundary';
+import {useEffectiveDirectory} from '@/hooks/useEffectiveDirectory';
+import {FileTypeIcon} from '@/components/icons/FileTypeIcon';
+import {ensurePierreThemeRegistered} from '@/lib/shiki/appThemeRegistry';
+import {getDefaultTheme} from '@/lib/theme/themes';
+import {openDesktopPath, openDesktopProjectInApp} from '@/lib/desktop';
+import {OPEN_DIRECTORY_APP_IDS} from '@/lib/openInApps';
+import {useOpenInAppsStore} from '@/stores/useOpenInAppsStore';
 
 type FileNode = {
   name: string;
@@ -443,6 +444,7 @@ interface FilesViewProps {
 }
 
 export const FilesView: React.FC<FilesViewProps> = ({ mode = 'full' }) => {
+    const {t} = useI18n();
   const { files, runtime } = useRuntimeAPIs();
   const { currentTheme, availableThemes, lightThemeId, darkThemeId } = useThemeSystem();
   const { isMobile, screenWidth } = useDeviceInfo();
@@ -2113,7 +2115,7 @@ export const FilesView: React.FC<FilesViewProps> = ({ mode = 'full' }) => {
             <button
               type="button"
               onClick={() => setShowMobilePageContent(false)}
-              aria-label="Back"
+              aria-label={t('Back')}
               className="inline-flex h-7 w-7 flex-shrink-0 items-center justify-center mr-1 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               <RiArrowLeftSLine className="h-5 w-5" />
@@ -2127,7 +2129,7 @@ export const FilesView: React.FC<FilesViewProps> = ({ mode = 'full' }) => {
                   <button
                     type="button"
                     className="inline-flex min-w-0 max-w-full items-center gap-1 text-left typography-ui-label font-medium"
-                    aria-label="Open files"
+                    aria-label={t('Open files')}
                   >
                     <FileTypeIcon filePath={selectedFile.path} extension={selectedFile.extension} className="h-3.5 w-3.5 flex-shrink-0" />
                     <span className="min-w-0 flex-1 truncate">{selectedFile.name}</span>
@@ -2276,8 +2278,8 @@ export const FilesView: React.FC<FilesViewProps> = ({ mode = 'full' }) => {
                   variant="ghost"
                   size="sm"
                   className="h-5 w-5 p-0 text-muted-foreground opacity-70 hover:opacity-100"
-                  title="Open in desktop app"
-                  aria-label="Open in desktop app"
+                  title={t('Open in desktop app')}
+                  aria-label={t('Open in desktop app')}
                 >
                   <RiFileTransferLine className="h-4 w-4" />
                 </Button>
@@ -2332,7 +2334,7 @@ export const FilesView: React.FC<FilesViewProps> = ({ mode = 'full' }) => {
                       'h-5 w-5 p-0 transition-opacity',
                       isSearchOpen ? 'text-foreground opacity-100' : 'text-muted-foreground opacity-60 hover:opacity-100'
                     )}
-                    title="Find in file"
+                    title={t('Find in file')}
                   >
                     <RiSearchLine className="size-4" />
                   </Button>
@@ -2370,8 +2372,8 @@ export const FilesView: React.FC<FilesViewProps> = ({ mode = 'full' }) => {
                   }
                 }}
                 className="h-5 w-5 p-0"
-                title="Copy file contents"
-                aria-label="Copy file contents"
+                title={t('Copy file contents')}
+                aria-label={t('Copy file contents')}
               >
                 {copiedContent ? (
                   <RiCheckLine className="h-4 w-4 text-[color:var(--status-success)]" />
@@ -2615,13 +2617,13 @@ export const FilesView: React.FC<FilesViewProps> = ({ mode = 'full' }) => {
               ref={searchInputRef}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search files…"
+              placeholder={t('Search files…')}
               className="h-8 pl-8 pr-8 typography-meta"
             />
             {searchQuery.trim().length > 0 && (
               <button
                 type="button"
-                aria-label="Clear search"
+                aria-label={t('Clear search')}
                 className="absolute right-2 top-2 inline-flex h-4 w-4 items-center justify-center text-muted-foreground hover:text-foreground"
                 onClick={() => {
                   setSearchQuery('');
@@ -2637,7 +2639,7 @@ export const FilesView: React.FC<FilesViewProps> = ({ mode = 'full' }) => {
             size="sm"
             onClick={() => handleOpenDialog('createFile', { path: currentDirectory, type: 'directory' })}
             className="h-8 w-8 p-0 flex-shrink-0"
-            title="New File"
+            title={t('New File')}
           >
             <RiFileAddLine className="h-4 w-4" />
           </Button>
@@ -2646,7 +2648,7 @@ export const FilesView: React.FC<FilesViewProps> = ({ mode = 'full' }) => {
             size="sm"
             onClick={() => handleOpenDialog('createFolder', { path: currentDirectory, type: 'directory' })}
             className="h-8 w-8 p-0 flex-shrink-0"
-            title="New Folder"
+            title={t('New Folder')}
           >
             <RiFolderAddLine className="h-4 w-4" />
           </Button>
@@ -2737,8 +2739,8 @@ export const FilesView: React.FC<FilesViewProps> = ({ mode = 'full' }) => {
                 variant="ghost"
                 size="sm"
                 className="h-6 w-6 p-0 text-muted-foreground opacity-70 hover:opacity-100"
-                title="Open in desktop app"
-                aria-label="Open in desktop app"
+                title={t('Open in desktop app')}
+                aria-label={t('Open in desktop app')}
               >
                 <RiFileTransferLine className="h-4 w-4" />
               </Button>
@@ -2815,8 +2817,8 @@ export const FilesView: React.FC<FilesViewProps> = ({ mode = 'full' }) => {
                 }
               }}
               className="h-6 w-6 p-0"
-              title="Copy file contents"
-              aria-label="Copy file contents"
+              title={t('Copy file contents')}
+              aria-label={t('Copy file contents')}
             >
               {copiedContent ? (
                 <RiCheckLine className="h-4 w-4 text-[color:var(--status-success)]" />
@@ -2862,8 +2864,8 @@ export const FilesView: React.FC<FilesViewProps> = ({ mode = 'full' }) => {
             size="sm"
             onClick={() => setIsFullscreen(false)}
             className="h-6 w-6 p-0"
-            title="Exit fullscreen"
-            aria-label="Exit fullscreen"
+            title={t('Exit fullscreen')}
+            aria-label={t('Exit fullscreen')}
           >
             <RiFullscreenExitLine className="h-4 w-4" />
           </Button>

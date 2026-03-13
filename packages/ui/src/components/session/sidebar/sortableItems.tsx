@@ -1,23 +1,12 @@
 import React from 'react';
-import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
-import {
-  RiAddLine,
-  RiCheckLine,
-  RiCloseLine,
-  RiGitBranchLine,
-  RiMore2Line,
-  RiPencilAiLine,
-} from '@remixicon/react';
-import { ArrowsMerge } from '@/components/icons/ArrowsMerge';
-import { cn } from '@/lib/utils';
+import {useSortable} from '@dnd-kit/sortable';
+import {CSS} from '@dnd-kit/utilities';
+import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,} from '@/components/ui/dropdown-menu';
+import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
+import {RiAddLine, RiCheckLine, RiCloseLine, RiGitBranchLine, RiMore2Line, RiPencilAiLine,} from '@remixicon/react';
+import {ArrowsMerge} from '@/components/icons/ArrowsMerge';
+import {cn} from '@/lib/utils';
+import {useI18n} from '@/contexts/useI18n';
 
 export interface SortableProjectItemProps {
   id: string;
@@ -80,6 +69,7 @@ export const SortableProjectItem: React.FC<SortableProjectItemProps> = ({
   showCreateButtons = true,
   hideHeader = false,
 }) => {
+    const {t} = useI18n();
   const {
     attributes,
     listeners,
@@ -242,7 +232,7 @@ export const SortableProjectItem: React.FC<SortableProjectItemProps> = ({
                       className="text-destructive focus:text-destructive"
                     >
                       <RiCloseLine className="mr-1.5 h-4 w-4" />
-                      Close Project
+                        {t('Close project')}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -261,13 +251,13 @@ export const SortableProjectItem: React.FC<SortableProjectItemProps> = ({
                         'inline-flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 hover:text-foreground hover:bg-interactive-hover/50 flex-shrink-0',
                         mobileVariant ? 'opacity-70' : 'opacity-100',
                       )}
-                      aria-label="New session in worktree"
+                      aria-label={t('New session in worktree')}
                     >
                       <RiGitBranchLine className="h-4 w-4" />
                     </button>
                   </TooltipTrigger>
                   <TooltipContent side="bottom" sideOffset={4}>
-                    <p>New session in worktree</p>
+                      <p>{t('New session in worktree')}</p>
                   </TooltipContent>
                 </Tooltip>
               )}
@@ -281,13 +271,13 @@ export const SortableProjectItem: React.FC<SortableProjectItemProps> = ({
                         onNewSession();
                       }}
                       className="inline-flex h-6 w-6 items-center justify-center text-muted-foreground hover:text-foreground hover:bg-interactive-hover/50 flex-shrink-0 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
-                      aria-label="New session"
+                      aria-label={t('New session')}
                     >
                       <RiAddLine className="h-4 w-4" />
                     </button>
                   </TooltipTrigger>
                   <TooltipContent side="bottom" sideOffset={4}>
-                    <p>New session</p>
+                      <p>{t('New session')}</p>
                   </TooltipContent>
                 </Tooltip>
               )}

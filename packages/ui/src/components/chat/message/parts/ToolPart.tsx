@@ -1,39 +1,60 @@
-
 import React from 'react';
-import { RuntimeAPIContext } from '@/contexts/runtimeAPIContext';
-import { RiAiAgentLine, RiArrowDownSLine, RiArrowRightSLine, RiBookLine, RiExternalLinkLine, RiFileEditLine, RiFileList2Line, RiFileSearchLine, RiFileTextLine, RiFolder6Line, RiGitBranchLine, RiGlobalLine, RiListCheck2, RiListCheck3, RiMenuSearchLine, RiPencilLine, RiSurveyLine, RiTaskLine, RiTerminalBoxLine, RiToolsLine } from '@remixicon/react';
-import { File as PierreFile, PatchDiff } from '@pierre/diffs/react';
-import { cn } from '@/lib/utils';
-import { formatTimestampForDisplay } from '../timeFormat';
-import { SimpleMarkdownRenderer } from '../../MarkdownRenderer';
-import { getToolMetadata, getLanguageFromExtension, isImageFile, getImageMimeType } from '@/lib/toolHelpers';
-import type { ToolPart as ToolPartType, ToolState as ToolStateUnion } from '@opencode-ai/sdk/v2';
-import { toolDisplayStyles } from '@/lib/typography';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { useOptionalThemeSystem } from '@/contexts/useThemeSystem';
-import { useDirectoryStore } from '@/stores/useDirectoryStore';
-import { useSessionStore } from '@/stores/useSessionStore';
-import { useUIStore } from '@/stores/useUIStore';
-import { opencodeClient } from '@/lib/opencode/client';
-import { ScrollableOverlay } from '@/components/ui/ScrollableOverlay';
-import type { ContentChangeReason } from '@/hooks/useChatScrollManager';
-import type { ToolPopupContent } from '../types';
-import { ensurePierreThemeRegistered } from '@/lib/shiki/appThemeRegistry';
-import { getDefaultTheme } from '@/lib/theme/themes';
+import {RuntimeAPIContext} from '@/contexts/runtimeAPIContext';
+import {
+    RiAiAgentLine,
+    RiArrowDownSLine,
+    RiArrowRightSLine,
+    RiBookLine,
+    RiExternalLinkLine,
+    RiFileEditLine,
+    RiFileList2Line,
+    RiFileSearchLine,
+    RiFileTextLine,
+    RiFolder6Line,
+    RiGitBranchLine,
+    RiGlobalLine,
+    RiListCheck2,
+    RiListCheck3,
+    RiMenuSearchLine,
+    RiPencilLine,
+    RiSurveyLine,
+    RiTaskLine,
+    RiTerminalBoxLine,
+    RiToolsLine
+} from '@remixicon/react';
+import {File as PierreFile, PatchDiff} from '@pierre/diffs/react';
+import {cn} from '@/lib/utils';
+import {formatTimestampForDisplay} from '../timeFormat';
+import {SimpleMarkdownRenderer} from '../../MarkdownRenderer';
+import {getImageMimeType, getLanguageFromExtension, getToolMetadata, isImageFile} from '@/lib/toolHelpers';
+import type {ToolPart as ToolPartType, ToolState as ToolStateUnion} from '@opencode-ai/sdk/v2';
+import {toolDisplayStyles} from '@/lib/typography';
+import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
+import {useOptionalThemeSystem} from '@/contexts/useThemeSystem';
+import {useDirectoryStore} from '@/stores/useDirectoryStore';
+import {useSessionStore} from '@/stores/useSessionStore';
+import {useUIStore} from '@/stores/useUIStore';
+import {useI18n} from '@/contexts/useI18n';
+import {opencodeClient} from '@/lib/opencode/client';
+import {ScrollableOverlay} from '@/components/ui/ScrollableOverlay';
+import type {ContentChangeReason} from '@/hooks/useChatScrollManager';
+import type {ToolPopupContent} from '../types';
+import {ensurePierreThemeRegistered} from '@/lib/shiki/appThemeRegistry';
+import {getDefaultTheme} from '@/lib/theme/themes';
 
 import {
-    renderListOutput,
-    renderGrepOutput,
-    renderGlobOutput,
-    renderTodoOutput,
-    renderWebSearchOutput,
-    formatEditOutput,
     detectLanguageFromOutput,
+    formatEditOutput,
     formatInputForDisplay,
     parseReadToolOutput,
+    renderGlobOutput,
+    renderGrepOutput,
+    renderListOutput,
+    renderTodoOutput,
+    renderWebSearchOutput,
 } from '../toolRenderers';
-import { DiffViewToggle, type DiffViewMode } from '../DiffViewToggle';
-import { VirtualizedCodeBlock, type CodeLine } from './VirtualizedCodeBlock';
+import {type DiffViewMode, DiffViewToggle} from '../DiffViewToggle';
+import {type CodeLine, VirtualizedCodeBlock} from './VirtualizedCodeBlock';
 
 type ToolStateWithMetadata = ToolStateUnion & { metadata?: Record<string, unknown>; input?: Record<string, unknown>; output?: string; error?: string; time?: { start: number; end?: number } };
 
@@ -710,6 +731,7 @@ const TaskToolSummary: React.FC<{
     input?: Record<string, unknown>;
 }> = ({ entries, isExpanded, isMobile, hasPrevTool, hasNextTool, output, sessionId, onShowPopup, input }) => {
     const setCurrentSession = useSessionStore((state) => state.setCurrentSession);
+    const {t} = useI18n();
     const displayEntries = React.useMemo(() => {
         const nonPending = entries.filter((entry) => entry.state?.status !== 'pending');
         return nonPending.length > 0 ? nonPending : entries;
@@ -790,7 +812,9 @@ const TaskToolSummary: React.FC<{
                     onClick={handleOpenSession}
                 >
                     <RiExternalLinkLine className="h-3.5 w-3.5 flex-shrink-0" />
-                    <span className="typography-meta text-primary font-medium">Open {agentType.charAt(0).toUpperCase() + agentType.slice(1)} subtask</span>
+                    <span className="typography-meta text-primary font-medium">
+                        {t('Open {agentType} subtask', {agentType: agentType.charAt(0).toUpperCase() + agentType.slice(1)})}
+                    </span>
                 </button>
             )}
 
@@ -811,7 +835,7 @@ const TaskToolSummary: React.FC<{
                         ) : (
                             <RiArrowRightSLine className="h-3.5 w-3.5 flex-shrink-0" />
                         )}
-                        <span className="typography-meta text-foreground/80 font-medium">Output</span>
+                        <span className="typography-meta text-foreground/80 font-medium">{t('Output')}</span>
                     </button>
                     {isOutputExpanded ? (
                         <ToolScrollableSection maxHeightClass="max-h-[50vh]">
@@ -1165,6 +1189,7 @@ const ToolExpandedContent: React.FC<ToolExpandedContentProps> = React.memo(({
     hasPrevTool,
     hasNextTool,
 }) => {
+    const {t} = useI18n();
     const { pierreTheme, pierreThemeType } = usePierreThemeConfig();
     const [diffViewMode, setDiffViewMode] = React.useState<DiffViewMode>('unified');
     const stateWithData = state as ToolStateWithMetadata;
@@ -1198,7 +1223,7 @@ const ToolExpandedContent: React.FC<ToolExpandedContentProps> = React.memo(({
     const shouldShowWriteInputPreview = part.tool === 'write' && !!writeInputContent;
     const isWriteImageFile = writeFilePath ? isImageFile(writeFilePath) : false;
     const writeDisplayPath = shouldShowWriteInputPreview
-        ? (writeFilePath ? getRelativePath(writeFilePath, currentDirectory) : 'New file')
+        ? (writeFilePath ? getRelativePath(writeFilePath, currentDirectory) : t('New file'))
         : null;
 
     const inputTextContent = React.useMemo(() => {
@@ -1259,7 +1284,7 @@ const ToolExpandedContent: React.FC<ToolExpandedContentProps> = React.memo(({
             if (state.status === 'error' && 'error' in state) {
                 return (
                     <div>
-                        <div className="typography-meta font-medium text-muted-foreground mb-1">Error:</div>
+                        <div className="typography-meta font-medium text-muted-foreground mb-1">{t('Error:')}</div>
                         <div className="typography-meta p-2 rounded-xl border" style={{
                             backgroundColor: 'var(--status-error-background)',
                             color: 'var(--status-error)',
@@ -1271,15 +1296,15 @@ const ToolExpandedContent: React.FC<ToolExpandedContentProps> = React.memo(({
                 );
             }
 
-            return <div className="typography-meta text-muted-foreground">Awaiting response...</div>;
+            return <div className="typography-meta text-muted-foreground">{t('Awaiting response...')}</div>;
         }
 
         if (part.tool === 'todowrite' || part.tool === 'todoread') {
             if (state.status === 'completed' && hasStringOutput) {
-                const todoContent = renderTodoOutput(outputString, { unstyled: true });
+                const todoContent = renderTodoOutput(outputString, {unstyled: true}, t);
                 return renderScrollableBlock(
                     todoContent ?? (
-                        <div className="typography-meta text-muted-foreground">Unable to parse todo list</div>
+                        <div className="typography-meta text-muted-foreground">{t('Unable to parse todo list')}</div>
                     )
                 );
             }
@@ -1287,7 +1312,7 @@ const ToolExpandedContent: React.FC<ToolExpandedContentProps> = React.memo(({
             if (state.status === 'error' && 'error' in state) {
                 return (
                     <div>
-                        <div className="typography-meta font-medium text-muted-foreground mb-1">Error:</div>
+                        <div className="typography-meta font-medium text-muted-foreground mb-1">{t('Error:')}</div>
                         <div className="typography-meta p-2 rounded-xl border" style={{
                             backgroundColor: 'var(--status-error-background)',
                             color: 'var(--status-error)',
@@ -1299,7 +1324,7 @@ const ToolExpandedContent: React.FC<ToolExpandedContentProps> = React.memo(({
                 );
             }
 
-            return <div className="typography-meta text-muted-foreground">Processing todo list...</div>;
+            return <div className="typography-meta text-muted-foreground">{t('Processing todo list...')}</div>;
         }
 
         if (part.tool === 'list' && hasStringOutput) {
@@ -1432,7 +1457,7 @@ const ToolExpandedContent: React.FC<ToolExpandedContentProps> = React.memo(({
         }
 
         return renderScrollableBlock(
-            <div className="typography-meta text-muted-foreground/70">No output produced</div>,
+            <div className="typography-meta text-muted-foreground/70">{t('No output was produced')}</div>,
             { maxHeightClass: 'max-h-60' }
         );
     };
@@ -1462,7 +1487,7 @@ const ToolExpandedContent: React.FC<ToolExpandedContentProps> = React.memo(({
                                 <ImagePreview
                                     content={writeInputContent as string}
                                     filePath={writeFilePath as string}
-                                    displayPath={writeDisplayPath ?? 'New file'}
+                                    displayPath={writeDisplayPath ?? t('New file')}
                                 />
                             )}
                         </div>
@@ -1472,7 +1497,7 @@ const ToolExpandedContent: React.FC<ToolExpandedContentProps> = React.memo(({
                                 <WriteInputPreview
                                     content={writeInputContent as string}
                                     filePath={writeFilePath}
-                                    displayPath={writeDisplayPath ?? 'New file'}
+                                    displayPath={writeDisplayPath ?? t('New file')}
                                     pierreTheme={pierreTheme}
                                     pierreThemeType={pierreThemeType}
                                 />
@@ -1493,7 +1518,7 @@ const ToolExpandedContent: React.FC<ToolExpandedContentProps> = React.memo(({
                         <div>
                             <div className="mb-1 flex items-center justify-between gap-2">
                                 <div className="typography-meta font-medium text-muted-foreground/80">
-                                    Result:
+                                    {t('Result:')}
                                 </div>
                                 {(part.tool === 'edit' || part.tool === 'multiedit' || part.tool === 'apply_patch') && diffContent ? (
                                     <DiffViewToggle
@@ -1509,7 +1534,8 @@ const ToolExpandedContent: React.FC<ToolExpandedContentProps> = React.memo(({
 
                     {state.status === 'error' && 'error' in state && (
                         <div>
-                            <div className="typography-meta font-medium text-muted-foreground/80 mb-1">Error:</div>
+                            <div
+                                className="typography-meta font-medium text-muted-foreground/80 mb-1">{t('Error:')}</div>
                             <div className="typography-meta p-2 rounded-xl border" style={{
                                 backgroundColor: 'var(--status-error-background)',
                                 color: 'var(--status-error)',

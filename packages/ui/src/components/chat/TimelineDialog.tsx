@@ -1,17 +1,13 @@
 import React from 'react';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { useSessionStore } from '@/stores/useSessionStore';
-import { useMessageStore } from '@/stores/messageStore';
-import { RiLoader4Line, RiSearchLine, RiTimeLine, RiGitBranchLine, RiArrowGoBackLine } from '@remixicon/react';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import type { Part } from '@opencode-ai/sdk/v2';
+import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,} from '@/components/ui/dialog';
+import {Input} from '@/components/ui/input';
+import {useSessionStore} from '@/stores/useSessionStore';
+import {useMessageStore} from '@/stores/messageStore';
+import {RiArrowGoBackLine, RiGitBranchLine, RiLoader4Line, RiSearchLine, RiTimeLine} from '@remixicon/react';
+import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
+import type {Part} from '@opencode-ai/sdk/v2';
+import {useI18n} from '@/contexts/useI18n';
+import type {TranslateFn} from '@/lib/i18n/messages';
 
 interface TimelineDialogProps {
     open: boolean;
@@ -20,7 +16,7 @@ interface TimelineDialogProps {
 }
 
 // Helper: format relative time (e.g., "2 hours ago")
-function formatRelativeTime(timestamp: number): string {
+function formatRelativeTime(timestamp: number, t: TranslateFn, locale: string): string {
     const now = Date.now();
     const diffMs = now - timestamp;
     const diffSecs = Math.floor(diffMs / 1000);
@@ -28,14 +24,15 @@ function formatRelativeTime(timestamp: number): string {
     const diffHours = Math.floor(diffMins / 60);
     const diffDays = Math.floor(diffHours / 24);
 
-    if (diffSecs < 60) return 'just now';
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays < 7) return `${diffDays}d ago`;
-    return new Date(timestamp).toLocaleDateString();
+    if (diffSecs < 60) return t('Just now');
+    if (diffMins < 60) return t('{count}m ago', {count: diffMins});
+    if (diffHours < 24) return t('{count}h ago', {count: diffHours});
+    if (diffDays < 7) return t('{count}d ago', {count: diffDays});
+    return new Date(timestamp).toLocaleDateString(locale);
 }
 
 export const TimelineDialog: React.FC<TimelineDialogProps> = ({ open, onOpenChange, onScrollToMessage }) => {
+    const {t, locale} = useI18n();
     const currentSessionId = useSessionStore((state) => state.currentSessionId);
     const messages = useMessageStore((state) =>
         currentSessionId ? state.messages.get(currentSessionId) || [] : []
@@ -85,17 +82,17 @@ export const TimelineDialog: React.FC<TimelineDialogProps> = ({ open, onOpenChan
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         <RiTimeLine className="h-5 w-5" />
-                        Conversation Timeline
+                        {t('Conversation Timeline')}
                     </DialogTitle>
                     <DialogDescription>
-                        Navigate to any point in the conversation or fork a new session
+                        {t('Navigate to any point in the conversation or fork a new session')}
                     </DialogDescription>
                 </DialogHeader>
 
                 <div className="relative mt-2">
                     <RiSearchLine className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
-                        placeholder="Search messages..."
+                        placeholder={t('Search messages...')}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="pl-9 w-full"
@@ -105,13 +102,13 @@ export const TimelineDialog: React.FC<TimelineDialogProps> = ({ open, onOpenChan
                 <div className="flex-1 overflow-y-auto">
                     {filteredMessages.length === 0 ? (
                         <div className="text-center text-muted-foreground py-8">
-                            {searchQuery ? 'No messages found' : 'No messages in this session yet'}
+                            {searchQuery ? t('No messages found') : t('No messages in this session yet')}
                         </div>
                     ) : (
                         filteredMessages.map((message) => {
                             const preview = getMessagePreview(message.parts);
                             const timestamp = message.info.time.created;
-                            const relativeTime = formatRelativeTime(timestamp);
+                            const relativeTime = formatRelativeTime(timestamp, t, locale);
                             const messageNumber = userMessages.length - userMessages.indexOf(message);
 
                             return (
@@ -127,7 +124,7 @@ export const TimelineDialog: React.FC<TimelineDialogProps> = ({ open, onOpenChan
                                         {messageNumber}.
                                     </span>
                                     <p className="flex-1 min-w-0 typography-small text-foreground truncate ml-0.5">
-                                        {preview || '[No text content]'}
+                                        {preview || t('[No text content]')}
                                         {preview && preview.length >= 80 && '…'}
                                     </p>
 
@@ -151,7 +148,7 @@ export const TimelineDialog: React.FC<TimelineDialogProps> = ({ open, onOpenChan
                                                         <RiArrowGoBackLine className="h-4 w-4" />
                                                     </button>
                                                 </TooltipTrigger>
-                                                <TooltipContent sideOffset={6}>Revert from here</TooltipContent>
+                                                <TooltipContent sideOffset={6}>{t('Revert from here')}</TooltipContent>
                                             </Tooltip>
 
                                             <Tooltip delayDuration={1000}>
@@ -172,7 +169,7 @@ export const TimelineDialog: React.FC<TimelineDialogProps> = ({ open, onOpenChan
                                                         )}
                                                     </button>
                                                 </TooltipTrigger>
-                                                <TooltipContent sideOffset={6}>Fork from here</TooltipContent>
+                                                <TooltipContent sideOffset={6}>{t('Fork from here')}</TooltipContent>
                                             </Tooltip>
                                         </div>
                                     </div>
@@ -183,18 +180,18 @@ export const TimelineDialog: React.FC<TimelineDialogProps> = ({ open, onOpenChan
                 </div>
 
                 <div className="mt-4 p-3 bg-muted/30 rounded-lg">
-                    <p className="typography-meta text-muted-foreground font-medium mb-2">Actions</p>
+                    <p className="typography-meta text-muted-foreground font-medium mb-2">{t('Actions')}</p>
                     <div className="flex flex-col gap-1.5 typography-meta text-muted-foreground">
                         <div className="flex items-center gap-2">
-                            <span>Click on a message to scroll to it in the conversation</span>
+                            <span>{t('Click on a message to scroll to it in the conversation')}</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <RiArrowGoBackLine className="h-4 w-4 flex-shrink-0" />
-                            <span>Undo to this point (message text will populate input)</span>
+                            <span>{t('Undo to this point (message text will populate input)')}</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <RiGitBranchLine className="h-4 w-4 flex-shrink-0" />
-                            <span>Create a new session starting from here</span>
+                            <span>{t('Create a new session starting from here')}</span>
                         </div>
                     </div>
                 </div>

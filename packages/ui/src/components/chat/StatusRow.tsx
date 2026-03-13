@@ -8,12 +8,13 @@ import {
   RiRecordCircleLine,
   RiTimeLine,
 } from "@remixicon/react";
-import { cn } from "@/lib/utils";
-import { useTodoStore, type TodoItem, type TodoPriority, type TodoStatus } from "@/stores/useTodoStore";
-import { useSessionStore } from "@/stores/useSessionStore";
-import { useUIStore } from "@/stores/useUIStore";
-import { WorkingPlaceholder } from "./message/parts/WorkingPlaceholder";
-import { isVSCodeRuntime } from "@/lib/desktop";
+import {cn} from "@/lib/utils";
+import {type TodoItem, type TodoPriority, type TodoStatus, useTodoStore} from "@/stores/useTodoStore";
+import {useSessionStore} from "@/stores/useSessionStore";
+import {useUIStore} from "@/stores/useUIStore";
+import {WorkingPlaceholder} from "./message/parts/WorkingPlaceholder";
+import {isVSCodeRuntime} from "@/lib/desktop";
+import {useI18n} from "@/contexts/useI18n";
 
 const statusConfig: Record<TodoStatus, { textClassName: string }> = {
   in_progress: {
@@ -47,7 +48,9 @@ interface TodoItemRowProps {
 }
 
 const TodoItemRow: React.FC<TodoItemRowProps> = ({ todo }) => {
+    const {t} = useI18n();
   const config = statusConfig[todo.status] || statusConfig.pending;
+    const priorityLabel = t(`priority.${todo.priority}`);
 
   const statusIcon =
     todo.status === "in_progress" ? (
@@ -74,7 +77,7 @@ const TodoItemRow: React.FC<TodoItemRowProps> = ({ todo }) => {
           "typography-meta flex-shrink-0",
           priorityClassName[todo.priority] ?? priorityClassName.medium
         )}
-        title={`${todo.priority} priority`}
+        title={t('Priority: {priority}', {priority: priorityLabel})}
       >
         {priorityIcon[todo.priority] ?? priorityIcon.medium}
       </span>
@@ -119,6 +122,7 @@ export const StatusRow: React.FC<StatusRowProps> = ({
   );
   const loadTodos = useTodoStore((state) => state.loadTodos);
   const { isMobile } = useUIStore();
+    const {t} = useI18n();
   const isCompact = isMobile || isVSCodeRuntime();
 
   // Load todos when session changes
@@ -193,7 +197,7 @@ export const StatusRow: React.FC<StatusRowProps> = ({
       type="button"
       onClick={onAbort}
       className="flex items-center justify-center h-[1.2rem] w-[1.2rem] text-[var(--status-error)] transition-opacity hover:opacity-80 focus-visible:outline-none flex-shrink-0"
-      aria-label="Stop generating"
+      aria-label={t('Stop generating')}
     >
       <RiCloseCircleLine size={18} aria-hidden="true" />
     </button>
@@ -212,10 +216,10 @@ export const StatusRow: React.FC<StatusRowProps> = ({
           {activeTodo.content}
         </span>
       ) : (
-        <span className="typography-ui-label">Tasks</span>
+          <span className="typography-ui-label">{t('Tasks')}</span>
       )}
       <span className="typography-meta">
-        {statusSummary.active} active · {statusSummary.left} left
+        {t('{active} active · {left} left', {active: statusSummary.active, left: statusSummary.left})}
       </span>
       {isExpanded ? (
         <RiArrowUpSLine className="h-3.5 w-3.5" />
@@ -239,7 +243,7 @@ export const StatusRow: React.FC<StatusRowProps> = ({
             <div className="flex h-full items-center text-[var(--status-error)] pl-[2ch]">
               <span className="flex items-center gap-1.5 typography-ui-label">
                 <RiCloseCircleLine size={16} aria-hidden="true" />
-                Aborted
+                  {t('Aborted')}
               </span>
             </div>
           ) : shouldRenderPlaceholder ? (
@@ -273,7 +277,7 @@ export const StatusRow: React.FC<StatusRowProps> = ({
             >
               {/* Header */}
               <div className="flex items-center justify-between px-3 py-2 border-b border-border">
-                <span className="typography-ui-label text-muted-foreground">Tasks</span>
+                  <span className="typography-ui-label text-muted-foreground">{t('Tasks')}</span>
                 <span className="typography-meta text-muted-foreground">
                   {progress.completed}/{progress.total}
                 </span>

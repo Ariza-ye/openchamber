@@ -1,18 +1,19 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
+import {StrictMode} from 'react'
+import {createRoot} from 'react-dom/client'
 import './styles/fonts'
 import './index.css'
 import App from './App.tsx'
-import { SessionAuthGate } from './components/auth/SessionAuthGate'
-import { ThemeSystemProvider } from './contexts/ThemeSystemContext'
-import { ThemeProvider } from './components/providers/ThemeProvider'
+import {SessionAuthGate} from './components/auth/SessionAuthGate'
+import {ThemeSystemProvider} from './contexts/ThemeSystemContext'
+import {ThemeProvider} from './components/providers/ThemeProvider'
+import {I18nProvider} from './contexts/I18nContext'
 import './lib/debug'
-import { syncDesktopSettings, initializeAppearancePreferences } from './lib/persistence'
-import { startAppearanceAutoSave } from './lib/appearanceAutoSave'
-import { applyPersistedDirectoryPreferences } from './lib/directoryPersistence'
-import { startTypographyWatcher } from './lib/typographyWatcher'
-import { startModelPrefsAutoSave } from './lib/modelPrefsAutoSave'
-import type { RuntimeAPIs } from './lib/api/types'
+import {initializeAppearancePreferences, syncDesktopSettings} from './lib/persistence'
+import {startAppearanceAutoSave} from './lib/appearanceAutoSave'
+import {applyPersistedDirectoryPreferences} from './lib/directoryPersistence'
+import {startTypographyWatcher} from './lib/typographyWatcher'
+import {startModelPrefsAutoSave} from './lib/modelPrefsAutoSave'
+import type {RuntimeAPIs} from './lib/api/types'
 
 declare global {
   interface Window {
@@ -92,9 +93,11 @@ createRoot(rootElement).render(
   <StrictMode>
     <ThemeSystemProvider>
       <ThemeProvider>
-        <SessionAuthGate>
-          <App apis={runtimeAPIs} />
-        </SessionAuthGate>
+          <I18nProvider>
+              <SessionAuthGate>
+                  <App apis={runtimeAPIs}/>
+              </SessionAuthGate>
+          </I18nProvider>
       </ThemeProvider>
     </ThemeSystemProvider>
   </StrictMode>,

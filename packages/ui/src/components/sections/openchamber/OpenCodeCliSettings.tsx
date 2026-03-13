@@ -1,13 +1,15 @@
 import * as React from 'react';
-import { ButtonSmall } from '@/components/ui/button-small';
-import { Input } from '@/components/ui/input';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { RiFolderLine, RiInformationLine } from '@remixicon/react';
-import { isDesktopShell, isTauriShell } from '@/lib/desktop';
-import { updateDesktopSettings } from '@/lib/persistence';
-import { reloadOpenCodeConfiguration } from '@/stores/useAgentsStore';
+import {ButtonSmall} from '@/components/ui/button-small';
+import {Input} from '@/components/ui/input';
+import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
+import {RiFolderLine, RiInformationLine} from '@remixicon/react';
+import {isDesktopShell, isTauriShell} from '@/lib/desktop';
+import {updateDesktopSettings} from '@/lib/persistence';
+import {reloadOpenCodeConfiguration} from '@/stores/useAgentsStore';
+import {useI18n} from '@/contexts/useI18n';
 
 export const OpenCodeCliSettings: React.FC = () => {
+    const {t} = useI18n();
   const [value, setValue] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(true);
   const [isSaving, setIsSaving] = React.useState(false);
@@ -101,7 +103,7 @@ export const OpenCodeCliSettings: React.FC = () => {
       <section className="px-2 pb-2 pt-0 space-y-0.5">
         <div className="flex flex-col gap-2 py-1.5 sm:flex-row sm:items-center sm:gap-3">
           <div className="flex min-w-0 flex-col shrink-0">
-            <span className="typography-ui-label text-foreground">OpenCode Binary Path</span>
+              <span className="typography-ui-label text-foreground">{t('OpenCode Binary Path')}</span>
           </div>
           <div className="flex min-w-0 items-center gap-2 sm:w-[20rem]">
             <Input
@@ -118,8 +120,8 @@ export const OpenCodeCliSettings: React.FC = () => {
               onClick={handleBrowse}
               disabled={isLoading || isSaving || !isDesktopShell() || !isTauriShell()}
               className="h-7 w-7 p-0"
-              aria-label="Browse for OpenCode binary path"
-              title="Browse"
+              aria-label={t('Browse for OpenCode binary path')}
+              title={t('Browse')}
             >
               <RiFolderLine className="h-4 w-4" />
             </ButtonSmall>

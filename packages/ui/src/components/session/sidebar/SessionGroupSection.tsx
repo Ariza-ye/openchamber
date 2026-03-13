@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Session } from '@opencode-ai/sdk/v2';
+import type {Session} from '@opencode-ai/sdk/v2';
 import {
   RiAddLine,
   RiArchiveLine,
@@ -9,15 +9,21 @@ import {
   RiDeleteBinLine,
   RiGitBranchLine,
 } from '@remixicon/react';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { cn } from '@/lib/utils';
-import { sessionEvents } from '@/lib/sessionEvents';
-import type { MainTab } from '@/stores/useUIStore';
-import { SessionFolderItem } from '../SessionFolderItem';
-import { DroppableFolderWrapper, SessionFolderDndScope } from './sessionFolderDnd';
-import type { GroupSearchData, SessionGroup, SessionNode } from './types';
-import { compareSessionsByPinnedAndTime, isBranchDifferentFromLabel, normalizePath, renderHighlightedText } from './utils';
-import type { SessionFolder } from '@/stores/useSessionFoldersStore';
+import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
+import {cn} from '@/lib/utils';
+import {sessionEvents} from '@/lib/sessionEvents';
+import type {MainTab} from '@/stores/useUIStore';
+import {SessionFolderItem} from '../SessionFolderItem';
+import {DroppableFolderWrapper, SessionFolderDndScope} from './sessionFolderDnd';
+import type {GroupSearchData, SessionGroup, SessionNode} from './types';
+import {
+  compareSessionsByPinnedAndTime,
+  isBranchDifferentFromLabel,
+  normalizePath,
+  renderHighlightedText
+} from './utils';
+import type {SessionFolder} from '@/stores/useSessionFoldersStore';
+import {useI18n} from '@/contexts/useI18n';
 
 type DeleteFolderConfirm = {
   scopeKey: string;
@@ -90,6 +96,7 @@ type Props = {
 };
 
 export function SessionGroupSection(props: Props): React.ReactNode {
+    const {t} = useI18n();
   const {
     group,
     groupKey,
@@ -541,12 +548,12 @@ export function SessionGroupSection(props: Props): React.ReactNode {
                     });
                   }}
                   className="inline-flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground hover:text-destructive hover:bg-interactive-hover/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
-                  aria-label={`Delete ${group.label}`}
+                  aria-label={t('Delete {name}', {name: group.label})}
                 >
                   <RiDeleteBinLine className="h-4 w-4" />
                 </button>
               </TooltipTrigger>
-              <TooltipContent side="bottom" sideOffset={4}><p>Delete worktree</p></TooltipContent>
+                <TooltipContent side="bottom" sideOffset={4}><p>{t('Delete worktree')}</p></TooltipContent>
             </Tooltip>
           </div>
         ) : null}
@@ -564,12 +571,12 @@ export function SessionGroupSection(props: Props): React.ReactNode {
                     openNewSessionDraft({ directoryOverride: group.directory });
                   }}
                   className="inline-flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-interactive-hover/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
-                  aria-label={`New session in ${group.label}`}
+                  aria-label={t('New session in {name}', {name: group.label})}
                 >
                   <RiAddLine className="h-4 w-4" />
                 </button>
               </TooltipTrigger>
-              <TooltipContent side="bottom" sideOffset={4}><p>New session</p></TooltipContent>
+                <TooltipContent side="bottom" sideOffset={4}><p>{t('New session')}</p></TooltipContent>
             </Tooltip>
           </div>
         ) : null}

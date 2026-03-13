@@ -1,7 +1,8 @@
 import React from 'react';
-import { cn } from '@/lib/utils';
-import { ErrorBoundary } from '../ui/ErrorBoundary';
-import { useUIStore } from '@/stores/useUIStore';
+import {cn} from '@/lib/utils';
+import {ErrorBoundary} from '../ui/ErrorBoundary';
+import {useUIStore} from '@/stores/useUIStore';
+import {useI18n} from '@/contexts/useI18n';
 
 export const SIDEBAR_CONTENT_WIDTH = 250;
 const SIDEBAR_MIN_WIDTH = 250;
@@ -14,6 +15,7 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, isMobile, children }) => {
+    const {t} = useI18n();
     const { sidebarWidth, setSidebarWidth } = useUIStore();
     const [isResizing, setIsResizing] = React.useState(false);
     const startXRef = React.useRef(0);
@@ -140,7 +142,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, isMobile, children }) 
                     onPointerCancel={handlePointerEnd}
                     role="separator"
                     aria-orientation="vertical"
-                    aria-label="Resize left panel"
+                    aria-label={t('Resize left panel')}
                 />
             )}
             <div

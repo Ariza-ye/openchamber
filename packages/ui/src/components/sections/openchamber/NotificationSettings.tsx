@@ -1,20 +1,21 @@
 import React from 'react';
-import { RiInformationLine, RiRestartLine } from '@remixicon/react';
-import { useUIStore } from '@/stores/useUIStore';
-import { useConfigStore } from '@/stores/useConfigStore';
-import { isDesktopShell, isVSCodeRuntime } from '@/lib/desktop';
-import { useDeviceInfo } from '@/lib/device';
-import { updateDesktopSettings } from '@/lib/persistence';
-import { Checkbox } from '@/components/ui/checkbox';
-import { toast } from '@/components/ui';
-import { getRegisteredRuntimeAPIs } from '@/contexts/runtimeAPIRegistry';
-import { GridLoader } from '@/components/ui/grid-loader';
-import { Input } from '@/components/ui/input';
-import { NumberInput } from '@/components/ui/number-input';
-import { ButtonSmall } from '@/components/ui/button-small';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { cn } from '@/lib/utils';
+import {RiInformationLine, RiRestartLine} from '@remixicon/react';
+import {useUIStore} from '@/stores/useUIStore';
+import {useConfigStore} from '@/stores/useConfigStore';
+import {isDesktopShell, isVSCodeRuntime} from '@/lib/desktop';
+import {useDeviceInfo} from '@/lib/device';
+import {updateDesktopSettings} from '@/lib/persistence';
+import {Checkbox} from '@/components/ui/checkbox';
+import {toast} from '@/components/ui';
+import {getRegisteredRuntimeAPIs} from '@/contexts/runtimeAPIRegistry';
+import {GridLoader} from '@/components/ui/grid-loader';
+import {Input} from '@/components/ui/input';
+import {NumberInput} from '@/components/ui/number-input';
+import {ButtonSmall} from '@/components/ui/button-small';
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
+import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
+import {cn} from '@/lib/utils';
+import {useI18n} from '@/contexts/useI18n';
 
 const DEFAULT_NOTIFICATION_TEMPLATES = {
   completion: { title: '{agent_name} is ready', message: '{model_name} completed the task' },
@@ -32,6 +33,7 @@ const DEFAULT_SUMMARY_LENGTH = 100;
 const DEFAULT_MAX_LAST_MESSAGE_LENGTH = 250;
 
 export const NotificationSettings: React.FC = () => {
+    const {t} = useI18n();
   const { isMobile } = useDeviceInfo();
   const isDesktop = React.useMemo(() => isDesktopShell(), []);
   const isVSCode = React.useMemo(() => isVSCodeRuntime(), []);
@@ -214,13 +216,13 @@ export const NotificationSettings: React.FC = () => {
         if (permission === 'granted') {
           setNativeNotificationsEnabled(true);
         } else {
-          toast.error('Notification permission denied', {
-            description: 'Please enable notifications in your browser settings.',
+            toast.error(t('Notification permission denied'), {
+                description: t('Please enable notifications in your browser settings.'),
           });
         }
       } catch (error) {
         console.error('Failed to request notification permission:', error);
-        toast.error('Failed to request notification permission');
+          toast.error(t('Failed to request notification permission'));
       }
     } else if (checked && notificationPermission === 'granted') {
       setNativeNotificationsEnabled(true);
@@ -388,13 +390,13 @@ export const NotificationSettings: React.FC = () => {
 
   const handleEnableBackgroundNotifications = async () => {
     if (!pushSupported) {
-      toast.error('Push notifications not supported');
+        toast.error(t('Push notifications not supported'));
       return;
     }
 
     const apis = getRegisteredRuntimeAPIs();
     if (!apis?.push) {
-      toast.error('Push API not available');
+        toast.error(t('Push API not available'));
       return;
     }
 
@@ -404,23 +406,23 @@ export const NotificationSettings: React.FC = () => {
         const permission = await Notification.requestPermission();
         setNotificationPermission(permission);
         if (permission !== 'granted') {
-          toast.error('Notification permission denied', {
-            description: 'Enable notifications in your browser settings.',
+            toast.error(t('Notification permission denied'), {
+                description: t('Enable notifications in your browser settings.'),
           });
           return;
         }
       }
 
       if (typeof Notification !== 'undefined' && Notification.permission !== 'granted') {
-        toast.error('Notification permission denied', {
-          description: 'Enable notifications in your browser settings.',
+          toast.error(t('Notification permission denied'), {
+              description: t('Enable notifications in your browser settings.'),
         });
         return;
       }
 
       const key = await apis.push.getVapidPublicKey();
       if (!key?.publicKey) {
-        toast.error('Failed to load push key');
+          toast.error(t('Failed to load push key'));
         return;
       }
 
@@ -462,16 +464,16 @@ export const NotificationSettings: React.FC = () => {
       );
 
       if (!ok?.ok) {
-        toast.error('Failed to enable background notifications');
+          toast.error(t('Failed to enable background notifications'));
         return;
       }
 
       setPushSubscribed(true);
-      toast.success('Background notifications enabled');
+        toast.success(t('Background notifications enabled'));
     } catch (error) {
       console.error('[Push] Enable failed:', error);
       const formatted = formatUnknownError(error);
-      toast.error('Failed to enable background notifications', {
+        toast.error(t('Failed to enable background notifications'), {
         description: formatted.summary,
       });
     } finally {
@@ -487,7 +489,7 @@ export const NotificationSettings: React.FC = () => {
 
     const apis = getRegisteredRuntimeAPIs();
     if (!apis?.push) {
-      toast.error('Push API not available');
+        toast.error(t('Push API not available'));
       return;
     }
 
@@ -504,7 +506,7 @@ export const NotificationSettings: React.FC = () => {
       await subscription.unsubscribe();
       await apis.push.unsubscribe({ endpoint });
       setPushSubscribed(false);
-      toast.success('Background notifications disabled');
+        toast.success(t('Background notifications disabled'));
     } finally {
       setPushBusy(false);
     }
@@ -542,9 +544,9 @@ export const NotificationSettings: React.FC = () => {
                 onChange={(checked) => {
                   void handleToggleChange(checked);
                 }}
-                ariaLabel="Enable notifications"
+                ariaLabel={t('Enable notifications')}
               />
-              <span className="typography-ui-label text-foreground">Enable Notifications</span>
+                <span className="typography-ui-label text-foreground">{t('Enable Notifications')}</span>
             </div>
 
             {nativeNotificationsEnabled && canShowNotifications && (
@@ -564,9 +566,9 @@ export const NotificationSettings: React.FC = () => {
                 <Checkbox
                   checked={notificationMode === 'always'}
                   onChange={(checked) => setNotificationMode(checked ? 'always' : 'hidden-only')}
-                  ariaLabel="Notify while app is focused"
+                  ariaLabel={t('Notify while app is focused')}
                 />
-                <span className="typography-ui-label text-foreground">Notify While App is Focused</span>
+                  <span className="typography-ui-label text-foreground">{t('Notify While App is Focused')}</span>
               </div>
             )}
           </section>
@@ -621,8 +623,9 @@ export const NotificationSettings: React.FC = () => {
                     }
                   }}
                 >
-                  <Checkbox checked={notifyOnCompletion} onChange={setNotifyOnCompletion} ariaLabel="Agent completion" />
-                  <span className="typography-ui-label text-foreground">Agent Completion</span>
+                    <Checkbox checked={notifyOnCompletion} onChange={setNotifyOnCompletion}
+                              ariaLabel={t('Agent completion')}/>
+                    <span className="typography-ui-label text-foreground">{t('Agent Completion')}</span>
                 </div>
 
                 <div
@@ -638,8 +641,9 @@ export const NotificationSettings: React.FC = () => {
                     }
                   }}
                 >
-                  <Checkbox checked={notifyOnSubtasks} onChange={setNotifyOnSubtasks} ariaLabel="Subagent completion" />
-                  <span className="typography-ui-label text-foreground">Subagent Completion</span>
+                    <Checkbox checked={notifyOnSubtasks} onChange={setNotifyOnSubtasks}
+                              ariaLabel={t('Subagent completion')}/>
+                    <span className="typography-ui-label text-foreground">{t('Subagent Completion')}</span>
                 </div>
 
                 <div
@@ -655,8 +659,8 @@ export const NotificationSettings: React.FC = () => {
                     }
                   }}
                 >
-                  <Checkbox checked={notifyOnError} onChange={setNotifyOnError} ariaLabel="Agent errors" />
-                  <span className="typography-ui-label text-foreground">Agent Errors</span>
+                    <Checkbox checked={notifyOnError} onChange={setNotifyOnError} ariaLabel={t('Agent errors')}/>
+                    <span className="typography-ui-label text-foreground">{t('Agent Errors')}</span>
                 </div>
 
                 <div
@@ -672,8 +676,9 @@ export const NotificationSettings: React.FC = () => {
                     }
                   }}
                 >
-                  <Checkbox checked={notifyOnQuestion} onChange={setNotifyOnQuestion} ariaLabel="Agent questions" />
-                  <span className="typography-ui-label text-foreground">Agent Questions</span>
+                    <Checkbox checked={notifyOnQuestion} onChange={setNotifyOnQuestion}
+                              ariaLabel={t('Agent questions')}/>
+                    <span className="typography-ui-label text-foreground">{t('Agent Questions')}</span>
                 </div>
               </section>
             </div>
@@ -697,7 +702,7 @@ export const NotificationSettings: React.FC = () => {
                     </span>
                     <div className="mt-1.5 space-y-2">
                       <div>
-                        <label className="typography-micro text-muted-foreground block mb-1">Title</label>
+                          <label className="typography-micro text-muted-foreground block mb-1">{t('Title')}</label>
                         <Input
                           value={notificationTemplates[event].title}
                           onChange={(e) => updateTemplate(event, 'title', e.target.value)}
@@ -706,7 +711,7 @@ export const NotificationSettings: React.FC = () => {
                         />
                       </div>
                       <div>
-                        <label className="typography-micro text-muted-foreground block mb-1">Message</label>
+                          <label className="typography-micro text-muted-foreground block mb-1">{t('Message')}</label>
                         <Input
                           value={notificationTemplates[event].message}
                           onChange={(e) => updateTemplate(event, 'message', e.target.value)}
@@ -745,15 +750,15 @@ export const NotificationSettings: React.FC = () => {
                   <Checkbox
                     checked={summarizeLastMessage}
                     onChange={setSummarizeLastMessage}
-                    ariaLabel="Summarize last message"
+                    ariaLabel={t('Summarize last message')}
                   />
-                  <span className="typography-ui-label text-foreground">Summarize Last Message</span>
+                    <span className="typography-ui-label text-foreground">{t('Summarize Last Message')}</span>
                 </div>
 
                 <div className={cn("flex flex-col gap-2 py-1 sm:flex-row sm:items-center sm:gap-8")}>
                   <div className="flex min-w-0 flex-col sm:w-56 shrink-0">
                     <div className="flex items-center gap-2">
-                      <span className="typography-ui-label text-foreground">Summarization Model</span>
+                        <span className="typography-ui-label text-foreground">{t('Summarization Model')}</span>
                       <Tooltip delayDuration={1000}>
                         <TooltipTrigger asChild>
                           <RiInformationLine className="h-3.5 w-3.5 text-muted-foreground/60 cursor-help" />
@@ -770,10 +775,10 @@ export const NotificationSettings: React.FC = () => {
                       onValueChange={handleUtilityModelChange}
                     >
                       <SelectTrigger className="w-fit min-w-[220px]">
-                        <SelectValue placeholder="Not selected" />
+                          <SelectValue placeholder={t('Not selected')}/>
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value={UTILITY_NOT_SELECTED_VALUE}>Not selected</SelectItem>
+                          <SelectItem value={UTILITY_NOT_SELECTED_VALUE}>{t('Not selected')}</SelectItem>
                         {utilityModelOptions.map((model) => (
                           <SelectItem key={model.id} value={model.id}>
                             {model.name}
@@ -788,8 +793,9 @@ export const NotificationSettings: React.FC = () => {
                   <>
                     <div className="flex items-center gap-8 py-1.5 mt-1 border-t border-[var(--surface-subtle)]">
                       <div className="flex min-w-0 flex-col w-56 shrink-0">
-                        <span className="typography-ui-label text-foreground">Threshold</span>
-                        <span className="typography-meta text-muted-foreground">Messages longer than this will be summarized</span>
+                          <span className="typography-ui-label text-foreground">{t('Threshold')}</span>
+                          <span
+                              className="typography-meta text-muted-foreground">{t('Messages longer than this will be summarized')}</span>
                       </div>
                       <div className="flex items-center gap-2 w-fit">
                         <NumberInput
@@ -806,8 +812,8 @@ export const NotificationSettings: React.FC = () => {
                           onClick={() => setSummaryThreshold(DEFAULT_SUMMARY_THRESHOLD)}
                           disabled={summaryThreshold === DEFAULT_SUMMARY_THRESHOLD}
                           className="h-7 w-7 px-0 text-muted-foreground hover:text-foreground"
-                          aria-label="Reset threshold"
-                          title="Reset"
+                          aria-label={t('Reset threshold')}
+                          title={t('Reset')}
                         >
                           <RiRestartLine className="h-3.5 w-3.5" />
                         </ButtonSmall>
@@ -815,8 +821,9 @@ export const NotificationSettings: React.FC = () => {
                     </div>
                     <div className="flex items-center gap-8 py-1.5">
                       <div className="flex min-w-0 flex-col w-56 shrink-0">
-                        <span className="typography-ui-label text-foreground">Length</span>
-                        <span className="typography-meta text-muted-foreground">Target character length of the summary</span>
+                          <span className="typography-ui-label text-foreground">{t('Length')}</span>
+                          <span
+                              className="typography-meta text-muted-foreground">{t('Target character length of the summary')}</span>
                       </div>
                       <div className="flex items-center gap-2 w-fit">
                         <NumberInput
@@ -833,8 +840,8 @@ export const NotificationSettings: React.FC = () => {
                           onClick={() => setSummaryLength(DEFAULT_SUMMARY_LENGTH)}
                           disabled={summaryLength === DEFAULT_SUMMARY_LENGTH}
                           className="h-7 w-7 px-0 text-muted-foreground hover:text-foreground"
-                          aria-label="Reset summary length"
-                          title="Reset"
+                          aria-label={t('Reset summary length')}
+                          title={t('Reset')}
                         >
                           <RiRestartLine className="h-3.5 w-3.5" />
                         </ButtonSmall>
@@ -844,7 +851,7 @@ export const NotificationSettings: React.FC = () => {
                 ) : (
                   <div className={cn("py-1.5 mt-1 border-t border-[var(--surface-subtle)]", isMobile ? "flex flex-col gap-3" : "flex items-center gap-8")}>
                     <div className={cn("flex min-w-0 flex-col", isMobile ? "w-full" : "w-56 shrink-0")}>
-                      <span className="typography-ui-label text-foreground">Max Length</span>
+                        <span className="typography-ui-label text-foreground">{t('Max Length')}</span>
                       <span className="typography-meta text-muted-foreground">Truncate {'{last_message}'} to this length</span>
                     </div>
                     <div className={cn("flex items-center gap-2", isMobile ? "w-full" : "w-fit")}>
@@ -862,8 +869,8 @@ export const NotificationSettings: React.FC = () => {
                         onClick={() => setMaxLastMessageLength(DEFAULT_MAX_LAST_MESSAGE_LENGTH)}
                         disabled={maxLastMessageLength === DEFAULT_MAX_LAST_MESSAGE_LENGTH}
                         className="h-7 w-7 px-0 text-muted-foreground hover:text-foreground"
-                        aria-label="Reset max message length"
-                        title="Reset"
+                        aria-label={t('Reset max message length')}
+                        title={t('Reset')}
                       >
                         <RiRestartLine className="h-3.5 w-3.5" />
                       </ButtonSmall>
@@ -896,10 +903,11 @@ export const NotificationSettings: React.FC = () => {
                       void handleDisableBackgroundNotifications();
                     }
                   }}
-                  ariaLabel="Enable push notifications"
+                  ariaLabel={t('Enable push notifications')}
                 />
                 <div className="flex min-w-0 flex-col">
-                  <span className={cn("typography-ui-label", !pushSupported ? "text-muted-foreground" : "text-foreground")}>Enable push notifications</span>
+                    <span
+                        className={cn("typography-ui-label", !pushSupported ? "text-muted-foreground" : "text-foreground")}>{t('Enable push notifications')}</span>
                   <span className="typography-meta text-muted-foreground">
                     {!pushSupported
                       ? "Push not supported. Desktop Chrome/Edge and Android support push. iOS requires an installed PWA."

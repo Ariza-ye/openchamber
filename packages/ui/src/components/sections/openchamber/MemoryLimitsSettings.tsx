@@ -1,17 +1,19 @@
 import React from 'react';
-import { RiInformationLine, RiRestartLine } from '@remixicon/react';
-import { NumberInput } from '@/components/ui/number-input';
-import { ButtonSmall } from '@/components/ui/button-small';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { useUIStore } from '@/stores/useUIStore';
-import { updateDesktopSettings } from '@/lib/persistence';
-import { getRegisteredRuntimeAPIs } from '@/contexts/runtimeAPIRegistry';
-import { DEFAULT_MESSAGE_LIMIT } from '@/stores/types/sessionTypes';
+import {RiInformationLine, RiRestartLine} from '@remixicon/react';
+import {NumberInput} from '@/components/ui/number-input';
+import {ButtonSmall} from '@/components/ui/button-small';
+import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
+import {useUIStore} from '@/stores/useUIStore';
+import {updateDesktopSettings} from '@/lib/persistence';
+import {getRegisteredRuntimeAPIs} from '@/contexts/runtimeAPIRegistry';
+import {DEFAULT_MESSAGE_LIMIT} from '@/stores/types/sessionTypes';
+import {useI18n} from '@/contexts/useI18n';
 
 const MIN_LIMIT = 10;
 const MAX_LIMIT = 500;
 
 export const MemoryLimitsSettings: React.FC = () => {
+    const {t} = useI18n();
   const messageLimit = useUIStore((state) => state.messageLimit);
   const setMessageLimit = useUIStore((state) => state.setMessageLimit);
 
@@ -81,7 +83,7 @@ export const MemoryLimitsSettings: React.FC = () => {
     <div className="mb-8">
       <div className="mb-1 px-1">
         <div className="flex items-center gap-2">
-          <h3 className="typography-ui-header font-medium text-foreground">Message Memory</h3>
+            <h3 className="typography-ui-header font-medium text-foreground">{t('Message Memory')}</h3>
           <Tooltip delayDuration={1000}>
             <TooltipTrigger asChild>
               <RiInformationLine className="h-3.5 w-3.5 text-muted-foreground/60 cursor-help" />
@@ -97,7 +99,7 @@ export const MemoryLimitsSettings: React.FC = () => {
       <section className="px-2 pb-2 pt-0">
         <div className="flex flex-col gap-2 py-1.5 sm:flex-row sm:items-center sm:gap-8">
           <div className="flex min-w-0 flex-col sm:w-56 shrink-0">
-            <span className="typography-ui-label text-foreground">Message Limit</span>
+              <span className="typography-ui-label text-foreground">{t('Message Limit')}</span>
           </div>
           <div className="flex items-center gap-2 sm:w-fit">
             <NumberInput
@@ -106,7 +108,7 @@ export const MemoryLimitsSettings: React.FC = () => {
               min={MIN_LIMIT}
               max={MAX_LIMIT}
               step={10}
-              aria-label="Message limit"
+              aria-label={t('Message limit')}
               className="w-20 tabular-nums"
             />
             <ButtonSmall
@@ -115,8 +117,8 @@ export const MemoryLimitsSettings: React.FC = () => {
               onClick={() => handleChange(DEFAULT_MESSAGE_LIMIT)}
               disabled={isDefault}
               className="h-7 w-7 px-0 text-muted-foreground hover:text-foreground"
-              aria-label="Reset message limit"
-              title="Reset"
+              aria-label={t('Reset message limit')}
+              title={t('Reset')}
             >
               <RiRestartLine className="h-3.5 w-3.5" />
             </ButtonSmall>

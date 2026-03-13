@@ -1,37 +1,49 @@
 import React from 'react';
-import type { Part } from '@opencode-ai/sdk/v2';
+import type {Part, ToolPart as ToolPartType} from '@opencode-ai/sdk/v2';
 
 import UserTextPart from './parts/UserTextPart';
 import ToolPart from './parts/ToolPart';
 import ProgressiveGroup from './parts/ProgressiveGroup';
 import ReasoningPart from './parts/ReasoningPart';
-import { MessageFilesDisplay } from '../FileAttachment';
-import type { ToolPart as ToolPartType } from '@opencode-ai/sdk/v2';
-import type { StreamPhase, ToolPopupContent, AgentMentionInfo } from './types';
-import type { TurnGroupingContext } from '../hooks/useTurnGrouping';
-import { cn } from '@/lib/utils';
-import { isEmptyTextPart, extractTextContent } from './partUtils';
-import { FadeInOnReveal } from './FadeInOnReveal';
-import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { RiCheckLine, RiFileCopyLine, RiChatNewLine, RiArrowGoBackLine, RiGitBranchLine, RiHourglassLine, RiTimeLine, RiVolumeUpLine, RiStopLine, RiImageDownloadLine, RiLoader4Line } from '@remixicon/react';
-import { ArrowsMerge } from '@/components/icons/ArrowsMerge';
-import type { ContentChangeReason } from '@/hooks/useChatScrollManager';
+import {MessageFilesDisplay} from '../FileAttachment';
+import type {AgentMentionInfo, StreamPhase, ToolPopupContent} from './types';
+import type {TurnGroupingContext} from '../hooks/useTurnGrouping';
+import {cn} from '@/lib/utils';
+import {extractTextContent, isEmptyTextPart} from './partUtils';
+import {FadeInOnReveal} from './FadeInOnReveal';
+import {Button} from '@/components/ui/button';
+import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
+import {
+    RiArrowGoBackLine,
+    RiChatNewLine,
+    RiCheckLine,
+    RiFileCopyLine,
+    RiGitBranchLine,
+    RiHourglassLine,
+    RiImageDownloadLine,
+    RiLoader4Line,
+    RiStopLine,
+    RiTimeLine,
+    RiVolumeUpLine
+} from '@remixicon/react';
+import {ArrowsMerge} from '@/components/icons/ArrowsMerge';
+import type {ContentChangeReason} from '@/hooks/useChatScrollManager';
 
-import { SimpleMarkdownRenderer } from '../MarkdownRenderer';
-import { useMessageStore } from '@/stores/messageStore';
-import { useSessionStore } from '@/stores/useSessionStore';
-import { useUIStore } from '@/stores/useUIStore';
-import { flattenAssistantTextParts } from '@/lib/messages/messageText';
-import { MULTIRUN_EXECUTION_FORK_PROMPT_META_TEXT } from '@/lib/messages/executionMeta';
-import { useMessageTTS } from '@/hooks/useMessageTTS';
-import { useConfigStore } from '@/stores/useConfigStore';
-import { TextSelectionMenu } from './TextSelectionMenu';
-import { copyTextToClipboard } from '@/lib/clipboard';
-import { isVSCodeRuntime } from '@/lib/desktop';
-import { toPng } from 'html-to-image';
-import { toast } from '@/components/ui';
-import { formatTimestampForDisplay } from './timeFormat';
+import {SimpleMarkdownRenderer} from '../MarkdownRenderer';
+import {useMessageStore} from '@/stores/messageStore';
+import {useSessionStore} from '@/stores/useSessionStore';
+import {useUIStore} from '@/stores/useUIStore';
+import {flattenAssistantTextParts} from '@/lib/messages/messageText';
+import {MULTIRUN_EXECUTION_FORK_PROMPT_META_TEXT} from '@/lib/messages/executionMeta';
+import {useMessageTTS} from '@/hooks/useMessageTTS';
+import {useConfigStore} from '@/stores/useConfigStore';
+import {TextSelectionMenu} from './TextSelectionMenu';
+import {copyTextToClipboard} from '@/lib/clipboard';
+import {isVSCodeRuntime} from '@/lib/desktop';
+import {toPng} from 'html-to-image';
+import {toast} from '@/components/ui';
+import {formatTimestampForDisplay} from './timeFormat';
+import {useI18n} from '@/contexts/useI18n';
 
 type SubtaskPartLike = Part & {
     type: 'subtask';
@@ -75,6 +87,7 @@ const normalizeSubtaskModel = (model: SubtaskPartLike['model']): string | null =
 const UserSubtaskPart: React.FC<{ part: SubtaskPartLike }> = ({ part }) => {
     const [expanded, setExpanded] = React.useState(false);
     const setCurrentSession = useSessionStore((state) => state.setCurrentSession);
+    const {t} = useI18n();
 
     const description = typeof part.description === 'string' ? part.description.trim() : '';
     const command = typeof part.command === 'string' ? part.command.trim() : '';
@@ -86,7 +99,7 @@ const UserSubtaskPart: React.FC<{ part: SubtaskPartLike }> = ({ part }) => {
     return (
         <div className="mt-2">
             <div className="flex items-center gap-2 flex-wrap">
-                <span className="typography-meta font-semibold text-foreground">Delegated task</span>
+                <span className="typography-meta font-semibold text-foreground">{t('Delegated task')}</span>
                 {command ? (
                     <span className="inline-flex h-5 items-center rounded px-1.5 text-[11px] leading-none bg-foreground/5 text-muted-foreground">
                         /{command}
@@ -117,7 +130,7 @@ const UserSubtaskPart: React.FC<{ part: SubtaskPartLike }> = ({ part }) => {
                         className="typography-meta text-muted-foreground hover:text-foreground transition-colors underline underline-offset-2"
                         onClick={() => setExpanded((value) => !value)}
                     >
-                        {expanded ? 'Hide prompt' : 'Show prompt'}
+                        {expanded ? t('Hide prompt') : t('Show prompt')}
                     </button>
                     {expanded ? (
                         <pre className="typography-meta mt-1.5 overflow-x-auto whitespace-pre-wrap break-words text-foreground/85">
@@ -136,7 +149,7 @@ const UserSubtaskPart: React.FC<{ part: SubtaskPartLike }> = ({ part }) => {
                             void setCurrentSession(taskSessionID);
                         }}
                     >
-                        Open subtask session
+                        {t('Open subtask session')}
                     </button>
                 </div>
             ) : null}
@@ -148,6 +161,7 @@ const UserShellActionPart: React.FC<{ part: ShellActionPartLike }> = ({ part }) 
     const [expanded, setExpanded] = React.useState(false);
     const [copiedOutput, setCopiedOutput] = React.useState(false);
     const copiedResetTimeoutRef = React.useRef<number | null>(null);
+    const {t} = useI18n();
 
     const command = typeof part.shellAction?.command === 'string' ? part.shellAction.command.trim() : '';
     const output = typeof part.shellAction?.output === 'string' ? part.shellAction.output : '';
@@ -186,7 +200,7 @@ const UserShellActionPart: React.FC<{ part: ShellActionPartLike }> = ({ part }) 
     return (
         <div className="mt-2">
             <div className="flex items-center gap-2 flex-wrap">
-                <span className="typography-meta font-semibold text-foreground">Shell command</span>
+                <span className="typography-meta font-semibold text-foreground">{t('Shell command')}</span>
                 {status ? (
                     <span className={cn(
                         'inline-flex h-5 items-center rounded px-1.5 text-[11px] leading-none',
@@ -308,6 +322,7 @@ const UserMessageBody: React.FC<{
 }> = ({ messageId, parts, isMobile, hasTouchInput, hasTextContent, onCopyMessage, copiedMessage, onShowPopup, agentMention, onRevert, onFork, userActionsMode = 'inline', stickyUserHeaderEnabled = true }) => {
     const [copyHintVisible, setCopyHintVisible] = React.useState(false);
     const copyHintTimeoutRef = React.useRef<number | null>(null);
+    const {t} = useI18n();
 
     const userContentParts = React.useMemo(() => {
         return parts.filter((part) => {
@@ -415,7 +430,7 @@ const UserMessageBody: React.FC<{
                                 variant="ghost"
                                 size="icon"
                                 className="h-6 w-6 text-muted-foreground bg-transparent hover:text-foreground hover:!bg-transparent active:!bg-transparent focus-visible:!bg-transparent focus-visible:ring-2 focus-visible:ring-primary/50"
-                                aria-label="Revert to this message"
+                                aria-label={t('Revert to this message')}
                                 onPointerDown={(event) => event.stopPropagation()}
                                 onClick={(event) => {
                                     event.stopPropagation();
@@ -425,7 +440,7 @@ const UserMessageBody: React.FC<{
                                 <RiArrowGoBackLine className="h-3 w-3" />
                             </Button>
                         </TooltipTrigger>
-                        <TooltipContent sideOffset={6}>Revert from here</TooltipContent>
+                        <TooltipContent sideOffset={6}>{t('Revert from here')}</TooltipContent>
                     </Tooltip>
                 )}
                 {onFork && (
@@ -436,7 +451,7 @@ const UserMessageBody: React.FC<{
                                 variant="ghost"
                                 size="icon"
                                 className="h-6 w-6 text-muted-foreground bg-transparent hover:text-foreground hover:!bg-transparent active:!bg-transparent focus-visible:!bg-transparent focus-visible:ring-2 focus-visible:ring-primary/50"
-                                aria-label="Fork from this message"
+                                aria-label={t('Fork from this message')}
                                 onPointerDown={(event) => event.stopPropagation()}
                                 onClick={(event) => {
                                     event.stopPropagation();
@@ -446,7 +461,7 @@ const UserMessageBody: React.FC<{
                                 <RiGitBranchLine className="h-3 w-3" />
                             </Button>
                         </TooltipTrigger>
-                        <TooltipContent sideOffset={6}>Fork from here</TooltipContent>
+                        <TooltipContent sideOffset={6}>{t('Fork from here')}</TooltipContent>
                     </Tooltip>
                 )}
                 {canCopyMessage && hasCopyableText && (
@@ -458,7 +473,7 @@ const UserMessageBody: React.FC<{
                                 size="icon"
                                 data-visible={copyHintVisible || isMessageCopied ? 'true' : undefined}
                                 className="h-6 w-6 text-muted-foreground bg-transparent hover:text-foreground hover:!bg-transparent active:!bg-transparent focus-visible:!bg-transparent focus-visible:ring-2 focus-visible:ring-primary/50"
-                                aria-label="Copy message text"
+                                aria-label={t('Copy message text')}
                                 onPointerDown={(event) => event.stopPropagation()}
                                 onClick={handleCopyButtonClick}
                                 onFocus={() => setCopyHintVisible(true)}
@@ -475,7 +490,7 @@ const UserMessageBody: React.FC<{
                                 )}
                             </Button>
                         </TooltipTrigger>
-                        <TooltipContent sideOffset={6}>Copy message</TooltipContent>
+                        <TooltipContent sideOffset={6}>{t('Copy message')}</TooltipContent>
                     </Tooltip>
                 )}
             </div>
@@ -575,6 +590,7 @@ const AssistantMessageBody: React.FC<Omit<MessageBodyProps, 'isUser'>> = ({
     const [copyHintVisible, setCopyHintVisible] = React.useState(false);
     const copyHintTimeoutRef = React.useRef<number | null>(null);
     const messageContentRef = React.useRef<HTMLDivElement>(null);
+    const {t} = useI18n();
 
     const canCopyMessage = Boolean(onCopyMessage);
     const isMessageCopied = Boolean(copiedMessage);
@@ -610,11 +626,11 @@ const AssistantMessageBody: React.FC<Omit<MessageBodyProps, 'isUser'>> = ({
 
     const readAloudTooltip = React.useMemo(() => {
         if (isTTSPlaying) {
-            return 'Stop speaking';
+            return t('Stop speaking');
         }
         const providerLabel = voiceProvider === 'browser' ? 'Browser' : voiceProvider === 'openai' ? 'OpenAI' : 'Say';
-        return `Read aloud (${providerLabel} voice)`;
-    }, [isTTSPlaying, voiceProvider]);
+        return t('Read aloud ({provider} voice)', {provider: providerLabel});
+    }, [isTTSPlaying, t, voiceProvider]);
 
 
     const hasTools = toolParts.length > 0;
@@ -864,11 +880,10 @@ const AssistantMessageBody: React.FC<Omit<MessageBodyProps, 'isUser'>> = ({
                     contain: none;
                 `;
 
-                const timestampElements = clone.querySelectorAll<HTMLElement>('[aria-label^="Message time:"]');
+                const timestampElements = clone.querySelectorAll<HTMLElement>('[data-message-time]');
                 const footerRowsAdjusted = new Set<HTMLElement>();
                 timestampElements.forEach((element) => {
-                    const label = element.getAttribute('aria-label');
-                    const timestamp = label?.replace('Message time:', '').trim();
+                    const timestamp = element.getAttribute('data-message-time')?.trim();
                     if (!timestamp || element.textContent?.includes(timestamp)) {
                         return;
                     }
@@ -928,10 +943,10 @@ const AssistantMessageBody: React.FC<Omit<MessageBodyProps, 'isUser'>> = ({
                     document.body.removeChild(link);
                 }
 
-                toast.success('Image saved');
+                toast.success(t('Image saved'));
             } catch (error) {
                 console.error('Failed to generate image:', error);
-                toast.error('Failed to generate image');
+                toast.error(t('Failed to generate image'));
             } finally {
                 if (wrapper && wrapper.parentNode) {
                     wrapper.parentNode.removeChild(wrapper);
@@ -939,7 +954,7 @@ const AssistantMessageBody: React.FC<Omit<MessageBodyProps, 'isUser'>> = ({
                 setIsSharing(false);
             }
         },
-        [messageId, isSharing]
+        [messageId, isSharing, t]
     );
 
     React.useEffect(() => {
@@ -1312,7 +1327,7 @@ const AssistantMessageBody: React.FC<Omit<MessageBodyProps, 'isUser'>> = ({
                                   !hasCopyableText && 'opacity-50'
                               )}
                               disabled={!hasCopyableText}
-                              aria-label="Copy message text"
+                              aria-label={t('Copy message text')}
                               aria-hidden={!hasCopyableText}
                               onPointerDown={(event) => event.stopPropagation()}
                               onClick={handleCopyButtonClick}
@@ -1333,10 +1348,10 @@ const AssistantMessageBody: React.FC<Omit<MessageBodyProps, 'isUser'>> = ({
                                   <RiFileCopyLine className="h-3.5 w-3.5" />
                               )}
                           </Button>
-                       </TooltipTrigger>
-                       <TooltipContent sideOffset={6}>Copy answer</TooltipContent>
-                   </Tooltip>
-               )}
+                      </TooltipTrigger>
+                      <TooltipContent sideOffset={6}>{t('Copy answer')}</TooltipContent>
+                  </Tooltip>
+              )}
                <Tooltip delayDuration={1000}>
                    <TooltipTrigger asChild>
                        <Button
@@ -1358,7 +1373,9 @@ const AssistantMessageBody: React.FC<Omit<MessageBodyProps, 'isUser'>> = ({
                             )}
                         </Button>
                     </TooltipTrigger>
-                    <TooltipContent sideOffset={6}>{isSharing ? 'Saving image...' : 'Save as image'}</TooltipContent>
+                   <TooltipContent sideOffset={6}>
+                       {isSharing ? t('Saving image...') : t('Save as image')}
+                   </TooltipContent>
                 </Tooltip>
                <Tooltip delayDuration={1000}>
                    <TooltipTrigger asChild>
@@ -1373,7 +1390,7 @@ const AssistantMessageBody: React.FC<Omit<MessageBodyProps, 'isUser'>> = ({
                            <RiChatNewLine className="h-4 w-4" />
                        </Button>
                    </TooltipTrigger>
-                   <TooltipContent sideOffset={6}>Start new session from this answer</TooltipContent>
+                   <TooltipContent sideOffset={6}>{t('Start new session from this answer')}</TooltipContent>
                </Tooltip>
               <Tooltip delayDuration={1000}>
                   <TooltipTrigger asChild>
@@ -1388,7 +1405,7 @@ const AssistantMessageBody: React.FC<Omit<MessageBodyProps, 'isUser'>> = ({
                           <ArrowsMerge className="h-4 w-4" />
                       </Button>
                   </TooltipTrigger>
-                  <TooltipContent sideOffset={6}>Start new multi-run from this answer</TooltipContent>
+                  <TooltipContent sideOffset={6}>{t('Start new multi-run from this answer')}</TooltipContent>
               </Tooltip>
 
               {showMessageTTSButtons && hasCopyableText && (
@@ -1402,7 +1419,7 @@ const AssistantMessageBody: React.FC<Omit<MessageBodyProps, 'isUser'>> = ({
                                  'h-8 w-8 bg-transparent hover:!bg-transparent active:!bg-transparent focus-visible:!bg-transparent focus-visible:ring-2 focus-visible:ring-primary/50',
                                  isTTSPlaying ? 'text-green-500' : 'text-muted-foreground hover:text-foreground'
                              )}
-                             aria-label={isTTSPlaying ? 'Stop speaking' : 'Read aloud'}
+                             aria-label={isTTSPlaying ? t('Stop speaking') : t('Read aloud')}
                              onPointerDown={(event) => event.stopPropagation()}
                              onClick={handleTTSClick}
                          >
@@ -1466,7 +1483,8 @@ const AssistantMessageBody: React.FC<Omit<MessageBodyProps, 'isUser'>> = ({
                                             {footerTimestamp ? (
                                                 <span
                                                     className={footerTimestampClassName}
-                                                    aria-label={`Message time: ${footerTimestamp}`}
+                                                    data-message-time={footerTimestamp}
+                                                    aria-label={t('Message time: {time}', {time: footerTimestamp})}
                                                 >
                                                     <RiTimeLine className="h-3.5 w-3.5" />
                                                     {footerTimestamp}
@@ -1495,7 +1513,8 @@ const AssistantMessageBody: React.FC<Omit<MessageBodyProps, 'isUser'>> = ({
                             {footerTimestamp ? (
                                 <span
                                     className={footerTimestampClassName}
-                                    aria-label={`Message time: ${footerTimestamp}`}
+                                    data-message-time={footerTimestamp}
+                                    aria-label={t('Message time: {time}', {time: footerTimestamp})}
                                 >
                                     <RiTimeLine className="h-3.5 w-3.5" />
                                     {footerTimestamp}

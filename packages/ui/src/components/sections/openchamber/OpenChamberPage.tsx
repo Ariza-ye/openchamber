@@ -1,20 +1,20 @@
 import React from 'react';
-import { OpenChamberVisualSettings } from './OpenChamberVisualSettings';
-import { AboutSettings } from './AboutSettings';
-import { SessionRetentionSettings } from './SessionRetentionSettings';
-import { MemoryLimitsSettings } from './MemoryLimitsSettings';
-import { DefaultsSettings } from './DefaultsSettings';
-import { GitSettings } from './GitSettings';
-import { NotificationSettings } from './NotificationSettings';
-import { GitHubSettings } from './GitHubSettings';
-import { VoiceSettings } from './VoiceSettings';
-import { TunnelSettings } from './TunnelSettings';
-import { OpenCodeCliSettings } from './OpenCodeCliSettings';
-import { KeyboardShortcutsSettings } from './KeyboardShortcutsSettings';
-import { ScrollableOverlay } from '@/components/ui/ScrollableOverlay';
-import { useDeviceInfo } from '@/lib/device';
-import { isVSCodeRuntime, isWebRuntime } from '@/lib/desktop';
-import type { OpenChamberSection } from './types';
+import {OpenChamberVisualSettings} from './OpenChamberVisualSettings';
+import {AboutSettings} from './AboutSettings';
+import {SessionRetentionSettings} from './SessionRetentionSettings';
+import {MemoryLimitsSettings} from './MemoryLimitsSettings';
+import {DefaultsSettings} from './DefaultsSettings';
+import {GitSettings} from './GitSettings';
+import {NotificationSettings} from './NotificationSettings';
+import {GitHubSettings} from './GitHubSettings';
+import {VoiceSettings} from './VoiceSettings';
+import {TunnelSettings} from './TunnelSettings';
+import {OpenCodeCliSettings} from './OpenCodeCliSettings';
+import {KeyboardShortcutsSettings} from './KeyboardShortcutsSettings';
+import {ScrollableOverlay} from '@/components/ui/ScrollableOverlay';
+import {useDeviceInfo} from '@/lib/device';
+import {isVSCodeRuntime, isWebRuntime} from '@/lib/desktop';
+import type {OpenChamberSection} from './types';
 
 interface OpenChamberPageProps {
     /** Which section to display. If undefined, shows all sections (mobile/legacy behavior) */
@@ -104,6 +104,7 @@ const ShortcutsSectionContent: React.FC = () => {
 const VisualSectionContent: React.FC = () => {
     const isVSCode = isVSCodeRuntime();
     return <OpenChamberVisualSettings visibleSettings={[
+        'language',
         'theme',
         'pwaInstallName',
         'fontSize',

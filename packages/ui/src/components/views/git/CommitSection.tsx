@@ -1,20 +1,12 @@
-import {
-  RiGitCommitLine,
-  RiArrowUpLine,
-  RiAiGenerate2,
-  RiLoader4Line,
-  RiEmotionHappyLine,
-} from '@remixicon/react';
-import {
-  Collapsible,
-  CollapsibleContent,
-} from '@/components/ui/collapsible';
-import { Button } from '@/components/ui/button';
-import { ButtonLarge } from '@/components/ui/button-large';
-import { CommitInput } from './CommitInput';
-import { AIHighlightsBox } from './AIHighlightsBox';
-import { useDeviceInfo } from '@/lib/device';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import {RiAiGenerate2, RiArrowUpLine, RiEmotionHappyLine, RiGitCommitLine, RiLoader4Line,} from '@remixicon/react';
+import {Collapsible, CollapsibleContent,} from '@/components/ui/collapsible';
+import {Button} from '@/components/ui/button';
+import {ButtonLarge} from '@/components/ui/button-large';
+import {CommitInput} from './CommitInput';
+import {AIHighlightsBox} from './AIHighlightsBox';
+import {useDeviceInfo} from '@/lib/device';
+import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
+import {useI18n} from '@/contexts/useI18n';
 
 type CommitAction = 'commit' | 'commitAndPush' | null;
 
@@ -53,6 +45,7 @@ export const CommitSection: React.FC<CommitSectionProps> = ({
   onOpenGitmojiPicker,
   variant = 'framed',
 }) => {
+    const {t} = useI18n();
   const hasSelectedFiles = selectedCount > 0;
   const canCommit = commitMessage.trim() && hasSelectedFiles && commitAction === null;
   const { isMobile, hasTouchInput } = useDeviceInfo();
@@ -102,7 +95,7 @@ export const CommitSection: React.FC<CommitSectionProps> = ({
           <CommitInput
             value={commitMessage}
             onChange={onCommitMessageChange}
-            placeholder="Commit message"
+            placeholder={t('Commit message')}
             disabled={commitAction !== null}
             hasTouchInput={hasTouchInput}
             isMobile={isMobile}
@@ -133,7 +126,7 @@ export const CommitSection: React.FC<CommitSectionProps> = ({
                 isBusy
               }
               type="button"
-              aria-label="Generate"
+              aria-label={t('Generate')}
               className="commit-actions__btn"
             >
               {isGeneratingMessage ? (
@@ -151,7 +144,7 @@ export const CommitSection: React.FC<CommitSectionProps> = ({
               onClick={onCommit}
               disabled={!canCommit || isGeneratingMessage}
               className="commit-actions__btn whitespace-nowrap"
-              aria-label="Commit"
+              aria-label={t('Commit')}
             >
               {commitAction === 'commit' ? (
                 <>
@@ -175,7 +168,7 @@ export const CommitSection: React.FC<CommitSectionProps> = ({
                       onClick={() => onCommitAndPush()}
                       disabled={!canCommit || isGeneratingMessage}
                       className="h-7 w-7 p-0"
-                      aria-label="Push"
+                      aria-label={t('Push')}
                     >
                     {commitAction === 'commitAndPush' ? (
                       <RiLoader4Line className="size-4 animate-spin" />
@@ -194,7 +187,7 @@ export const CommitSection: React.FC<CommitSectionProps> = ({
                 onClick={() => onCommitAndPush()}
                 disabled={!canCommit || isGeneratingMessage}
                 className="commit-actions__btn"
-                aria-label="Push"
+                aria-label={t('Push')}
               >
                 {commitAction === 'commitAndPush' ? (
                   <>

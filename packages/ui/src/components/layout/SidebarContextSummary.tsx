@@ -1,18 +1,19 @@
 import React from 'react';
-import { useSessionStore } from '@/stores/useSessionStore';
-import { useDirectoryStore } from '@/stores/useDirectoryStore';
-import { cn } from '@/lib/utils';
+import {useSessionStore} from '@/stores/useSessionStore';
+import {useDirectoryStore} from '@/stores/useDirectoryStore';
+import {cn} from '@/lib/utils';
+import {useI18n} from '@/contexts/useI18n';
 
 interface SidebarContextSummaryProps {
     className?: string;
 }
 
-const formatSessionTitle = (title?: string | null) => {
+const formatSessionTitle = (title: string | null | undefined, fallback: string) => {
     if (!title) {
-        return 'Untitled Session';
+        return fallback;
     }
     const trimmed = title.trim();
-    return trimmed.length > 0 ? trimmed : 'Untitled Session';
+    return trimmed.length > 0 ? trimmed : fallback;
 };
 
 const formatDirectoryPath = (path?: string) => {
@@ -23,17 +24,19 @@ const formatDirectoryPath = (path?: string) => {
 };
 
 export const SidebarContextSummary: React.FC<SidebarContextSummaryProps> = ({ className }) => {
+    const {t} = useI18n();
     const currentSessionId = useSessionStore((state) => state.currentSessionId);
     const sessions = useSessionStore((state) => state.sessions);
     const { currentDirectory } = useDirectoryStore();
+    const untitledSessionLabel = t('Untitled Session');
 
     const activeSessionTitle = React.useMemo(() => {
         if (!currentSessionId) {
-            return 'No active session';
+            return t('No active session');
         }
         const session = sessions.find((item) => item.id === currentSessionId);
-        return session ? formatSessionTitle(session.title) : 'No active session';
-    }, [currentSessionId, sessions]);
+        return session ? formatSessionTitle(session.title, untitledSessionLabel) : t('No active session');
+    }, [currentSessionId, sessions, t, untitledSessionLabel]);
 
     const directoryFull = React.useMemo(() => {
         return formatDirectoryPath(currentDirectory);
@@ -49,7 +52,7 @@ export const SidebarContextSummary: React.FC<SidebarContextSummaryProps> = ({ cl
 
     return (
         <div className={cn('hidden min-h-[48px] flex-col justify-center gap-0.5 border-b bg-sidebar/60 px-3 py-2 backdrop-blur md:flex md:pb-2', className)}>
-            <span className="typography-meta text-muted-foreground">Session</span>
+            <span className="typography-meta text-muted-foreground">{t('Session')}</span>
             <span className="typography-ui-label font-semibold text-foreground truncate" title={activeSessionTitle}>
                 {activeSessionTitle}
             </span>

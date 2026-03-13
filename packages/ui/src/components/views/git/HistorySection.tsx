@@ -1,20 +1,11 @@
 import React from 'react';
-import { RiArrowUpSLine, RiArrowDownSLine } from '@remixicon/react';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { ScrollableOverlay } from '@/components/ui/ScrollableOverlay';
-import { HistoryCommitRow } from './HistoryCommitRow';
-import type { GitLogEntry, CommitFileEntry } from '@/lib/api/types';
+import {RiArrowDownSLine, RiArrowUpSLine} from '@remixicon/react';
+import {Collapsible, CollapsibleContent, CollapsibleTrigger,} from '@/components/ui/collapsible';
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue,} from '@/components/ui/select';
+import {ScrollableOverlay} from '@/components/ui/ScrollableOverlay';
+import {HistoryCommitRow} from './HistoryCommitRow';
+import type {CommitFileEntry, GitLogEntry} from '@/lib/api/types';
+import {useI18n} from '@/contexts/useI18n';
 
 const LOG_SIZE_OPTIONS = [
   { label: '25 commits', value: 25 },
@@ -47,6 +38,7 @@ export const HistorySection: React.FC<HistorySectionProps> = ({
   onCopyHash,
   showHeader = true,
 }) => {
+    const {t} = useI18n();
   const [isOpen, setIsOpen] = React.useState(true);
 
   if (!log) {
@@ -111,7 +103,7 @@ export const HistorySection: React.FC<HistorySectionProps> = ({
                   className="data-[size=sm]:h-auto h-7 min-h-7 w-auto justify-between px-2 py-0"
                   disabled={isLogLoading}
                 >
-                  <SelectValue placeholder="Commits" />
+                    <SelectValue placeholder={t('Commits')}/>
                 </SelectTrigger>
                 <SelectContent>
                   {LOG_SIZE_OPTIONS.map((option) => (

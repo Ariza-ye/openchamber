@@ -1,10 +1,11 @@
 import React from 'react';
-import { createPortal } from 'react-dom';
-import { useSessionStore } from '@/stores/useSessionStore';
-import { useUIStore } from '@/stores/useUIStore';
-import { RiChatNewLine, RiAddLine, RiFileCopyLine } from '@remixicon/react';
-import { cn } from '@/lib/utils';
-import { copyTextToClipboard } from '@/lib/clipboard';
+import {createPortal} from 'react-dom';
+import {useSessionStore} from '@/stores/useSessionStore';
+import {useUIStore} from '@/stores/useUIStore';
+import {RiAddLine, RiChatNewLine, RiFileCopyLine} from '@remixicon/react';
+import {cn} from '@/lib/utils';
+import {copyTextToClipboard} from '@/lib/clipboard';
+import {useI18n} from '@/contexts/useI18n';
 
 interface TextSelectionMenuProps {
   containerRef: React.RefObject<HTMLElement | null>;
@@ -32,6 +33,7 @@ export const TextSelectionMenu: React.FC<TextSelectionMenuProps> = ({ containerR
   const createSession = useSessionStore((state) => state.createSession);
   const setPendingInputText = useSessionStore((state) => state.setPendingInputText);
   const isMobile = useUIStore((state) => state.isMobile);
+    const {t} = useI18n();
 
   React.useEffect(() => {
     isMenuVisibleRef.current = position.show;
@@ -313,7 +315,7 @@ export const TextSelectionMenu: React.FC<TextSelectionMenuProps> = ({ containerR
           type="button"
         >
           <RiAddLine className="h-5 w-5" />
-          <span>Add to chat</span>
+            <span>{t('Add to chat')}</span>
         </button>
         
         <button
@@ -328,7 +330,7 @@ export const TextSelectionMenu: React.FC<TextSelectionMenuProps> = ({ containerR
           type="button"
         >
           <RiChatNewLine className="h-5 w-5" />
-          <span>New session</span>
+            <span>{t('New session')}</span>
         </button>
         
         <button
@@ -343,7 +345,7 @@ export const TextSelectionMenu: React.FC<TextSelectionMenuProps> = ({ containerR
           type="button"
         >
           <RiFileCopyLine className="h-5 w-5" />
-          <span>Copy</span>
+            <span>{t('Copy')}</span>
         </button>
       </div>,
       document.body
@@ -380,11 +382,11 @@ export const TextSelectionMenu: React.FC<TextSelectionMenuProps> = ({ containerR
             'hover:bg-[var(--interactive-hover)]',
             'transition-colors duration-150'
           )}
-          title="Add to current chat"
+          title={t('Add to current chat')}
           type="button"
         >
           <RiAddLine className="h-4 w-4" />
-          <span className="whitespace-nowrap">Add to chat</span>
+            <span className="whitespace-nowrap">{t('Add to chat')}</span>
         </button>
       
         <div className="w-px h-4 bg-[var(--interactive-border)]" />
@@ -398,11 +400,11 @@ export const TextSelectionMenu: React.FC<TextSelectionMenuProps> = ({ containerR
             'hover:bg-[var(--interactive-hover)]',
             'transition-colors duration-150'
           )}
-          title="Create new session with selection"
+          title={t('Create new session with selection')}
           type="button"
         >
           <RiChatNewLine className="h-4 w-4" />
-          <span className="whitespace-nowrap">New session</span>
+            <span className="whitespace-nowrap">{t('New session')}</span>
         </button>
       </div>
     </div>,

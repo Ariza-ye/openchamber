@@ -1,24 +1,26 @@
 import React from 'react';
-import { RiAddLine, RiCloseLine, RiDeleteBinLine, RiInformationLine } from '@remixicon/react';
-import { ButtonSmall } from '@/components/ui/button-small';
-import { Input } from '@/components/ui/input';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { useProjectsStore } from '@/stores/useProjectsStore';
-import { useSessionStore } from '@/stores/useSessionStore';
-import { useDirectoryStore } from '@/stores/useDirectoryStore';
-import { useDeviceInfo } from '@/lib/device';
-import { checkIsGitRepository } from '@/lib/gitApi';
-import { getWorktreeSetupCommands, saveWorktreeSetupCommands } from '@/lib/openchamberConfig';
-import { listProjectWorktrees } from '@/lib/worktrees/worktreeManager';
-import { sessionEvents } from '@/lib/sessionEvents';
-import type { WorktreeMetadata } from '@/types/worktree';
-import { formatPathForDisplay, cn } from '@/lib/utils';
+import {RiAddLine, RiCloseLine, RiDeleteBinLine, RiInformationLine} from '@remixicon/react';
+import {ButtonSmall} from '@/components/ui/button-small';
+import {Input} from '@/components/ui/input';
+import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
+import {useProjectsStore} from '@/stores/useProjectsStore';
+import {useSessionStore} from '@/stores/useSessionStore';
+import {useDirectoryStore} from '@/stores/useDirectoryStore';
+import {useDeviceInfo} from '@/lib/device';
+import {checkIsGitRepository} from '@/lib/gitApi';
+import {getWorktreeSetupCommands, saveWorktreeSetupCommands} from '@/lib/openchamberConfig';
+import {listProjectWorktrees} from '@/lib/worktrees/worktreeManager';
+import {sessionEvents} from '@/lib/sessionEvents';
+import type {WorktreeMetadata} from '@/types/worktree';
+import {cn, formatPathForDisplay} from '@/lib/utils';
+import {useI18n} from '@/contexts/useI18n';
 
 export interface WorktreeSectionContentProps {
   projectRef?: { id: string; path: string } | null;
 }
 
 export const WorktreeSectionContent: React.FC<WorktreeSectionContentProps> = ({ projectRef: projectRefProp = null }) => {
+    const {t} = useI18n();
   const { isMobile } = useDeviceInfo();
   const activeProject = useProjectsStore((state) => state.getActiveProject());
 
@@ -268,7 +270,7 @@ export const WorktreeSectionContent: React.FC<WorktreeSectionContentProps> = ({ 
       <div className="space-y-2">
         <div className="mb-1 px-1">
           <div className="flex items-center gap-2">
-            <h3 className="typography-ui-header font-normal text-foreground">Setup commands</h3>
+              <h3 className="typography-ui-header font-normal text-foreground">{t('Setup commands')}</h3>
             <Tooltip delayDuration={1000}>
               <TooltipTrigger asChild>
                 <RiInformationLine className="h-3.5 w-3.5 text-muted-foreground/60 cursor-help" />
@@ -282,7 +284,7 @@ export const WorktreeSectionContent: React.FC<WorktreeSectionContentProps> = ({ 
         </div>
 
         {isLoadingCommands ? (
-          <p className="typography-meta text-muted-foreground px-1">Loading...</p>
+            <p className="typography-meta text-muted-foreground px-1">{t('Loading...')}</p>
         ) : (
           <div className="space-y-2 px-1">
             {setupCommands.map((command, index) => (
@@ -300,7 +302,7 @@ export const WorktreeSectionContent: React.FC<WorktreeSectionContentProps> = ({ 
                     handleRemoveCommand(index);
                     }}
                     className="flex-shrink-0 flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
-                    aria-label="Remove command"
+                    aria-label={t('Remove command')}
                   >
                   <RiCloseLine className="h-4 w-4" />
                 </button>
@@ -324,7 +326,7 @@ export const WorktreeSectionContent: React.FC<WorktreeSectionContentProps> = ({ 
       <div className="space-y-2 border-t border-border/40 pt-4">
         <div className="mb-1 px-1">
           <div className="flex items-center gap-2">
-            <h3 className="typography-ui-header font-normal text-foreground">Existing worktrees</h3>
+              <h3 className="typography-ui-header font-normal text-foreground">{t('Existing worktrees')}</h3>
             <Tooltip delayDuration={1000}>
               <TooltipTrigger asChild>
                 <RiInformationLine className="h-3.5 w-3.5 text-muted-foreground/60 cursor-help" />
@@ -337,7 +339,7 @@ export const WorktreeSectionContent: React.FC<WorktreeSectionContentProps> = ({ 
         </div>
 
         {isLoadingWorktrees ? (
-          <p className="typography-meta text-muted-foreground px-1">Loading worktrees...</p>
+            <p className="typography-meta text-muted-foreground px-1">{t('Loading worktrees...')}</p>
         ) : availableWorktrees.length === 0 ? (
           <p className="typography-meta text-muted-foreground/70 px-1">
             No worktrees found for this project

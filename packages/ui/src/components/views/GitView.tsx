@@ -1,66 +1,54 @@
 import React from 'react';
-import { useSessionStore } from '@/stores/useSessionStore';
-import { useConfigStore } from '@/stores/useConfigStore';
-import { useFireworksCelebration } from '@/contexts/FireworksContext';
-import type { GitIdentityProfile, CommitFileEntry } from '@/lib/api/types';
-import { useGitIdentitiesStore } from '@/stores/useGitIdentitiesStore';
-import { useEffectiveDirectory } from '@/hooks/useEffectiveDirectory';
-import { copyTextToClipboard } from '@/lib/clipboard';
+import {useSessionStore} from '@/stores/useSessionStore';
+import {useConfigStore} from '@/stores/useConfigStore';
+import {useFireworksCelebration} from '@/contexts/FireworksContext';
+import type {CommitFileEntry, GitIdentityProfile} from '@/lib/api/types';
+import {useGitIdentitiesStore} from '@/stores/useGitIdentitiesStore';
+import {useEffectiveDirectory} from '@/hooks/useEffectiveDirectory';
+import {copyTextToClipboard} from '@/lib/clipboard';
+import {useI18n} from '@/contexts/useI18n';
 import {
-  useGitStore,
-  useGitStatus,
   useGitBranches,
-  useGitLog,
   useGitIdentity,
+  useGitLog,
+  useGitStatus,
+  useGitStore,
   useIsGitRepo,
 } from '@/stores/useGitStore';
-import { ScrollableOverlay } from '@/components/ui/ScrollableOverlay';
-import { ScrollShadow } from '@/components/ui/ScrollShadow';
+import {ScrollableOverlay} from '@/components/ui/ScrollableOverlay';
+import {ScrollShadow} from '@/components/ui/ScrollShadow';
 import {
   RiGitBranchLine,
-  RiGitMergeLine,
   RiGitCommitLine,
+  RiGitMergeLine,
   RiGitPullRequestLine,
   RiLoader4Line,
   RiSplitCellsHorizontal,
 } from '@remixicon/react';
-import { toast } from '@/components/ui';
-import { SortableTabsStrip } from '@/components/ui/sortable-tabs-strip';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import {toast} from '@/components/ui';
+import {SortableTabsStrip} from '@/components/ui/sortable-tabs-strip';
+import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,} from '@/components/ui/dialog';
 // (dropdown menu used inside IntegrateCommitsSection)
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@/components/ui/command';
+import {Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList,} from '@/components/ui/command';
 
-import { useRuntimeAPIs } from '@/hooks/useRuntimeAPIs';
-import { useUIStore } from '@/stores/useUIStore';
-import { IntegrateCommitsSection } from './git/IntegrateCommitsSection';
+import {useRuntimeAPIs} from '@/hooks/useRuntimeAPIs';
+import {useUIStore} from '@/stores/useUIStore';
+import {IntegrateCommitsSection} from './git/IntegrateCommitsSection';
 
-import { GitHeader } from './git/GitHeader';
-import { ChangesSection } from './git/ChangesSection';
-import { CommitSection } from './git/CommitSection';
-import { GitEmptyState } from './git/GitEmptyState';
-import { HistorySection } from './git/HistorySection';
-import { PullRequestSection } from './git/PullRequestSection';
-import { ConflictDialog } from './git/ConflictDialog';
-import { StashDialog } from './git/StashDialog';
-import { InProgressOperationBanner } from './git/InProgressOperationBanner';
-import { BranchIntegrationSection, type OperationLogEntry } from './git/BranchIntegrationSection';
-import type { GitRemote } from '@/lib/gitApi';
-import { getRootBranch } from '@/lib/worktrees/worktreeStatus';
-import { cn } from '@/lib/utils';
-import { generateCommitMessage as generateSessionCommitMessage } from '@/lib/gitApi';
+import {GitHeader} from './git/GitHeader';
+import {ChangesSection} from './git/ChangesSection';
+import {CommitSection} from './git/CommitSection';
+import {GitEmptyState} from './git/GitEmptyState';
+import {HistorySection} from './git/HistorySection';
+import {PullRequestSection} from './git/PullRequestSection';
+import {ConflictDialog} from './git/ConflictDialog';
+import {StashDialog} from './git/StashDialog';
+import {InProgressOperationBanner} from './git/InProgressOperationBanner';
+import {BranchIntegrationSection, type OperationLogEntry} from './git/BranchIntegrationSection';
+import type {GitRemote} from '@/lib/gitApi';
+import {generateCommitMessage as generateSessionCommitMessage} from '@/lib/gitApi';
+import {getRootBranch} from '@/lib/worktrees/worktreeStatus';
+import {cn} from '@/lib/utils';
 
 type SyncAction = 'fetch' | 'pull' | 'push' | null;
 type CommitAction = 'commit' | 'commitAndPush' | null;
@@ -216,6 +204,7 @@ const normalizePath = (value?: string | null): string =>
   (value || '').replace(/\\/g, '/').replace(/\/+$/, '');
 
 export const GitView: React.FC = () => {
+    const {t} = useI18n();
   const { git } = useRuntimeAPIs();
   const currentDirectory = useEffectiveDirectory();
   const {
@@ -1968,7 +1957,7 @@ export const GitView: React.FC = () => {
           </DialogHeader>
           <Command className="h-[420px]">
             <CommandInput
-              placeholder="Search gitmojis..."
+                placeholder={t('Search gitmojis...')}
               value={gitmojiSearch}
               onValueChange={setGitmojiSearch}
             />

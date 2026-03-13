@@ -1,7 +1,8 @@
 import React from 'react';
-import { useProjectsStore } from '@/stores/useProjectsStore';
-import { isDesktopShell, isTauriShell } from '@/lib/desktop';
-import { desktopHostsGet, locationMatchesHost, redactSensitiveUrl } from '@/lib/desktopHosts';
+import {useProjectsStore} from '@/stores/useProjectsStore';
+import {isDesktopShell, isTauriShell} from '@/lib/desktop';
+import {desktopHostsGet, locationMatchesHost, redactSensitiveUrl} from '@/lib/desktopHosts';
+import {useI18n} from '@/contexts/useI18n';
 
 const APP_TITLE = 'OpenChamber';
 
@@ -21,6 +22,7 @@ const buildWindowTitle = (projectLabel: string | null, instanceLabel: string | n
 };
 
 export const useWindowTitle = () => {
+    const {t} = useI18n();
   const activeProject = useProjectsStore((state) => {
     if (!state.activeProjectId) {
       return null;
@@ -70,13 +72,13 @@ export const useWindowTitle = () => {
 
         const cfg = await desktopHostsGet();
         const match = cfg.hosts.find((host) => locationMatchesHost(currentHref, host.url));
-        const nextLabel = match?.label?.trim() ? redactSensitiveUrl(match.label.trim()) : 'Instance';
+          const nextLabel = match?.label?.trim() ? redactSensitiveUrl(match.label.trim()) : t('Instance');
         if (!cancelled) {
           setInstanceLabel(nextLabel);
         }
       } catch {
         if (!cancelled) {
-          setInstanceLabel('Instance');
+            setInstanceLabel(t('Instance'));
         }
       }
     };
@@ -92,7 +94,7 @@ export const useWindowTitle = () => {
       cancelled = true;
       window.removeEventListener('focus', handleFocus);
     };
-  }, []);
+  }, [t]);
 
   const title = React.useMemo(() => buildWindowTitle(projectLabel, instanceLabel), [projectLabel, instanceLabel]);
 

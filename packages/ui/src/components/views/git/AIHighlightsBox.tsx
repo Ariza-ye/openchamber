@@ -1,7 +1,8 @@
 import React from 'react';
-import { RiArrowDownLine } from '@remixicon/react';
-import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import {RiArrowDownLine} from '@remixicon/react';
+import {Button} from '@/components/ui/button';
+import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
+import {useI18n} from '@/contexts/useI18n';
 
 interface AIHighlightsBoxProps {
   highlights: string[];
@@ -14,6 +15,7 @@ export const AIHighlightsBox: React.FC<AIHighlightsBoxProps> = ({
   onInsert,
   onClear,
 }) => {
+    const {t} = useI18n();
   if (highlights.length === 0) {
     return null;
   }
@@ -26,7 +28,7 @@ export const AIHighlightsBox: React.FC<AIHighlightsBoxProps> = ({
   return (
     <div className="space-y-2 rounded-xl border border-border/60 bg-transparent px-3 py-2">
       <div className="flex items-center justify-between gap-2">
-        <p className="typography-micro text-muted-foreground">AI highlights</p>
+          <p className="typography-micro text-muted-foreground">{t('AI highlights')}</p>
         <Tooltip delayDuration={1000}>
           <TooltipTrigger asChild>
             <Button
@@ -34,13 +36,13 @@ export const AIHighlightsBox: React.FC<AIHighlightsBoxProps> = ({
               size="icon"
               className="size-6"
               onClick={handleInsert}
-              aria-label="Insert highlights into commit message"
+              aria-label={t('Insert highlights into commit message')}
             >
               <RiArrowDownLine className="size-4" />
             </Button>
           </TooltipTrigger>
           <TooltipContent sideOffset={8}>
-            Append highlights to commit message
+              {t('Append highlights to commit message')}
           </TooltipContent>
         </Tooltip>
       </div>

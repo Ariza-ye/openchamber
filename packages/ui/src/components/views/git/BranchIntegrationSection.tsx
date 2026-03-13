@@ -1,13 +1,13 @@
 import React from 'react';
 import {
-  RiGitMergeLine,
-  RiGitBranchLine,
-  RiLoader4Line,
   RiArrowDownSLine,
   RiCheckLine,
   RiCloseLine,
+  RiGitBranchLine,
+  RiGitMergeLine,
+  RiLoader4Line,
 } from '@remixicon/react';
-import { Button } from '@/components/ui/button';
+import {Button} from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -16,11 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import {DropdownMenu, DropdownMenuContent, DropdownMenuTrigger,} from '@/components/ui/dropdown-menu';
 import {
   Command,
   CommandEmpty,
@@ -30,8 +26,9 @@ import {
   CommandList,
   CommandSeparator,
 } from '@/components/ui/command';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { cn } from '@/lib/utils';
+import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
+import {cn} from '@/lib/utils';
+import {useI18n} from '@/contexts/useI18n';
 
 type OperationType = 'merge' | 'rebase';
 
@@ -66,6 +63,7 @@ export const BranchIntegrationSection: React.FC<BranchIntegrationSectionProps> =
   onOperationComplete,
   mode = 'dialog',
 }) => {
+    const {t} = useI18n();
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [operation, setOperation] = React.useState<OperationType>('merge');
   const [selectedBranch, setSelectedBranch] = React.useState<string | null>(null);
@@ -298,7 +296,7 @@ export const BranchIntegrationSection: React.FC<BranchIntegrationSectionProps> =
             <Command className="h-full min-h-0">
               <CommandInput
                 ref={searchInputRef}
-                placeholder="Search branches..."
+                placeholder={t('Search branches...')}
                 value={branchSearch}
                 onValueChange={setBranchSearch}
               />

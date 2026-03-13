@@ -9,16 +9,39 @@ import {
   CommandSeparator,
   CommandShortcut,
 } from '@/components/ui/command';
-import { useUIStore } from '@/stores/useUIStore';
-import { useSessionStore } from '@/stores/useSessionStore';
-import { useDirectoryStore } from '@/stores/useDirectoryStore';
-import { useThemeSystem } from '@/contexts/useThemeSystem';
-import { useDeviceInfo } from '@/lib/device';
-import { RiAddLine, RiChatAi3Line, RiCheckLine, RiCodeLine, RiComputerLine, RiGitBranchLine, RiLayoutLeftLine, RiLayoutRightLine, RiMoonLine, RiQuestionLine, RiSettings3Line, RiSunLine, RiTerminalBoxLine, RiTimeLine } from '@remixicon/react';
-import { createWorktreeSession } from '@/lib/worktreeSessionCreator';
-import { formatShortcutForDisplay, getEffectiveShortcutCombo } from '@/lib/shortcuts';
-import { isDesktopShell, isVSCodeRuntime, isWebRuntime } from '@/lib/desktop';
-import { SETTINGS_PAGE_METADATA, SETTINGS_GROUP_LABELS, type SettingsRuntimeContext } from '@/lib/settings/metadata';
+import {useUIStore} from '@/stores/useUIStore';
+import {useSessionStore} from '@/stores/useSessionStore';
+import {useDirectoryStore} from '@/stores/useDirectoryStore';
+import {useThemeSystem} from '@/contexts/useThemeSystem';
+import {useI18n} from '@/contexts/useI18n';
+import {useDeviceInfo} from '@/lib/device';
+import {
+  RiAddLine,
+  RiChatAi3Line,
+  RiCheckLine,
+  RiCodeLine,
+  RiComputerLine,
+  RiGitBranchLine,
+  RiLayoutLeftLine,
+  RiLayoutRightLine,
+  RiMoonLine,
+  RiQuestionLine,
+  RiSettings3Line,
+  RiSunLine,
+  RiTerminalBoxLine,
+  RiTimeLine
+} from '@remixicon/react';
+import {createWorktreeSession} from '@/lib/worktreeSessionCreator';
+import {formatShortcutForDisplay, getEffectiveShortcutCombo} from '@/lib/shortcuts';
+import {isDesktopShell, isVSCodeRuntime, isWebRuntime} from '@/lib/desktop';
+import {
+  getSettingsGroupLabel,
+  getSettingsPageTitle,
+  SETTINGS_PAGE_METADATA,
+  type SettingsPageGroup,
+  type SettingsPageMeta,
+  type SettingsRuntimeContext
+} from '@/lib/settings/metadata';
 
 export const CommandPalette: React.FC = () => {
   const {
@@ -48,6 +71,7 @@ export const CommandPalette: React.FC = () => {
 
   const { currentDirectory } = useDirectoryStore();
   const { themeMode, setThemeMode } = useThemeSystem();
+    const {t} = useI18n();
 
   const handleClose = () => {
     setCommandPaletteOpen(false);
@@ -130,15 +154,16 @@ export const CommandPalette: React.FC = () => {
   }, [settingsRuntimeCtx]);
 
   const settingsItems = React.useMemo(() => {
-    const groupLabel = (group: string) => (SETTINGS_GROUP_LABELS as Record<string, string>)[group] ?? group;
+      const groupLabel = (group: SettingsPageGroup) => getSettingsGroupLabel(group, t);
+      const titleFor = (page: SettingsPageMeta) => getSettingsPageTitle(page, t);
     return settingsPages
       .slice()
       .sort((a, b) => {
         const g = groupLabel(a.group).localeCompare(groupLabel(b.group));
         if (g !== 0) return g;
-        return a.title.localeCompare(b.title);
+          return titleFor(a).localeCompare(titleFor(b));
       });
-  }, [settingsPages]);
+  }, [settingsPages, t]);
 
   const handleToggleRightSidebar = () => {
     toggleRightSidebar();
@@ -272,7 +297,7 @@ export const CommandPalette: React.FC = () => {
           {settingsItems.map((page) => (
             <CommandItem key={page.slug} onSelect={() => handleOpenSettingsPage(page.slug)}>
               <RiSettings3Line className="mr-2 h-4 w-4" />
-              <span>{SETTINGS_GROUP_LABELS[page.group]}: {page.title}</span>
+                <span>{getSettingsGroupLabel(page.group, t)}: {getSettingsPageTitle(page, t)}</span>
             </CommandItem>
           ))}
         </CommandGroup>
