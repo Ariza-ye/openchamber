@@ -2731,6 +2731,7 @@ const commands = {
 
     const child = spawn(runtimeBin, serverArgs, {
       detached: true,
+      windowsHide: true,
       stdio: ['ignore', logFd, logFd, 'ipc'],
       env: {
         ...process.env,
@@ -4615,7 +4616,7 @@ async function main() {
   await commands[command](options);
 }
 
-const isCliExecution = isModuleCliExecution();
+const isCliExecution = isModuleCliExecution(process.argv[1], import.meta.url, fs.realpathSync, 'openchamber');
 
 if (isCliExecution) {
   let isHandlingSigint = false;
