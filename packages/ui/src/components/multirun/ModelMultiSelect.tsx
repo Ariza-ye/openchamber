@@ -7,6 +7,7 @@ import { ScrollableOverlay } from '@/components/ui/ScrollableOverlay';
 import { ProviderLogo } from '@/components/ui/ProviderLogo';
 import { cn } from '@/lib/utils';
 import { isIMECompositionEvent } from '@/lib/ime';
+import { useI18n } from '@/contexts/useI18n';
 import { useConfigStore } from '@/stores/useConfigStore';
 import { useModelLists } from '@/hooks/useModelLists';
 import type { ModelMetadata } from '@/types';
@@ -108,10 +109,12 @@ export const ModelMultiSelect: React.FC<ModelMultiSelectProps> = ({
   onRemove,
   onUpdate,
   minModels,
-  addButtonLabel = 'Add model',
+  addButtonLabel,
   showChips = true,
   maxModels,
 }) => {
+  const { t } = useI18n();
+  const resolvedAddButtonLabel = addButtonLabel ?? t('Add model');
   const { providers, modelsMetadata } = useConfigStore();
   const { favoriteModelsList, recentModelsList } = useModelLists();
   const [isOpen, setIsOpen] = React.useState(false);
@@ -312,7 +315,7 @@ export const ModelMultiSelect: React.FC<ModelMultiSelectProps> = ({
             onClick={() => setIsOpen(!isOpen)}
           >
             <RiAddLine className="h-3.5 w-3.5 mr-1" />
-            {addButtonLabel}
+            {resolvedAddButtonLabel}
           </Button>
 
           {isOpen && (() => {
@@ -387,7 +390,7 @@ export const ModelMultiSelect: React.FC<ModelMultiSelectProps> = ({
                     <Input
                       ref={searchInputRef}
                       type="text"
-                      placeholder="Search models"
+                      placeholder={t('Search models')}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       onKeyDown={handleKeyDown}
@@ -404,7 +407,7 @@ export const ModelMultiSelect: React.FC<ModelMultiSelectProps> = ({
                   <div className="p-1">
                     {!hasResults && (
                       <div className="px-2 py-4 text-center typography-meta text-muted-foreground">
-                        No models found
+                        {t('No models found')}
                       </div>
                     )}
 
@@ -416,7 +419,7 @@ export const ModelMultiSelect: React.FC<ModelMultiSelectProps> = ({
                           className="typography-micro font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2 -mx-1 px-3 py-1.5 sticky top-0 z-10 border-b border-border/30"
                         >
                           <RiStarFill className="h-4 w-4 text-primary" />
-                          Favorites
+                          {t('Favorites')}
                         </div>
                         {filteredFavorites.map(({ model, providerID, modelID }) => {
                           const idx = currentFlatIndex++;
@@ -434,7 +437,7 @@ export const ModelMultiSelect: React.FC<ModelMultiSelectProps> = ({
                           className="typography-micro font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2 -mx-1 px-3 py-1.5 sticky top-0 z-10 border-b border-border/30"
                         >
                           <RiTimeLine className="h-4 w-4" />
-                          Recent
+                          {t('Recent')}
                         </div>
                         {filteredRecents.map(({ model, providerID, modelID }) => {
                           const idx = currentFlatIndex++;
@@ -470,7 +473,7 @@ export const ModelMultiSelect: React.FC<ModelMultiSelectProps> = ({
 
                 {/* Keyboard hints footer */}
                 <div className="px-3 pt-1 pb-1.5 border-t border-border/40 typography-micro text-muted-foreground">
-                  ↑↓ navigate • Enter select • Esc close
+                  {t('↑↓ navigate • Enter select • Esc close')}
                 </div>
               </div>
             );
@@ -520,11 +523,11 @@ export const ModelMultiSelect: React.FC<ModelMultiSelectProps> = ({
                             variantValue === DEFAULT_VARIANT_VALUE ? 'text-muted-foreground' : 'text-[color:var(--status-info)]'
                           )}
                         />
-                        <SelectValue placeholder="Thinking" />
+                        <SelectValue placeholder={t('Thinking')} />
                       </SelectTrigger>
                       <SelectContent fitContent>
                         <SelectItem value={DEFAULT_VARIANT_VALUE} className="pr-2 [&>span:first-child]:hidden">
-                          Default
+                          {t('Default')}
                         </SelectItem>
                         {variantKeys.map((variant) => (
                           <SelectItem key={variant} value={variant} className="pr-2 [&>span:first-child]:hidden">
@@ -544,7 +547,9 @@ export const ModelMultiSelect: React.FC<ModelMultiSelectProps> = ({
       {/* Validation hint */}
       {minModels !== undefined && selectedModels.length < minModels && (
         <p className="typography-micro text-muted-foreground">
-          Select from {minModels} {maxModels !== undefined ? `to ${maxModels} models` : ''}.
+          {maxModels !== undefined
+            ? t('Select from {min} to {max} models.', { min: minModels, max: maxModels })
+            : t('Select from {min} models.', { min: minModels })}
         </p>
       )}
     </div>

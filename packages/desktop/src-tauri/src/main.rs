@@ -599,7 +599,21 @@ fn desktop_open_in_app(
             return run_open_command_chain(&specs);
         }
 
-        if matches!(trimmed_app_id.as_str(), "terminal" | "iterm2" | "ghostty" | "kitty") {
+        // Kitty 使用 --single-instance 在现有窗口中打开新 tab
+        if trimmed_app_id == "kitty" {
+            specs.push(OpenCommandSpec {
+                program: "/Applications/kitty.app/Contents/MacOS/kitty",
+                args: vec![
+                    "--single-instance".to_string(),
+                    "--directory".to_string(),
+                    project.clone(),
+                ],
+            });
+            return run_open_command_chain(&specs);
+        }
+
+        // 其他终端使用 open -a 命令
+        if matches!(trimmed_app_id.as_str(), "terminal" | "iterm2" | "ghostty") {
             specs.push(OpenCommandSpec {
                 program: "open",
                 args: vec!["-a".to_string(), app_name_owned.clone(), project.clone()],

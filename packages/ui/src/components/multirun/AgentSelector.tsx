@@ -7,6 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useI18n } from '@/contexts/useI18n';
 import { useConfigStore } from '@/stores/useConfigStore';
 
 export interface AgentSelectorProps {
@@ -36,6 +37,7 @@ export const AgentSelector: React.FC<AgentSelectorProps> = ({
   const getVisibleAgents = useConfigStore((state) => state.getVisibleAgents);
   const loadAgents = useConfigStore((state) => state.loadAgents);
   const defaultAgentName = useConfigStore((state) => state.currentAgentName);
+  const { t } = useI18n();
   const agents = getVisibleAgents();
   const selectableAgents = React.useMemo(
     () => agents.filter((agent) => agent.mode !== 'subagent'),
@@ -87,7 +89,7 @@ export const AgentSelector: React.FC<AgentSelectorProps> = ({
         size="lg"
         className={className ?? 'max-w-full typography-meta text-foreground'}
       >
-        <SelectValue placeholder="Select an agent" />
+        <SelectValue placeholder={t('Select an agent')} />
       </SelectTrigger>
       <SelectContent fitContent>
         {selectableAgents.length > 0 && (
