@@ -1,179 +1,156 @@
-# OpenChamber - AI Agent Reference (verified)
+# OpenChamber Agent Guide
 
-## Core purpose
-OpenChamber provides UI runtimes (web/desktop/VS Code) for interacting with an OpenCode server (local auto-start or remote URL). UI uses HTTP + SSE via `@opencode-ai/sdk`.
+## Purpose
+- OpenChamber is a Bun monorepo with web, shared UI, desktop, and VS Code runtimes.
+- The product is a UI shell around an OpenCode server; UI talks to the server over HTTP + SSE.
+- Desktop is a thin Tauri host; keep core product logic in web/UI unless native integration truly requires Rust.
 
-## Runtime architecture (IMPORTANT)
-- `Desktop` is a thin Tauri shell that starts the web server sidecar and loads the web UI from `http://127.0.0.1:<port>`.
-- All backend logic lives in `packages/web/server/*` (and `packages/vscode/*` for the VS Code runtime). Desktop Rust is not a feature backend.
-- Tauri is used only for stable native integrations: menu, dialog (open folder), notifications, updater, deep-links.
+## Runtime Architecture
+- Web client entry: `packages/web/src/main.tsx`.
+- Shared UI entry: `packages/ui/src/main.tsx`; most shared state lives under `packages/ui/src/stores/`.
+- Web server entry: `packages/web/server/index.js`.
+- CLI entry: `packages/web/bin/cli.js`.
+- Desktop native entry: `packages/desktop/src-tauri/src/main.rs`.
+- VS Code extension entry: `packages/vscode/src/extension.ts`.
 
-## Tech stack (source of truth: `package.json`, resolved: `bun.lock`)
-- Runtime/tooling: Bun (`package.json` `packageManager`), Node >=20 (`package.json` `engines`)
-- UI: React, TypeScript, Vite, Tailwind v4
-- State: Zustand (`packages/ui/src/stores/`)
-- UI primitives: Radix UI (`package.json` deps), HeroUI (`package.json` deps), Remixicon (`package.json` deps)
-- Server: Express (`packages/web/server/index.js`)
-- Desktop: Tauri v2 (`packages/desktop/src-tauri/`)
-- VS Code: extension + webview (`packages/vscode/`)
+## Before Editing
+- Keep diffs tight; do not do drive-by refactors.
+- Check nearby files first and follow the local pattern before inventing a new one.
+- Do not modify `../opencode`; it is a separate repo.
+- Do not run git or GitHub commands unless the user explicitly asks.
+- Never add secrets, tokens, `.env` values, or verbose sensitive logs.
 
-## Monorepo layout
-Workspaces are `packages/*` (see `package.json`).
-- Shared UI: `packages/ui`
-- Web app + server + CLI: `packages/web`
-- Desktop app (Tauri): `packages/desktop`
-- VS Code extension: `packages/vscode`
+## Documentation Map
+- Read module docs before touching mapped server modules.
+- Core backend docs: `packages/web/server/lib/git/DOCUMENTATION.md`, `packages/web/server/lib/github/DOCUMENTATION.md`, `packages/web/server/lib/opencode/DOCUMENTATION.md`.
+- Runtime service docs: `packages/web/server/lib/notifications/DOCUMENTATION.md`, `packages/web/server/lib/quota/DOCUMENTATION.md`, `packages/web/server/lib/tts/DOCUMENTATION.md`.
+- Integration docs: `packages/web/server/lib/skills-catalog/DOCUMENTATION.md`, `packages/web/server/lib/terminal/DOCUMENTATION.md`.
 
-## Documentation map
-Before changing any mapped module, read its module documentation first.
+## Install / Environment
+- Package manager: `bun@1.3.5`.
+- Node requirement: `>=20`.
+- Install dependencies with `bun install`.
+- Desktop work also needs Rust stable, Xcode Command Line Tools, and Tauri CLI.
 
-### web
-Web runtime and server implementation for OpenChamber.
+## Common Commands
+- Dev all: `bun run dev`.
+- Dev web full stack: `bun run dev:web:full`.
+- Dev web watchers: `bun run dev:web`, `bun run dev:web:server`.
+- Dev desktop: `bun run desktop:dev`.
+- Dev VS Code extension: `bun run vscode:dev`.
 
-#### lib
-Server-side integration modules used by API routes and runtime services.
+## Build Commands
+- Build everything: `bun run build`.
+- Build web/UI packages: `bun run build:web`, `bun run build:ui`.
+- Build desktop app: `bun run desktop:build`.
+- Build desktop dev variant: `bun run desktop:build:dev`.
+- Build/package VS Code extension: `bun run vscode:build`, `bun run vscode:package`.
+- Release smoke build: `bun run release:test`.
 
-##### quota
-Quota provider registry, dispatch, and provider integrations for usage endpoints.
-- Module docs: `packages/web/server/lib/quota/DOCUMENTATION.md`
+## Lint / Type-Check Commands
+- Monorepo checks: `bun run type-check`, `bun run lint`.
+- Web only type-check: `bun run type-check:web`.
+- UI only type-check: `bun run type-check:ui`.
+- Desktop only type-check: `bun run desktop:type-check`.
+- VS Code only type-check: `bun run vscode:type-check`.
+- Web/UI lint: `bun run lint:web`, `bun run lint:ui`.
+- Desktop native lint/checks: `bun run desktop:lint`.
 
-##### git
-Git repository operations for the web server runtime.
-- Module docs: `packages/web/server/lib/git/DOCUMENTATION.md`
+## Test Commands
+- There is no root `test` script today.
+- JS tests use Bun's built-in runner and currently live under `packages/web`.
+- Run all discovered tests: `bun test`.
+- Run one file: `bun test packages/web/bin/cli.test.js`.
+- Run another single file: `bun test packages/web/server/lib/notifications/message.test.js`.
+- Run a single test by name: `bun test packages/web/bin/cli.test.js --test-name-pattern "symlinked entry paths"`.
+- If you add tests for a server module, prefer colocated `*.test.js` files beside the implementation.
 
-##### github
-GitHub authentication, OAuth device flow, Octokit client factory, and repository URL parsing.
-- Module docs: `packages/web/server/lib/github/DOCUMENTATION.md`
+## Validation Expectations
+- Minimum baseline before handing off code: `bun run type-check`, `bun run lint`, `bun run build`.
+- If you only changed one package, run targeted checks first, then the full baseline if the change is user-facing or cross-package.
+- For CLI work, test TTY and non-TTY behavior when possible.
+- For desktop-impacting work, make sure the web app still works; desktop is a shell over the web runtime.
 
-##### opencode
-OpenCode server integration utilities including config management, provider authentication, and UI authentication.
-- Module docs: `packages/web/server/lib/opencode/DOCUMENTATION.md`
+## Cursor / Copilot Rules
+- No `.cursorrules` file was found.
+- No `.cursor/rules/` directory was found.
+- No `.github/copilot-instructions.md` file was found.
+- Do not invent extra editor-specific rules; rely on repository source, docs, and this file.
 
-##### notifications
-Notification message preparation utilities for system notifications, including text truncation and optional summarization.
-- Module docs: `packages/web/server/lib/notifications/DOCUMENTATION.md`
+## Tech Stack
+- UI: React 19, TypeScript, Vite, Tailwind v4.
+- State: Zustand.
+- UI primitives: Radix UI, HeroUI, Remixicon.
+- Server: Express 5, Bun runtime, some Node APIs.
+- Desktop: Tauri v2 + Rust.
+- VS Code: extension host + webview.
 
-##### terminal
-WebSocket protocol utilities for terminal input handling including message normalization, control frame parsing, and rate limiting.
-- Module docs: `packages/web/server/lib/terminal/DOCUMENTATION.md`
+## General Code Style
+- Follow existing file-local formatting. This repo is not fully normalized, so do not reformat unrelated lines.
+- ESLint is the enforced baseline; there is no repo-wide Prettier config in root.
+- Use ASCII by default unless the file already requires Unicode.
+- Prefer small helpers and early returns over deep nesting.
+- Avoid adding comments unless a block is genuinely non-obvious.
+- Keep functions focused; if a branchy block keeps growing, extract a helper.
 
-##### tts
-Server-side text-to-speech services and summarization helpers for `/api/tts/*` endpoints.
-- Module docs: `packages/web/server/lib/tts/DOCUMENTATION.md`
+## Imports
+- Use ESM imports everywhere in JS/TS code.
+- Prefer `import type` for type-only imports.
+- In UI packages, prefer the `@/` alias for shared local imports from `packages/ui/src`.
+- In cross-package TS imports, use workspace aliases such as `@openchamber/ui/...` when already established.
+- Keep imports grouped logically: external packages, type imports, internal aliases, then relative imports.
+- Match the surrounding file's quote and semicolon style instead of mass-normalizing old files.
 
-##### skills-catalog
-Skills catalog management including discovery, installation, and configuration of agent skill packages.
-- Module docs: `packages/web/server/lib/skills-catalog/DOCUMENTATION.md`
+## Types And Data Modeling
+- TypeScript runs in strict mode; keep new code strict-friendly.
+- Avoid `any`; use `unknown`, discriminated unions, generics, or narrow casts.
+- Validate untrusted external data at boundaries; `zod` is already available when schema validation is warranted.
+- Prefer explicit return types for exported helpers if inference is not obvious.
+- Reuse shared types from `packages/ui/src/types/` and store type files before introducing duplicates.
+- Keep transport shapes simple and serializable; do not leak UI-only state into server payloads.
 
-## Build / dev commands (verified)
-All scripts are in `package.json`.
-- Validate: `bun run type-check`, `bun run lint`
-- Build all: `bun run build`
-- Desktop build: `bun run desktop:build`
-- VS Code build: `bun run vscode:build`
-- Release smoke build: `bun run release:test` (shell script: `scripts/test-release-build.sh`)
+## Naming
+- React components: PascalCase file and symbol names, usually one main component per file.
+- Hooks: `useXxx` in `hooks/` or adjacent component folders.
+- Stores: `useXxxStore` and colocated store helpers/types.
+- Constants: UPPER_SNAKE_CASE only for true constants or protocol-level values.
+- Prefer full words over cryptic abbreviations unless the surrounding module already uses the shorter form.
 
-## Runtime entry points
-- Web bootstrap: `packages/web/src/main.tsx`
-- Web server: `packages/web/server/index.js`
-- Web CLI: `packages/web/bin/cli.js` (package bin: `packages/web/package.json`)
-- Desktop: Tauri entry `packages/desktop/src-tauri/src/main.rs` (spawns web server sidecar + loads web UI)
-- Tauri backend: `packages/desktop/src-tauri/src/main.rs`
-- VS Code extension host: `packages/vscode/src/extension.ts`
-- VS Code webview bootstrap: `packages/vscode/webview/main.tsx`
+## React / UI Conventions
+- Prefer function components and hooks; class components are rare and mainly for boundaries.
+- Keep side effects inside hooks or clearly named event handlers, not during render.
+- Use the shared toast wrapper from `@/components/ui`; do not import `sonner` directly in feature code.
+- For settings-related UI, study existing patterns in `packages/ui/src/components/views/SettingsView.tsx` and `packages/ui/src/components/sections/`.
+- Preserve mobile behavior; many screens have dedicated responsive logic and should not regress on small widths.
 
-## OpenCode integration
-- UI client wrapper: `packages/ui/src/lib/opencode/client.ts` (imports `@opencode-ai/sdk/v2`)
-- SSE hookup: `packages/ui/src/hooks/useEventStream.ts`
-- Web server embeds/starts OpenCode server: `packages/web/server/index.js` (`createOpencodeServer`)
-- Web runtime filesystem endpoints: search `packages/web/server/index.js` for `/api/fs/`
-- External server support: Set `OPENCODE_HOST` (full base URL, e.g. `http://hostname:4096`) or `OPENCODE_PORT`, plus `OPENCODE_SKIP_START=true`, to connect to existing OpenCode instance
+## Theme And Styling Rules
+- Before any UI styling work, load the `theme-system` skill.
+- All colors must come from theme tokens or existing semantic CSS vars; never introduce raw Tailwind color classes for new UI.
+- Prefer existing surface, interactive, and status tokens like `--surface-elevated`, `--interactive-hover`, and `--status-warning`.
+- Use typography helpers from `packages/ui/src/lib/typography.ts` when the surrounding code does.
+- Preserve the existing visual language for a screen instead of redesigning it opportunistically.
 
-## Key UI patterns (reference files)
-- Settings shell: `packages/ui/src/components/views/SettingsView.tsx`
-- Settings shared primitives: `packages/ui/src/components/sections/shared/`
-- Settings sections: `packages/ui/src/components/sections/` (incl `skills/`)
-- Chat UI: `packages/ui/src/components/chat/` and `packages/ui/src/components/chat/message/`
-- Theme + typography: `packages/ui/src/lib/theme/`, `packages/ui/src/lib/typography.ts`
-- Terminal UI: `packages/ui/src/components/terminal/` (uses `ghostty-web`)
+## CLI Rules
+- Before terminal CLI work, load the `clack-cli-patterns` skill.
+- Enforce validation in command logic, not only in prompts.
+- `--quiet`, `--json`, non-interactive, and fully specified flag modes must keep the same safety behavior.
+- Invalid operations must fail deterministically with non-zero exit codes.
+- Test both human output and machine-oriented output when changing CLI behavior.
 
-## External / system integrations (active)
-- Git: `packages/ui/src/lib/gitApi.ts`, `packages/web/server/index.js` (`simple-git`)
-- Terminal PTY: `packages/web/server/index.js` (`bun-pty`/`node-pty`)
-- Skills catalog: `packages/web/server/lib/skills-catalog/`, UI: `packages/ui/src/components/sections/skills/`
+## Error Handling
+- Fail fast on invalid inputs and impossible states.
+- Use `try/catch` at I/O, network, storage, and SDK boundaries; avoid wrapping pure logic unless needed.
+- On recoverable failures, log or toast something actionable and keep the app usable.
+- Do not swallow errors silently unless the surrounding pattern is clearly best-effort and documented by code.
+- When catching `unknown`, narrow before reading `.message`.
 
-## Agent constraints
-- Do not modify `../opencode` (separate repo).
-- Do not run git/GitHub commands unless explicitly asked.
-- Keep baseline green (run `bun run type-check`, `bun run lint`, `bun run build` before finalizing changes).
+## Testing And Change Scope
+- Add or update tests when changing protocol logic, CLI behavior, pure helpers, or bug-prone regressions.
+- Keep tests close to the touched module when Bun tests are involved.
+- Avoid snapshot-heavy tests unless the output is stable and materially valuable.
+- Do not fix unrelated lint/style issues just because you saw them.
 
-## Development rules
-- Keep diffs tight; avoid drive-by refactors.
-- Backend changes: keep web/desktop/vscode runtimes consistent (if relevant).
-- Follow local precedent; search nearby code first.
-- TypeScript: avoid `any`/blind casts; keep ESLint/TS green.
-- React: prefer function components + hooks; class only when needed (e.g. error boundaries).
-- Control flow: avoid nested ternaries; prefer early returns + `if/else`/`switch`.
-- Styling: Tailwind v4; typography via `packages/ui/src/lib/typography.ts`; theme vars via `packages/ui/src/lib/theme/`.
-- Toasts: use custom toast wrapper from `@/components/ui` (backed by `packages/ui/src/components/ui/toast.ts`); do not import `sonner` directly in feature code.
-- No new deps unless asked.
-- Never add secrets (`.env`, keys) or log sensitive data.
-
-## CLI Parity and Safety Policy (MANDATORY)
-
-### Principle: policy-first, UX-second
-
-All safety and correctness rules MUST be enforced in core command logic, independent of output mode.
-
-Interactive/pretty UX (`@clack/prompts`) is a presentation layer only.
-It must never be the only place where validation or restriction is enforced.
-
-### Required parity across modes
-
-The same functional outcome and safety gates MUST hold for all execution modes:
-
-- Interactive TTY (full Clack UX)
-- Non-interactive shells (piped/stdin-less automation)
-- `--quiet`
-- `--json`
-- Fully pre-specified flags (no prompts)
-
-In all modes, invalid operations MUST fail with non-zero exit code and deterministic error semantics.
-
-### Non-negotiable rule
-
-Do not rely on prompts to enforce policy.
-
-- Prompts MAY help users choose valid inputs.
-- Core validators MUST run even when prompts are unavailable or skipped.
-- `--quiet` suppresses non-essential output only; it does not weaken validation.
-- `--json` changes output shape only; it does not weaken validation.
-
-Detailed Clack UX patterns (primitives, prompt gating, and implementation checklist)
-are defined in the `clack-cli-patterns` skill and should not be duplicated here.
-
-## Clack CLI Skill (MANDATORY for terminal CLI work)
-
-When working on terminal CLI commands, prompts, or output formatting, agents **MUST** study the Clack CLI skill first.
-
-**Before starting terminal CLI work:**
-```
-skill({ name: "clack-cli-patterns" })
-```
-
-Scope: terminal CLI only (for example `packages/web/bin/*`). Do not apply this requirement to VS Code or web UI work.
-
-## Theme System (MANDATORY for UI work)
-
-When working on any UI components, styling, or visual changes, agents **MUST** study the theme system skill first.
-
-**Before starting any UI work:**
-```
-skill({ name: "theme-system" })
-```
-
-This skill contains all color tokens, semantic logic, decision tree, and usage patterns. All UI colors must use theme tokens - never hardcoded values or Tailwind color classes.
-
-## Recent changes
-- Releases + high-level changes: `CHANGELOG.md`
-- Recent commits: `git log --oneline` (latest tags: `v1.4.6`, `v1.4.5`)
+## Cross-Runtime Notes
+- Backend behavior belongs in `packages/web/server/*`; desktop Rust should stay a thin integration layer.
+- If a change affects runtime APIs, consider web, desktop, and VS Code consistency together.
+- Recent release context lives in `CHANGELOG.md`.

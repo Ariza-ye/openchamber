@@ -28,6 +28,7 @@ local-dev*
 *.sw?
 .opencode/plans/*
 .hive
+AGENTS.md
 
 # Build outputs
 build/
