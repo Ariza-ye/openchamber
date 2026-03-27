@@ -473,7 +473,6 @@ interface UIStore {
   isBottomTerminalExpanded: boolean;
   bottomTerminalHeight: number;
   hasManuallyResizedBottomTerminal: boolean;
-  isNavRailExpanded: boolean;
   isSessionSwitcherOpen: boolean;
   activeMainTab: MainTab;
   mainTabGuard: MainTabGuard | null;
@@ -561,10 +560,8 @@ interface UIStore {
   stickyUserHeader: boolean;
   showMobileSessionStatusBar: boolean;
   isMobileSessionStatusBarCollapsed: boolean;
-  viewPagerPage: 'left' | 'center' | 'right';
-
   isExpandedInput: boolean;
-
+  reportUsage: boolean;
   shortcutOverrides: Record<string, ShortcutCombo>;
 
   setTheme: (theme: 'light' | 'dark' | 'system') => void;
@@ -592,8 +589,6 @@ interface UIStore {
   setBottomTerminalOpen: (open: boolean) => void;
   setBottomTerminalExpanded: (expanded: boolean) => void;
   setBottomTerminalHeight: (height: number) => void;
-  setNavRailExpanded: (expanded: boolean) => void;
-  toggleNavRail: () => void;
   setSessionSwitcherOpen: (open: boolean) => void;
   setActiveMainTab: (tab: MainTab) => void;
   setMainTabGuard: (guard: MainTabGuard | null) => void;
@@ -675,11 +670,13 @@ interface UIStore {
   setStickyUserHeader: (value: boolean) => void;
   setShowMobileSessionStatusBar: (value: boolean) => void;
   setIsMobileSessionStatusBarCollapsed: (value: boolean) => void;
+  viewPagerPage: 'left' | 'center' | 'right';
   setViewPagerPage: (page: 'left' | 'center' | 'right') => void;
   toggleExpandedInput: () => void;
   setExpandedInput: (value: boolean) => void;
   openMultiRunLauncher: () => void;
   openMultiRunLauncherWithPrompt: (prompt: string) => void;
+  setReportUsage: (value: boolean) => void;
   setShortcutOverride: (actionId: string, combo: ShortcutCombo) => void;
   clearShortcutOverride: (actionId: string) => void;
   resetAllShortcutOverrides: () => void;
@@ -707,7 +704,6 @@ export const useUIStore = create<UIStore>()(
         isBottomTerminalExpanded: false,
         bottomTerminalHeight: 300,
         hasManuallyResizedBottomTerminal: false,
-        isNavRailExpanded: false,
         isSessionSwitcherOpen: false,
         activeMainTab: 'chat',
         mainTabGuard: null,
@@ -743,7 +739,7 @@ export const useUIStore = create<UIStore>()(
         fontSize: 100,
         terminalFontSize: 13,
         padding: 100,
-        cornerRadius: 12,
+        cornerRadius: 18,
         inputBarOffset: 0,
         favoriteModels: [],
         hiddenModels: [],
@@ -790,6 +786,7 @@ export const useUIStore = create<UIStore>()(
         showMobileSessionStatusBar: true,
         isMobileSessionStatusBarCollapsed: false,
         isExpandedInput: false,
+        reportUsage: true,
         shortcutOverrides: {},
 
         setTheme: (theme) => {
@@ -1175,13 +1172,6 @@ export const useUIStore = create<UIStore>()(
 
         setBottomTerminalHeight: (height) => {
           set({ bottomTerminalHeight: height, hasManuallyResizedBottomTerminal: true });
-        },
-
-        setNavRailExpanded: (expanded) => {
-          set({ isNavRailExpanded: expanded });
-        },
-        toggleNavRail: () => {
-          set({ isNavRailExpanded: !get().isNavRailExpanded });
         },
 
         setSessionSwitcherOpen: (open) => {
@@ -1709,6 +1699,9 @@ export const useUIStore = create<UIStore>()(
         setIsMobileSessionStatusBarCollapsed: (value) => {
           set({ isMobileSessionStatusBarCollapsed: value });
         },
+        setReportUsage: (value) => {
+          set({ reportUsage: value });
+        },
         viewPagerPage: 'center',
         setViewPagerPage: (page: 'left' | 'center' | 'right') => {
           set({ viewPagerPage: page });
@@ -1836,7 +1829,6 @@ export const useUIStore = create<UIStore>()(
           isBottomTerminalOpen: state.isBottomTerminalOpen,
           isBottomTerminalExpanded: state.isBottomTerminalExpanded,
           bottomTerminalHeight: state.bottomTerminalHeight,
-          isNavRailExpanded: state.isNavRailExpanded,
           isSessionSwitcherOpen: state.isSessionSwitcherOpen,
           activeMainTab: state.activeMainTab,
           sidebarSection: state.sidebarSection,

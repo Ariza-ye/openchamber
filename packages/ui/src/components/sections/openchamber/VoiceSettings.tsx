@@ -3,15 +3,22 @@ import {useBrowserVoice} from '@/hooks/useBrowserVoice';
 import {useConfigStore} from '@/stores/useConfigStore';
 import {useDeviceInfo} from '@/lib/device';
 
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue,} from '@/components/ui/select';
-import {Checkbox} from '@/components/ui/checkbox';
-import {ButtonSmall} from '@/components/ui/button-small';
-import {NumberInput} from '@/components/ui/number-input';
-import {RiAppleLine, RiCloseLine, RiInformationLine, RiPlayLine, RiStopLine} from '@remixicon/react';
-import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
-import {browserVoiceService} from '@/lib/voice/browserVoiceService';
-import {cn} from '@/lib/utils';
 import {useI18n} from '@/contexts/useI18n';
+import {ButtonSmall} from '@/components/ui/button-small';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
+import { NumberInput } from '@/components/ui/number-input';
+import { RiPlayLine, RiStopLine, RiCloseLine, RiAppleLine, RiInformationLine } from '@remixicon/react';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { browserVoiceService } from '@/lib/voice/browserVoiceService';
+import { cn } from '@/lib/utils';
 
 const LANGUAGE_OPTIONS = [
     { value: 'en-US', label: 'English' },
@@ -166,6 +173,11 @@ export const VoiceSettings: React.FC = () => {
     }, [isBrowserPreviewPlaying]);
 
     useEffect(() => {
+        if (!voiceModeEnabled || voiceProvider !== 'openai') {
+            setIsOpenAIAvailable(openaiApiKey.trim().length > 0);
+            return;
+        }
+
         const checkOpenAIAvailability = async () => {
             try {
                 const response = await fetch('/api/tts/status');
@@ -179,9 +191,15 @@ export const VoiceSettings: React.FC = () => {
         };
 
         checkOpenAIAvailability();
-    }, [openaiApiKey]);
+    }, [openaiApiKey, voiceModeEnabled, voiceProvider]);
 
     useEffect(() => {
+        if (!voiceModeEnabled) {
+            setIsSayAvailable(false);
+            setSayVoices([]);
+            return;
+        }
+
         fetch('/api/tts/say/status')
             .then(res => res.json())
             .then(data => {
@@ -198,7 +216,7 @@ export const VoiceSettings: React.FC = () => {
             .catch(() => {
                 setIsSayAvailable(false);
             });
-    }, []);
+    }, [voiceModeEnabled]);
 
     const previewVoice = useCallback(async () => {
         if (previewAudio) {
@@ -365,7 +383,7 @@ export const VoiceSettings: React.FC = () => {
                                         </Tooltip>
                                     </div>
                                     <div className="flex flex-wrap items-center gap-1">
-                                        <ButtonSmall
+                                        <Button
                                             variant="outline"
                                             size="xs"
                                             onClick={() => setVoiceProvider('browser')}
@@ -377,8 +395,8 @@ export const VoiceSettings: React.FC = () => {
                                             )}
                                         >
                                             Browser
-                                        </ButtonSmall>
-                                        <ButtonSmall
+                                        </Button>
+                                        <Button
                                             variant="outline"
                                             size="xs"
                                             onClick={() => setVoiceProvider('openai')}
@@ -390,9 +408,9 @@ export const VoiceSettings: React.FC = () => {
                                             )}
                                         >
                                             OpenAI
-                                        </ButtonSmall>
+                                        </Button>
                                         {isSayAvailable && (
-                                            <ButtonSmall
+                                            <Button
                                                 variant="outline"
                                                 size="xs"
                                                 onClick={() => setVoiceProvider('say')}
@@ -405,7 +423,7 @@ export const VoiceSettings: React.FC = () => {
                                             >
                                                 <RiAppleLine className="w-3.5 h-3.5 mr-0.5" />
                                                 Say
-                                            </ButtonSmall>
+                                            </Button>
                                         )}
                                     </div>
                                 </div>
@@ -458,10 +476,9 @@ export const VoiceSettings: React.FC = () => {
                                                     ))}
                                                 </SelectContent>
                                             </Select>
-                                            <ButtonSmall variant="ghost" className="h-7 w-7 px-0"
-                                                         onClick={previewOpenAIVoice} title={t('Preview')}>
+                                            <Button size="xs" variant="ghost" onClick={previewOpenAIVoice} title={t('Preview')}>
                                                 {isOpenAIPreviewPlaying ? <RiStopLine className="w-3.5 h-3.5" /> : <RiPlayLine className="w-3.5 h-3.5" />}
-                                            </ButtonSmall>
+                                            </Button>
                                         </>
                                     )}
 
@@ -477,10 +494,9 @@ export const VoiceSettings: React.FC = () => {
                                                     ))}
                                                 </SelectContent>
                                             </Select>
-                                            <ButtonSmall variant="ghost" className="h-7 w-7 px-0" onClick={previewVoice}
-                                                         title={t('Preview')}>
+                                            <Button size="xs" variant="ghost" onClick={previewVoice} title={t('Preview')}>
                                                 {isPreviewPlaying ? <RiStopLine className="w-3.5 h-3.5" /> : <RiPlayLine className="w-3.5 h-3.5" />}
-                                            </ButtonSmall>
+                                            </Button>
                                         </>
                                     )}
 
@@ -497,10 +513,9 @@ export const VoiceSettings: React.FC = () => {
                                                     ))}
                                                 </SelectContent>
                                             </Select>
-                                            <ButtonSmall variant="ghost" className="h-7 w-7 px-0"
-                                                         onClick={previewBrowserVoice} title={t('Preview')}>
+                                            <Button size="xs" variant="ghost" onClick={previewBrowserVoice} title={t('Preview')}>
                                                 {isBrowserPreviewPlaying ? <RiStopLine className="w-3.5 h-3.5" /> : <RiPlayLine className="w-3.5 h-3.5" />}
-                                            </ButtonSmall>
+                                            </Button>
                                         </>
                                     )}
                                 </div>

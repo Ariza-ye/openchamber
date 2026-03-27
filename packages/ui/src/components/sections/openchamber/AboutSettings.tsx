@@ -1,10 +1,11 @@
 import React from 'react';
-import {RiDiscordFill, RiDownloadLine, RiGithubFill, RiLoaderLine, RiTwitterXFill} from '@remixicon/react';
-import {useUpdateStore} from '@/stores/useUpdateStore';
-import {UpdateDialog} from '@/components/ui/UpdateDialog';
-import {useDeviceInfo} from '@/lib/device';
-import {toast} from '@/components/ui';
-import {cn} from '@/lib/utils';
+import { RiDiscordFill, RiDownloadLine, RiGithubFill, RiLoaderLine, RiTwitterXFill } from '@remixicon/react';
+import { useUpdateStore } from '@/stores/useUpdateStore';
+import { UpdateDialog } from '@/components/ui/UpdateDialog';
+import { useDeviceInfo } from '@/lib/device';
+import { toast } from '@/components/ui';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 import {ButtonSmall} from '@/components/ui/button-small';
 import {useI18n} from '@/contexts/useI18n';
 
@@ -157,24 +158,26 @@ export const AboutSettings: React.FC = () => {
             )}
 
             {!updateStore.checking && updateStore.available && (
-              <ButtonSmall
+              <Button size="sm"
                 variant="default"
                 onClick={() => setUpdateDialogOpen(true)}
               >
                 <RiDownloadLine className="h-4 w-4 mr-1" />
-                  {t('Update to ')}{updateStore.info?.version}
-              </ButtonSmall>
+                Update to {updateStore.info?.version}
+              </Button>
             )}
 
             {!updateStore.checking && !updateStore.available && !updateStore.error && (
                 <span className="typography-meta text-muted-foreground">{t('Up to date')}</span>
             )}
 
-            <ButtonSmall
+            <Button size="sm"
               variant="outline"
               onClick={() => updateStore.checkForUpdates()}
               disabled={updateStore.checking}
-            >{t('Check for updates')}</ButtonSmall>
+            >
+              {t('Check for updates')}
+            </Button>
           </div>
         </div>
         

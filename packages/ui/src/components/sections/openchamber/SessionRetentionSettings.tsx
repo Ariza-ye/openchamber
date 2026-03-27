@@ -1,12 +1,13 @@
 import React from 'react';
-import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
-import {RiInformationLine, RiRestartLine} from '@remixicon/react';
-import {toast} from '@/components/ui';
-import {NumberInput} from '@/components/ui/number-input';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { RiInformationLine, RiRestartLine } from '@remixicon/react';
+import { toast } from '@/components/ui';
+import { NumberInput } from '@/components/ui/number-input';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useUIStore } from '@/stores/useUIStore';
+import { useSessionAutoCleanup } from '@/hooks/useSessionAutoCleanup';
 import {ButtonSmall} from '@/components/ui/button-small';
-import {Checkbox} from '@/components/ui/checkbox';
-import {useUIStore} from '@/stores/useUIStore';
-import {useSessionAutoCleanup} from '@/hooks/useSessionAutoCleanup';
 import {useI18n} from '@/contexts/useI18n';
 
 const MIN_DAYS = 1;
@@ -91,8 +92,8 @@ export const SessionRetentionSettings: React.FC = () => {
               aria-label={t('Retention period in days')}
               className="w-20 tabular-nums"
             />
-              <span className="typography-ui-label text-muted-foreground">{t('days')}</span>
-            <ButtonSmall
+            <span className="typography-ui-label text-muted-foreground">{t('days')}</span>
+            <Button size="sm"
               type="button"
               variant="ghost"
               onClick={() => setAutoDeleteAfterDays(DEFAULT_RETENTION_DAYS)}
@@ -102,7 +103,7 @@ export const SessionRetentionSettings: React.FC = () => {
               title={t('Reset')}
             >
               <RiRestartLine className="h-3.5 w-3.5" />
-            </ButtonSmall>
+            </Button>
           </div>
         </div>
       </section>
@@ -113,7 +114,7 @@ export const SessionRetentionSettings: React.FC = () => {
               <p className="typography-meta text-foreground font-medium">{t('Manual Cleanup')}</p>
           </div>
           <div className="flex items-center gap-2 sm:w-fit">
-            <ButtonSmall
+            <Button
               type="button"
               variant="outline"
               size="xs"
@@ -122,7 +123,7 @@ export const SessionRetentionSettings: React.FC = () => {
               className="!font-normal"
             >
               {isRunning ? 'Cleaning up...' : 'Run cleanup now'}
-            </ButtonSmall>
+            </Button>
           </div>
         </div>
         <p className="typography-meta text-muted-foreground">

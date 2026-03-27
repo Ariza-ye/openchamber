@@ -1,20 +1,21 @@
 import React from 'react';
-import {RiInformationLine, RiRestartLine} from '@remixicon/react';
-import {useUIStore} from '@/stores/useUIStore';
-import {useConfigStore} from '@/stores/useConfigStore';
-import {isDesktopShell, isVSCodeRuntime} from '@/lib/desktop';
-import {useDeviceInfo} from '@/lib/device';
-import {updateDesktopSettings} from '@/lib/persistence';
-import {Checkbox} from '@/components/ui/checkbox';
-import {toast} from '@/components/ui';
-import {getRegisteredRuntimeAPIs} from '@/contexts/runtimeAPIRegistry';
-import {GridLoader} from '@/components/ui/grid-loader';
-import {Input} from '@/components/ui/input';
-import {NumberInput} from '@/components/ui/number-input';
+import { RiInformationLine, RiRestartLine } from '@remixicon/react';
+import { useUIStore } from '@/stores/useUIStore';
+import { useConfigStore } from '@/stores/useConfigStore';
+import { isDesktopShell, isVSCodeRuntime } from '@/lib/desktop';
+import { useDeviceInfo } from '@/lib/device';
+import { updateDesktopSettings } from '@/lib/persistence';
+import { Checkbox } from '@/components/ui/checkbox';
+import { toast } from '@/components/ui';
+import { getRegisteredRuntimeAPIs } from '@/contexts/runtimeAPIRegistry';
+import { GridLoader } from '@/components/ui/grid-loader';
+import { Input } from '@/components/ui/input';
+import { NumberInput } from '@/components/ui/number-input';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
 import {ButtonSmall} from '@/components/ui/button-small';
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
-import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
-import {cn} from '@/lib/utils';
 import {useI18n} from '@/contexts/useI18n';
 
 const DEFAULT_NOTIFICATION_TEMPLATES = {
@@ -806,7 +807,7 @@ export const NotificationSettings: React.FC = () => {
                           step={50}
                           className="w-20 tabular-nums"
                         />
-                        <ButtonSmall
+                        <Button size="sm"
                           type="button"
                           variant="ghost"
                           onClick={() => setSummaryThreshold(DEFAULT_SUMMARY_THRESHOLD)}
@@ -816,7 +817,7 @@ export const NotificationSettings: React.FC = () => {
                           title={t('Reset')}
                         >
                           <RiRestartLine className="h-3.5 w-3.5" />
-                        </ButtonSmall>
+                        </Button>
                       </div>
                     </div>
                     <div className="flex items-center gap-8 py-1.5">
@@ -834,7 +835,7 @@ export const NotificationSettings: React.FC = () => {
                           step={10}
                           className="w-20 tabular-nums"
                         />
-                        <ButtonSmall
+                        <Button size="sm"
                           type="button"
                           variant="ghost"
                           onClick={() => setSummaryLength(DEFAULT_SUMMARY_LENGTH)}
@@ -844,7 +845,7 @@ export const NotificationSettings: React.FC = () => {
                           title={t('Reset')}
                         >
                           <RiRestartLine className="h-3.5 w-3.5" />
-                        </ButtonSmall>
+                        </Button>
                       </div>
                     </div>
                   </>
@@ -863,7 +864,7 @@ export const NotificationSettings: React.FC = () => {
                         step={10}
                         className="w-20 tabular-nums"
                       />
-                      <ButtonSmall
+                      <Button size="sm"
                         type="button"
                         variant="ghost"
                         onClick={() => setMaxLastMessageLength(DEFAULT_MAX_LAST_MESSAGE_LENGTH)}
@@ -873,7 +874,7 @@ export const NotificationSettings: React.FC = () => {
                         title={t('Reset')}
                       >
                         <RiRestartLine className="h-3.5 w-3.5" />
-                      </ButtonSmall>
+                      </Button>
                     </div>
                   </div>
                 )}

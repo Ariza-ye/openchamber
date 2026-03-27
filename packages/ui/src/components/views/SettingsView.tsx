@@ -30,33 +30,34 @@ import {
   RiServerLine,
   RiSlashCommands2,
 } from '@remixicon/react';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
+import { AgentsSidebar } from '@/components/sections/agents/AgentsSidebar';
+import { AgentsPage } from '@/components/sections/agents/AgentsPage';
+import { CommandsSidebar } from '@/components/sections/commands/CommandsSidebar';
+import { CommandsPage } from '@/components/sections/commands/CommandsPage';
+import { McpSidebar } from '@/components/sections/mcp/McpSidebar';
+import { McpPage } from '@/components/sections/mcp/McpPage';
+import { SkillsSidebar } from '@/components/sections/skills/SkillsSidebar';
+import { SkillsPage } from '@/components/sections/skills/SkillsPage';
+import { ProjectsSidebar } from '@/components/sections/projects/ProjectsSidebar';
+import { ProjectsPage } from '@/components/sections/projects/ProjectsPage';
+import { RemoteInstancesSidebar } from '@/components/sections/remote-instances/RemoteInstancesSidebar';
+import { RemoteInstancesPage } from '@/components/sections/remote-instances/RemoteInstancesPage';
+import { ProvidersSidebar } from '@/components/sections/providers/ProvidersSidebar';
+import { ProvidersPage } from '@/components/sections/providers/ProvidersPage';
+import { UsageSidebar } from '@/components/sections/usage/UsageSidebar';
+import { UsagePage } from '@/components/sections/usage/UsagePage';
+import { GitPage } from '@/components/sections/git-identities/GitPage';
+import type { OpenChamberSection } from '@/components/sections/openchamber/types';
+import { OpenChamberPage } from '@/components/sections/openchamber/OpenChamberPage';
+import { McpIcon } from '@/components/icons/McpIcon';
+import { useDeviceInfo } from '@/lib/device';
+import { isDesktopShell, isVSCodeRuntime, isWebRuntime } from '@/lib/desktop';
+import { reloadOpenCodeConfiguration } from '@/stores/useAgentsStore';
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
-import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
-import {ErrorBoundary} from '@/components/ui/ErrorBoundary';
 import {useI18n} from '@/contexts/useI18n';
-import {AgentsSidebar} from '@/components/sections/agents/AgentsSidebar';
-import {AgentsPage} from '@/components/sections/agents/AgentsPage';
-import {CommandsSidebar} from '@/components/sections/commands/CommandsSidebar';
-import {CommandsPage} from '@/components/sections/commands/CommandsPage';
-import {McpSidebar} from '@/components/sections/mcp/McpSidebar';
-import {McpPage} from '@/components/sections/mcp/McpPage';
-import {SkillsSidebar} from '@/components/sections/skills/SkillsSidebar';
-import {SkillsPage} from '@/components/sections/skills/SkillsPage';
-import {ProjectsSidebar} from '@/components/sections/projects/ProjectsSidebar';
-import {ProjectsPage} from '@/components/sections/projects/ProjectsPage';
-import {RemoteInstancesSidebar} from '@/components/sections/remote-instances/RemoteInstancesSidebar';
-import {RemoteInstancesPage} from '@/components/sections/remote-instances/RemoteInstancesPage';
-import {ProvidersSidebar} from '@/components/sections/providers/ProvidersSidebar';
-import {ProvidersPage} from '@/components/sections/providers/ProvidersPage';
-import {UsageSidebar} from '@/components/sections/usage/UsageSidebar';
-import {UsagePage} from '@/components/sections/usage/UsagePage';
-import {GitPage} from '@/components/sections/git-identities/GitPage';
-import type {OpenChamberSection} from '@/components/sections/openchamber/types';
-import {OpenChamberPage} from '@/components/sections/openchamber/OpenChamberPage';
 import {AboutSettings} from '@/components/sections/openchamber/AboutSettings';
-import {McpIcon} from '@/components/icons/McpIcon';
-import {useDeviceInfo} from '@/lib/device';
-import {isDesktopShell, isVSCodeRuntime, isWebRuntime} from '@/lib/desktop';
 import {
   getSettingsPageMeta,
   getSettingsPageTitle,
@@ -269,6 +270,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
     const {t} = useI18n();
 
   const settingsPageRaw = useUIStore((state) => state.settingsPage);
+  const isSettingsDialogOpen = useUIStore((state) => state.isSettingsDialogOpen);
   const setSettingsPage = useUIStore((state) => state.setSettingsPage);
   const settingsSlug = resolveSettingsSlug(settingsPageRaw);
 
@@ -351,25 +353,27 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
 
   // Load stores when project changes or when a page becomes active.
   React.useEffect(() => {
+    if (!isSettingsDialogOpen && !runtimeCtx.isVSCode) {
+      return;
+    }
+
     if (settingsSlug === 'agents') {
-      setTimeout(() => void useAgentsStore.getState().loadAgents(), 0);
+      void useAgentsStore.getState().loadAgents();
       return;
     }
     if (settingsSlug === 'commands') {
-      setTimeout(() => void useCommandsStore.getState().loadCommands(), 0);
+      void useCommandsStore.getState().loadCommands();
       return;
     }
     if (settingsSlug === 'mcp') {
-      setTimeout(() => void useMcpConfigStore.getState().loadMcpConfigs(), 0);
+      void useMcpConfigStore.getState().loadMcpConfigs();
       return;
     }
     if (settingsSlug === 'skills.installed' || settingsSlug === 'skills.catalog') {
-      setTimeout(() => {
-        void useSkillsStore.getState().loadSkills();
-        void useSkillsCatalogStore.getState().loadCatalog();
-      }, 0);
+      void useSkillsStore.getState().loadSkills();
+      void useSkillsCatalogStore.getState().loadCatalog();
     }
-  }, [activeProjectId, settingsSlug]);
+  }, [activeProjectId, isSettingsDialogOpen, runtimeCtx.isVSCode, settingsSlug]);
 
   const openPage = React.useCallback((slug: SettingsPageSlug) => {
     setSettingsPage(slug);
@@ -599,11 +603,6 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
               </Tooltip>
             )}
 
-            {isMobile && runtimeCtx.isWeb && (
-              <div className="px-1.5 pt-2">
-                <AboutSettings />
-              </div>
-            )}
           </div>
         </div>
       </div>
@@ -613,7 +612,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
   const renderMobileStage = () => {
     if (mobileStage === 'nav') {
       return (
-        <div className={cn('flex-1 overflow-hidden', runtimeCtx.isVSCode ? 'bg-background' : 'bg-sidebar')}>
+        <div className={cn('flex-1 min-h-0 overflow-hidden', runtimeCtx.isVSCode ? 'bg-background' : 'bg-sidebar')}>
           <div className="flex h-full min-h-0 flex-col">
             <ErrorBoundary>{renderSettingsNav(false)}</ErrorBoundary>
           </div>
@@ -630,13 +629,13 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
         // No sidebar available; fall back to direct content.
         const fallback = renderPageContent(settingsSlug);
         return (
-          <div className="flex-1 overflow-hidden bg-background" data-keyboard-avoid="true">
+          <div className="flex-1 min-h-0 overflow-hidden bg-background" data-keyboard-avoid="true">
             <ErrorBoundary>{fallback}</ErrorBoundary>
           </div>
         );
       }
       return (
-        <div className={cn('flex-1 overflow-hidden', runtimeCtx.isVSCode ? 'bg-background' : 'bg-sidebar')}>
+        <div className={cn('flex-1 min-h-0 overflow-hidden', runtimeCtx.isVSCode ? 'bg-background' : 'bg-sidebar')}>
           <ErrorBoundary>
             {renderPageSidebar(settingsSlug, { onItemSelect: () => setMobileStage('page-content') })}
           </ErrorBoundary>
@@ -648,7 +647,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
     const content = renderPageContent(settingsSlug);
 
     return (
-      <div className="flex-1 overflow-hidden bg-background" data-keyboard-avoid="true">
+      <div className="flex-1 min-h-0 overflow-hidden bg-background" data-keyboard-avoid="true">
         <ErrorBoundary>{content}</ErrorBoundary>
       </div>
     );
@@ -680,7 +679,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
   };
 
   return (
-    <div ref={containerRef} data-settings-view="true" className={cn('relative flex h-full flex-col overflow-hidden bg-background')}>
+    <div ref={containerRef} data-settings-view="true" className={cn('relative flex h-full min-h-0 flex-col overflow-hidden bg-background')}>
       {isMobile ? (
         <div
           className={cn(
@@ -758,7 +757,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
         </>
       )}
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 min-h-0 overflow-hidden">
         {isMobile ? (
           renderMobileStage()
         ) : (
@@ -767,7 +766,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
               className={cn(
                 'relative flex h-full min-h-0 flex-col overflow-hidden border-r',
                 isDesktopApp
-                  ? 'bg-[color:var(--sidebar-overlay-strong)] backdrop-blur supports-[backdrop-filter]:bg-[color:var(--sidebar-overlay-soft)]'
+                  ? 'bg-[color:var(--sidebar-overlay-strong)] supports-[backdrop-filter]:bg-[color:var(--sidebar-overlay-soft)]'
                   : runtimeCtx.isVSCode
                     ? 'bg-background'
                     : 'bg-sidebar',

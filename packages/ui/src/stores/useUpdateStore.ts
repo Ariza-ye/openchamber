@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type { UpdateInfo, UpdateProgress } from '@/lib/desktop';
 import { getDeviceInfo } from '@/lib/device';
+import { useUIStore } from './useUIStore';
 import {
   checkForDesktopUpdates,
   downloadDesktopUpdate,
@@ -66,7 +67,10 @@ function detectPlatform(): 'macos' | 'windows' | 'linux' | 'web' {
 }
 
 function mapRuntimeParams(runtime: ClientRuntime): URLSearchParams {
-  const params = new URLSearchParams({ reportUsage: 'true' });
+  // Check if user has opted out of usage reporting (default: true/enabled from UI store)
+  const shouldReportUsage = useUIStore.getState().reportUsage;
+  
+  const params = new URLSearchParams({ reportUsage: shouldReportUsage ? 'true' : 'false' });
   params.set('deviceClass', detectDeviceClass());
   params.set('arch', detectArch());
   params.set('platform', detectPlatform());
@@ -157,9 +161,43 @@ export const useUpdateStore = create<UpdateStore>()((set, get) => ({
       let suggestedSec: number | null = null;
 
       if (runtime === 'desktop') {
-        info = await checkForDesktopUpdates();
-        const sidecarInfo = await checkForWebUpdates('desktop', info?.currentVersion);
+        let desktopInfo = await checkForDesktopUpdates();
+        set({
+          checking: false,
+          available: desktopInfo?.available ?? false,
+          info: desktopInfo,
+          lastChecked: Date.now(),
+          nextCheckInSec: null,
+        });
+
+        const sidecarInfo = await checkForWebUpdates('desktop', desktopInfo?.currentVersion);
         suggestedSec = sidecarInfo?.nextSuggestedCheckInSec ?? null;
+
+        if (sidecarInfo?.available && !desktopInfo?.available) {
+          const forcedDesktopInfo = await checkForDesktopUpdates();
+          if (forcedDesktopInfo) {
+            desktopInfo = forcedDesktopInfo;
+          }
+        }
+
+        if (sidecarInfo) {
+          const mergedInfo: UpdateInfo = {
+            ...(desktopInfo ?? { available: false, currentVersion: sidecarInfo.currentVersion ?? 'unknown' }),
+            ...sidecarInfo,
+            currentVersion: desktopInfo?.currentVersion ?? sidecarInfo.currentVersion ?? 'unknown',
+            available: sidecarInfo.available,
+          };
+
+          set({
+            available: mergedInfo.available,
+            info: mergedInfo,
+            nextCheckInSec: suggestedSec,
+          });
+        } else {
+          set({ nextCheckInSec: suggestedSec });
+        }
+
+        return suggestedSec;
       } else if (runtime === 'web') {
         info = await checkForWebUpdates('web');
         suggestedSec = info?.nextSuggestedCheckInSec ?? null;
@@ -196,6 +234,21 @@ export const useUpdateStore = create<UpdateStore>()((set, get) => ({
     set({ downloading: true, error: null, progress: null });
 
     try {
+      const desktopInfo = await checkForDesktopUpdates();
+      if (!desktopInfo?.available) {
+        throw new Error('Update detected, but desktop package is not ready yet. Retry in a moment.');
+      }
+
+      set((state) => ({
+        info: state.info
+          ? {
+            ...state.info,
+            ...desktopInfo,
+            available: state.info.available,
+          }
+          : desktopInfo,
+      }));
+
       const ok = await downloadDesktopUpdate((progress) => {
         set({ progress });
       });

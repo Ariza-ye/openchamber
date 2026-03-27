@@ -1,10 +1,11 @@
 import React from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { RiInformationLine } from '@remixicon/react';
+import { useUIStore } from '@/stores/useUIStore';
+import { cn } from '@/lib/utils';
 import {ButtonSmall} from '@/components/ui/button-small';
-import {Input} from '@/components/ui/input';
-import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
-import {RiInformationLine} from '@remixicon/react';
-import {useUIStore} from '@/stores/useUIStore';
-import {cn} from '@/lib/utils';
 import {useI18n} from '@/contexts/useI18n';
 import {
   formatShortcutForDisplay,
@@ -133,8 +134,8 @@ export const KeyboardShortcutsSettings: React.FC = () => {
     <div className="mb-8">
       <div className="mb-1 px-1">
         <div className="flex items-center gap-2">
-            <h3 className="typography-ui-header font-medium text-foreground">{t('Keyboard Shortcuts')}</h3>
-          <ButtonSmall
+          <h3 className="typography-ui-header font-medium text-foreground">{t('Keyboard Shortcuts')}</h3>
+          <Button
             type="button"
             variant="outline"
             size="xs"
@@ -146,7 +147,9 @@ export const KeyboardShortcutsSettings: React.FC = () => {
               setErrorText('');
               setWarningText('');
             }}
-          >{t('Reset All')}</ButtonSmall>
+          >
+            {t('Reset All')}
+          </Button>
           <Tooltip delayDuration={1000}>
             <TooltipTrigger asChild>
               <RiInformationLine className="h-3.5 w-3.5 text-muted-foreground/60 cursor-help" />
@@ -166,10 +169,8 @@ export const KeyboardShortcutsSettings: React.FC = () => {
                 This combo is already used by another shortcut. Overwrite and clear that other mapping?
               </span>
               <div className="flex gap-2 shrink-0">
-                  <ButtonSmall type="button" size="xs" className="!font-normal"
-                               onClick={confirmOverwrite}>{t('Overwrite')}</ButtonSmall>
-                  <ButtonSmall type="button" size="xs" className="!font-normal" variant="ghost"
-                               onClick={() => setPendingOverwrite(null)}>{t('Cancel')}</ButtonSmall>
+                <Button type="button" size="xs" className="!font-normal" onClick={confirmOverwrite}>{t('Overwrite')}</Button>
+                <Button type="button" size="xs" className="!font-normal" variant="ghost" onClick={() => setPendingOverwrite(null)}>{t('Cancel')}</Button>
               </div>
             </div>
           )}
@@ -235,7 +236,7 @@ export const KeyboardShortcutsSettings: React.FC = () => {
                   }}
                   className="h-7 w-40 min-w-0 typography-ui-label text-center"
                 />
-                <ButtonSmall
+                <Button
                   type="button"
                   variant="secondary"
                   size="xs"
@@ -249,9 +250,12 @@ export const KeyboardShortcutsSettings: React.FC = () => {
                     saveCombo(action.id, next);
                   }}
                   disabled={!hasDraft}
-                >{t('Save')}</ButtonSmall>
-                  <ButtonSmall type="button" size="xs" className="!font-normal" variant="ghost"
-                               onClick={() => resetOne(action.id)}>{t('Reset')}</ButtonSmall>
+                >
+                  {t('Save')}
+                </Button>
+                <Button type="button" size="xs" className="!font-normal" variant="ghost" onClick={() => resetOne(action.id)}>
+                  {t('Reset')}
+                </Button>
               </div>
             </div>
           );

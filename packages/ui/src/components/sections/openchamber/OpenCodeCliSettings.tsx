@@ -1,11 +1,12 @@
 import * as React from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { RiFolderLine, RiInformationLine } from '@remixicon/react';
+import { isDesktopShell, isTauriShell } from '@/lib/desktop';
+import { updateDesktopSettings } from '@/lib/persistence';
+import { reloadOpenCodeConfiguration } from '@/stores/useAgentsStore';
 import {ButtonSmall} from '@/components/ui/button-small';
-import {Input} from '@/components/ui/input';
-import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
-import {RiFolderLine, RiInformationLine} from '@remixicon/react';
-import {isDesktopShell, isTauriShell} from '@/lib/desktop';
-import {updateDesktopSettings} from '@/lib/persistence';
-import {reloadOpenCodeConfiguration} from '@/stores/useAgentsStore';
 import {useI18n} from '@/contexts/useI18n';
 
 export const OpenCodeCliSettings: React.FC = () => {
@@ -113,7 +114,7 @@ export const OpenCodeCliSettings: React.FC = () => {
               disabled={isLoading || isSaving}
               className="h-7 min-w-0 flex-1 font-mono text-xs"
             />
-            <ButtonSmall
+            <Button
               type="button"
               variant="outline"
               size="xs"
@@ -124,7 +125,7 @@ export const OpenCodeCliSettings: React.FC = () => {
               title={t('Browse')}
             >
               <RiFolderLine className="h-4 w-4" />
-            </ButtonSmall>
+            </Button>
           </div>
         </div>
 
@@ -135,7 +136,7 @@ export const OpenCodeCliSettings: React.FC = () => {
         </div>
 
         <div className="flex justify-start py-1.5">
-          <ButtonSmall
+          <Button
             type="button"
             size="xs"
             onClick={handleSaveAndReload}
@@ -143,7 +144,7 @@ export const OpenCodeCliSettings: React.FC = () => {
             className="shrink-0 !font-normal"
           >
             {isSaving ? 'Saving…' : 'Save + Reload'}
-          </ButtonSmall>
+          </Button>
         </div>
       </section>
     </div>

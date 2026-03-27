@@ -1,46 +1,33 @@
-import React, {memo, useRef} from 'react';
-import {RiAttachment2, RiCloseLine, RiFileImageLine, RiFileLine, RiFilePdfLine} from '@remixicon/react';
-import {type AttachedFile, useSessionStore} from '@/stores/useSessionStore';
-import {useUIStore} from '@/stores/useUIStore';
-import {toast} from '@/components/ui';
-import {cn} from '@/lib/utils';
-import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
-import {useIsVSCodeRuntime} from '@/hooks/useRuntimeAPIs';
-import {FileTypeIcon} from '@/components/icons/FileTypeIcon';
-import {useI18n} from '@/contexts/useI18n';
+import React, { useRef, memo } from 'react';
+import { RiAttachment2, RiCloseLine, RiFileImageLine, RiFileLine, RiFilePdfLine, RiGithubLine, RiGitPullRequestLine } from '@remixicon/react';
+import { useSessionStore, type AttachedFile } from '@/stores/useSessionStore';
+import { useUIStore } from '@/stores/useUIStore';
+import { toast } from '@/components/ui';
+import { cn } from '@/lib/utils';
+import { openExternalUrl } from '@/lib/url';
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
+import { useIsVSCodeRuntime } from '@/hooks/useRuntimeAPIs';
+import { FileTypeIcon } from '@/components/icons/FileTypeIcon';
 
-import type {ToolPopupContent} from './message/types';
+import type { ToolPopupContent } from './message/types';
 
 export const FileAttachmentButton = memo(() => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { addAttachedFile } = useSessionStore();
   const { isMobile } = useUIStore();
   const isVSCodeRuntime = useIsVSCodeRuntime();
-    const {t} = useI18n();
   const buttonSizeClass = isMobile ? 'h-9 w-9' : 'h-7 w-7';
   const iconSizeClass = isMobile ? 'h-5 w-5' : 'h-[18px] w-[18px]';
 
   const attachFiles = async (files: FileList | File[]) => {
-    let attachedCount = 0;
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
-      const sizeBefore = useSessionStore.getState().attachedFiles.length;
       try {
         await addAttachedFile(file);
-        const sizeAfter = useSessionStore.getState().attachedFiles.length;
-        if (sizeAfter > sizeBefore) {
-          attachedCount++;
-        }
       } catch (error) {
         console.error('File attach failed', error);
-          toast.error(error instanceof Error ? error.message : t('Failed to attach file'));
+        toast.error(error instanceof Error ? error.message : t('Failed to attach file'));
       }
-    }
-    if (attachedCount > 0) {
-        const attachedLabel = attachedCount === 1
-            ? t('Attached {count} file', {count: attachedCount})
-            : t('Attached {count} files', {count: attachedCount});
-        toast.success(attachedLabel);
     }
   };
 
@@ -62,10 +49,8 @@ export const FileAttachmentButton = memo(() => {
       const skipped = Array.isArray(data?.skipped) ? data.skipped : [];
 
       if (skipped.length > 0) {
-          const summary = skipped
-              .map((s: { name?: string; reason?: string }) => `${s?.name || t('file')}: ${s?.reason || t('skipped')}`)
-              .join('\n');
-          toast.error(t('Some files were skipped:\n{summary}', {summary}));
+        const summary = skipped.map((s: { name?: string; reason?: string }) => `${s?.name || 'file'}: ${s?.reason || 'skipped'}`).join('\n');
+        toast.error(`Some files were skipped:\n${summary}`);
       }
 
       const asFiles = picked
@@ -94,7 +79,7 @@ export const FileAttachmentButton = memo(() => {
       }
     } catch (error) {
       console.error('VS Code file pick failed', error);
-        toast.error(error instanceof Error ? error.message : t('Failed to pick files in VS Code'));
+      toast.error(error instanceof Error ? error.message : t('Failed to pick files in VS Code'));
     }
   };
 
@@ -117,13 +102,13 @@ export const FileAttachmentButton = memo(() => {
               'hover:bg-muted text-muted-foreground',
               buttonSizeClass
             )}
-            aria-label={t('Attach files')}
+            aria-label={t(t('Attach files'))}
           >
             <RiAttachment2 className={iconSizeClass} />
           </button>
         </TooltipTrigger>
         <TooltipContent side="top">
-            <p>{t('Attach files')}</p>
+          <p>{t(t('Attach files'))}</p>
         </TooltipContent>
       </Tooltip>
     </>
@@ -138,7 +123,6 @@ interface ImagePreviewProps {
 }
 
 const ImagePreview = memo(({ file, onRemove }: ImagePreviewProps) => {
-    const {t} = useI18n();
   const isLocalImagePreview =
     file.source !== 'server' &&
     file.mimeType.startsWith('image/') &&
@@ -178,7 +162,7 @@ const ImagePreview = memo(({ file, onRemove }: ImagePreviewProps) => {
             onRemove();
           }}
           className="flex items-center justify-center h-5 w-5 flex-shrink-0 hover:bg-[var(--interactive-hover)] rounded-full transition-colors cursor-pointer"
-          aria-label={t('Remove {name}', {name: displayName})}
+          aria-label={`Remove ${displayName}`}
         >
           <RiCloseLine className="h-4 w-4 text-muted-foreground" />
         </span>
@@ -197,8 +181,8 @@ const ImagePreview = memo(({ file, onRemove }: ImagePreviewProps) => {
       <button
         onClick={onRemove}
         className="absolute top-0.5 right-0.5 h-4 w-4 rounded-full bg-background/80 text-foreground hover:text-destructive flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-        title={t('Remove image')}
-        aria-label={t('Remove {name}', {name: displayName})}
+        title={t(t('Remove image'))}
+        aria-label={`Remove ${displayName}`}
       >
         <RiCloseLine className="h-2.5 w-2.5" />
       </button>
@@ -214,7 +198,6 @@ interface FileChipProps {
 }
 
 const FileChip = memo(({ file, onRemove }: FileChipProps) => {
-    const {t} = useI18n();
   const getFileExtension = (filename: string): string => {
     const parts = filename.split('.');
     return parts.length > 1 ? parts[parts.length - 1].toLowerCase() : '';
@@ -261,7 +244,7 @@ const FileChip = memo(({ file, onRemove }: FileChipProps) => {
           onRemove();
         }}
         className="flex items-center justify-center h-5 w-5 flex-shrink-0 hover:bg-[var(--interactive-hover)] rounded-full transition-colors cursor-pointer"
-        aria-label={t('Remove {name}', {name: displayName})}
+        aria-label={`Remove ${displayName}`}
       >
         <RiCloseLine className="h-4 w-4 text-muted-foreground" />
       </span>
@@ -322,6 +305,19 @@ interface FilePart {
   size?: number;
 }
 
+const GITHUB_ISSUE_LINK_MIME = 'application/vnd.github.issue-link';
+const GITHUB_PR_LINK_MIME = 'application/vnd.github.pull-request-link';
+
+const getGitHubLinkKind = (file: FilePart): 'issue' | 'pr' | null => {
+  if (file.mime === GITHUB_ISSUE_LINK_MIME) {
+    return 'issue';
+  }
+  if (file.mime === GITHUB_PR_LINK_MIME) {
+    return 'pr';
+  }
+  return null;
+};
+
 interface MessageFilesDisplayProps {
   files: FilePart[];
   onShowPopup?: (content: ToolPopupContent) => void;
@@ -329,19 +325,26 @@ interface MessageFilesDisplayProps {
 }
 
 export const MessageFilesDisplay = memo(({ files, onShowPopup, compact = false }: MessageFilesDisplayProps) => {
-    const {t} = useI18n();
 
   const fileItems = files.filter(f => f.type === 'file' && (f.mime || f.url));
 
-    const extractFilename = React.useCallback((path?: string): string => {
-        if (!path) return t('Unnamed file');
+  const extractFilename = (path?: string): string => {
+    if (!path) return t('Unnamed file');
 
     const normalized = path.replace(/\\/g, '/');
     const parts = normalized.split('/');
     const filename = parts[parts.length - 1];
 
     return filename || path;
-    }, [t]);
+  };
+
+  const resolveDisplayName = React.useCallback((file: FilePart): string => {
+    const isGitHubLink = getGitHubLinkKind(file) !== null;
+    if (isGitHubLink && typeof file.filename === 'string' && file.filename.trim().length > 0) {
+      return file.filename.trim();
+    }
+    return extractFilename(file.filename || file.url);
+  }, []);
 
   const formatFileSize = (bytes?: number) => {
     if (!bytes || !Number.isFinite(bytes) || bytes <= 0) return '';
@@ -357,7 +360,7 @@ export const MessageFilesDisplay = memo(({ files, onShowPopup, compact = false }
     () =>
       imageFiles.flatMap((file) => {
         if (!file.url) return [];
-          const filename = extractFilename(file.filename) || t('Image');
+        const filename = resolveDisplayName(file) || t('Image');
         return [{
           url: file.url,
           mimeType: file.mime,
@@ -365,7 +368,7 @@ export const MessageFilesDisplay = memo(({ files, onShowPopup, compact = false }
           size: file.size,
         }];
       }),
-      [extractFilename, imageFiles, t]
+    [imageFiles, resolveDisplayName]
   );
 
   const handleImageClick = React.useCallback((index: number) => {
@@ -376,7 +379,7 @@ export const MessageFilesDisplay = memo(({ files, onShowPopup, compact = false }
     const file = imageGallery[index];
     if (!file?.url) return;
 
-      const filename = file.filename || t('Image');
+    const filename = file.filename || t('Image');
 
     onShowPopup({
       open: true,
@@ -397,7 +400,7 @@ export const MessageFilesDisplay = memo(({ files, onShowPopup, compact = false }
         index,
       },
     });
-  }, [imageGallery, onShowPopup, t]);
+  }, [imageGallery, onShowPopup]);
 
   if (fileItems.length === 0) return null;
 
@@ -407,21 +410,41 @@ export const MessageFilesDisplay = memo(({ files, onShowPopup, compact = false }
         {otherFiles.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
             {otherFiles.map((file, index) => {
-              const fileName = extractFilename(file.filename || file.url);
+              const fileName = resolveDisplayName(file);
               const sizeText = formatFileSize(file.size);
+              const githubLinkKind = getGitHubLinkKind(file);
               return (
                 <Tooltip key={`file-${file.url || file.filename || index}`}>
                   <TooltipTrigger asChild>
-                    <div className="inline-flex items-center bg-muted/30 border border-border/30 typography-meta gap-1 px-2 py-0.5 rounded-lg">
-                      {file.mime?.includes('pdf') ? (
-                        <RiFilePdfLine className="text-muted-foreground h-3.5 w-3.5" />
-                      ) : (
-                        <RiFileLine className="text-muted-foreground h-3.5 w-3.5" />
-                      )}
-                      <div className="overflow-hidden max-w-[140px]">
-                        <span className="truncate block" title={fileName}>{fileName}</span>
+                    {githubLinkKind && file.url ? (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          void openExternalUrl(file.url || '');
+                        }}
+                        className="inline-flex items-center bg-muted/30 border border-border/30 typography-meta gap-1 px-2 py-0.5 rounded-lg text-foreground hover:text-primary transition-colors"
+                      >
+                        {githubLinkKind === 'pr' ? (
+                          <RiGitPullRequestLine className="text-muted-foreground h-3.5 w-3.5" />
+                        ) : (
+                          <RiGithubLine className="text-muted-foreground h-3.5 w-3.5" />
+                        )}
+                        <div className="overflow-hidden max-w-[220px]">
+                          <span className="truncate block" title={fileName}>{fileName}</span>
+                        </div>
+                      </button>
+                    ) : (
+                      <div className="inline-flex items-center bg-muted/30 border border-border/30 typography-meta gap-1 px-2 py-0.5 rounded-lg">
+                        {file.mime?.includes('pdf') ? (
+                          <RiFilePdfLine className="text-muted-foreground h-3.5 w-3.5" />
+                        ) : (
+                          <RiFileLine className="text-muted-foreground h-3.5 w-3.5" />
+                        )}
+                        <div className="overflow-hidden max-w-[140px]">
+                          <span className="truncate block" title={fileName}>{fileName}</span>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </TooltipTrigger>
                   <TooltipContent>
                     <p>{fileName}{sizeText ? ` (${sizeText})` : ''}</p>
@@ -436,7 +459,7 @@ export const MessageFilesDisplay = memo(({ files, onShowPopup, compact = false }
           <div className="overflow-x-auto -mx-1 px-1 py-0.5 scrollbar-thin">
             <div className="flex snap-x snap-mandatory gap-2">
               {imageFiles.map((file, index) => {
-                  const filename = extractFilename(file.filename) || t('Image');
+                const filename = resolveDisplayName(file) || t('Image');
 
                 return (
                   <Tooltip key={`img-${file.url || file.filename || index}`} delayDuration={1000}>
@@ -485,9 +508,10 @@ export const MessageFilesDisplay = memo(({ files, onShowPopup, compact = false }
       compact ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2"
     )}>
       {fileItems.map((file, index) => {
-        const fileName = extractFilename(file.filename || file.url);
+        const fileName = resolveDisplayName(file);
         const isImage = file.mime?.startsWith('image/');
         const sizeText = formatFileSize(file.size);
+        const githubLinkKind = getGitHubLinkKind(file);
 
         if (isImage && file.url) {
           return (
@@ -507,6 +531,40 @@ export const MessageFilesDisplay = memo(({ files, onShowPopup, compact = false }
                 {sizeText && <p className="text-xs opacity-80">{sizeText}</p>}
               </div>
             </div>
+          );
+        }
+
+        if (githubLinkKind && file.url) {
+          return (
+            <Tooltip key={index}>
+              <TooltipTrigger asChild>
+                <button
+                  type="button"
+                  onClick={() => {
+                    void openExternalUrl(file.url || '');
+                  }}
+                  className={cn(
+                    "flex items-center gap-2 p-2 rounded-lg border border-border/40 bg-muted/10 hover:bg-muted/20 transition-colors text-left",
+                    compact ? "text-xs" : "text-sm"
+                  )}
+                >
+                  <div className="flex-shrink-0">
+                    {githubLinkKind === 'pr' ? (
+                      <RiGitPullRequestLine className={cn("text-muted-foreground", compact ? "h-3.5 w-3.5" : "h-4 w-4")} />
+                    ) : (
+                      <RiGithubLine className={cn("text-muted-foreground", compact ? "h-3.5 w-3.5" : "h-4 w-4")} />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium truncate">{fileName}</p>
+                    {sizeText && <p className="text-xs text-muted-foreground">{sizeText}</p>}
+                  </div>
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{fileName}{sizeText ? ` (${sizeText})` : ''}</p>
+              </TooltipContent>
+            </Tooltip>
           );
         }
 
@@ -568,7 +626,6 @@ interface ImageGalleryProps {
 }
 
 export const ImageGallery = memo(({ urls, caption, onShowPopup }: ImageGalleryProps) => {
-    const {t} = useI18n();
   if (urls.length === 0) return null;
 
   const getGridCols = () => {
@@ -587,7 +644,7 @@ export const ImageGallery = memo(({ urls, caption, onShowPopup }: ImageGalleryPr
             type="button"
             onClick={() => onShowPopup?.({
               open: true,
-                title: caption || t('Image {index} of {total}', {index: index + 1, total: urls.length}),
+              title: caption || `Image ${index + 1} of ${urls.length}`,
               content: '',
               image: {
                 url,
@@ -599,7 +656,7 @@ export const ImageGallery = memo(({ urls, caption, onShowPopup }: ImageGalleryPr
           >
             <img
               src={url}
-              alt={caption || t('Image {index}', {index: index + 1})}
+              alt={caption || `Image ${index + 1}`}
               className="h-full w-full object-cover transition-transform group-hover:scale-105"
               loading="lazy"
             />

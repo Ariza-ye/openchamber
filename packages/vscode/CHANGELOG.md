@@ -1,3 +1,20 @@
+## [1.9.1] - 2026-03-20
+
+- Sessions: sidebar lists now keep sessions visible in both Recent and Project sections for easier session discovery (thanks to @nguyenngothuong).
+- Chat/GitHub: linked issues and pull requests now show as user-message attachments and open more reliably through extension-safe external link handling.
+- Settings/MCP: adding MCP servers now correctly respects user scope so user entries are not written into project config files.
+- Reliability: managed server startup now imports login-shell environment values and normalizes Windows paths to reduce session-loading mismatches and proxy-related connection issues.
+- Usage: added MiniMax Weekly quota provider support for broader quota tracking coverage (thanks to @nzlov).
+
+## [1.9.0] - 2026-03-20
+
+- Navigation/UI: refreshed the extension shell with a redesigned sidebar, clearer hierarchy, and cleaner session grouping so active work is easier to navigate.
+- Sessions: improved sidebar organization and interaction stability, including fixes for drag/rename edge cases during quick session management.
+- Chat/Performance: reduced streaming overhead and update churn for smoother long responses, steadier activity rendering, and fewer UI stalls in heavy sessions.
+- Chat: improved follow-to-latest behavior and timeline stability so ongoing responses remain easier to track.
+- Chat/Permissions: added per-session permission auto-accept controls to reduce repetitive approval prompts in iterative workflows.
+- Reliability/Windows: normalized workspace drive-letter handling and hid background process windows to reduce startup/session mismatches (thanks to @zerone0x).
+
 ## [1.8.7] - 2026-03-13
 
 - No notable changes.

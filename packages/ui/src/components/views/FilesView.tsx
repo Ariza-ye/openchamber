@@ -1,33 +1,33 @@
 import React from 'react';
+import { useI18n } from '@/contexts/useI18n';
 
 import {
-  RiArrowDownSLine,
   RiArrowLeftSLine,
-  RiCheckLine,
+  RiArrowDownSLine,
   RiClipboardLine,
   RiCloseLine,
-  RiDeleteBinLine,
-  RiEditLine,
-  RiFileAddLine,
   RiFileCopy2Line,
-  RiFileCopyLine,
-  RiFileTransferLine,
+  RiCheckLine,
   RiFolder3Fill,
-  RiFolderAddLine,
   RiFolderOpenFill,
   RiFolderReceivedLine,
   RiFullscreenExitLine,
   RiFullscreenLine,
   RiLoader4Line,
-  RiMore2Fill,
   RiRefreshLine,
-  RiSave3Line,
   RiSearchLine,
+  RiSave3Line,
   RiTextWrap,
+  RiMore2Fill,
+  RiFileAddLine,
+  RiFolderAddLine,
+  RiDeleteBinLine,
+  RiEditLine,
+  RiFileCopyLine,
+  RiFileTransferLine,
 } from '@remixicon/react';
-import {toast} from '@/components/ui';
-import {copyTextToClipboard} from '@/lib/clipboard';
-import {useI18n} from '@/contexts/useI18n';
+import { toast } from '@/components/ui';
+import { copyTextToClipboard } from '@/lib/clipboard';
 
 import {
   DropdownMenu,
@@ -36,15 +36,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {ScrollableOverlay} from '@/components/ui/ScrollableOverlay';
-import {Input} from '@/components/ui/input';
-import {Button} from '@/components/ui/button';
-import {CodeMirrorEditor} from '@/components/ui/CodeMirrorEditor';
-import {PreviewToggleButton} from './PreviewToggleButton';
-import {SimpleMarkdownRenderer} from '@/components/chat/MarkdownRenderer';
-import {languageByExtension, loadLanguageByExtension} from '@/lib/codemirror/languageByExtension';
-import {createFlexokiCodeMirrorTheme} from '@/lib/codemirror/flexokiTheme';
-import {File as PierreFile} from '@pierre/diffs/react';
+import { ScrollableOverlay } from '@/components/ui/ScrollableOverlay';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { CodeMirrorEditor } from '@/components/ui/CodeMirrorEditor';
+import { PreviewToggleButton } from './PreviewToggleButton';
+import { SimpleMarkdownRenderer } from '@/components/chat/MarkdownRenderer';
+import { languageByExtension, loadLanguageByExtension } from '@/lib/codemirror/languageByExtension';
+import { createFlexokiCodeMirrorTheme } from '@/lib/codemirror/flexokiTheme';
+import { File as PierreFile } from '@pierre/diffs/react';
 import {
   Dialog,
   DialogContent,
@@ -53,31 +53,31 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import {useDebouncedValue} from '@/hooks/useDebouncedValue';
-import {useFileSearchStore} from '@/stores/useFileSearchStore';
-import {useDeviceInfo} from '@/lib/device';
-import {cn, getModifierLabel, hasModifier} from '@/lib/utils';
-import {getImageMimeType, getLanguageFromExtension, isImageFile} from '@/lib/toolHelpers';
-import {useRuntimeAPIs} from '@/hooks/useRuntimeAPIs';
-import {EditorView} from '@codemirror/view';
-import type {Extension} from '@codemirror/state';
-import {convertFileSrc} from '@tauri-apps/api/core';
-import {useThemeSystem} from '@/contexts/useThemeSystem';
-import {useUIStore} from '@/stores/useUIStore';
-import {useFilesViewTabsStore} from '@/stores/useFilesViewTabsStore';
-import {useGitStatus} from '@/stores/useGitStore';
-import {buildCodeMirrorCommentWidgets, normalizeLineRange, useInlineCommentController} from '@/components/comments';
-import {opencodeClient} from '@/lib/opencode/client';
-import {useDirectoryShowHidden} from '@/lib/directoryShowHidden';
-import {useFilesViewShowGitignored} from '@/lib/filesViewShowGitignored';
-import {ErrorBoundary} from '@/components/ui/ErrorBoundary';
-import {useEffectiveDirectory} from '@/hooks/useEffectiveDirectory';
-import {FileTypeIcon} from '@/components/icons/FileTypeIcon';
-import {ensurePierreThemeRegistered} from '@/lib/shiki/appThemeRegistry';
-import {getDefaultTheme} from '@/lib/theme/themes';
-import {openDesktopPath, openDesktopProjectInApp} from '@/lib/desktop';
-import {OPEN_DIRECTORY_APP_IDS} from '@/lib/openInApps';
-import {useOpenInAppsStore} from '@/stores/useOpenInAppsStore';
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
+import { useFileSearchStore } from '@/stores/useFileSearchStore';
+import { useDeviceInfo } from '@/lib/device';
+import { cn, getModifierLabel, hasModifier } from '@/lib/utils';
+import { getLanguageFromExtension, getImageMimeType, isImageFile } from '@/lib/toolHelpers';
+import { useRuntimeAPIs } from '@/hooks/useRuntimeAPIs';
+import { EditorView } from '@codemirror/view';
+import type { Extension } from '@codemirror/state';
+import { convertFileSrc } from '@tauri-apps/api/core';
+import { useThemeSystem } from '@/contexts/useThemeSystem';
+import { useUIStore } from '@/stores/useUIStore';
+import { useFilesViewTabsStore } from '@/stores/useFilesViewTabsStore';
+import { useGitStatus } from '@/stores/useGitStore';
+import { buildCodeMirrorCommentWidgets, normalizeLineRange, useInlineCommentController } from '@/components/comments';
+import { opencodeClient } from '@/lib/opencode/client';
+import { useDirectoryShowHidden } from '@/lib/directoryShowHidden';
+import { useFilesViewShowGitignored } from '@/lib/filesViewShowGitignored';
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
+import { useEffectiveDirectory } from '@/hooks/useEffectiveDirectory';
+import { FileTypeIcon } from '@/components/icons/FileTypeIcon';
+import { ensurePierreThemeRegistered } from '@/lib/shiki/appThemeRegistry';
+import { getDefaultTheme } from '@/lib/theme/themes';
+import { openDesktopPath, openDesktopProjectInApp } from '@/lib/desktop';
+import { OPEN_DIRECTORY_APP_IDS } from '@/lib/openInApps';
+import { useOpenInAppsStore } from '@/stores/useOpenInAppsStore';
 
 type FileNode = {
   name: string;
@@ -410,12 +410,12 @@ const FileRow: React.FC<FileRowProps> = ({
                   <DropdownMenuSeparator />
                   {canCreateFile && (
                     <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onOpenDialog('createFile', node); }}>
-                      <RiFileAddLine className="mr-2 h-4 w-4" /> New File
+                      <RiFileAddLine className="mr-2 h-4 w-4" /> {t(t('New File'))}
                     </DropdownMenuItem>
                   )}
                   {canCreateFolder && (
                     <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onOpenDialog('createFolder', node); }}>
-                      <RiFolderAddLine className="mr-2 h-4 w-4" /> New Folder
+                      <RiFolderAddLine className="mr-2 h-4 w-4" /> {t(t('New Folder'))}
                     </DropdownMenuItem>
                   )}
                 </>
@@ -444,7 +444,6 @@ interface FilesViewProps {
 }
 
 export const FilesView: React.FC<FilesViewProps> = ({ mode = 'full' }) => {
-    const {t} = useI18n();
   const { files, runtime } = useRuntimeAPIs();
   const { currentTheme, availableThemes, lightThemeId, darkThemeId } = useThemeSystem();
   const { isMobile, screenWidth } = useDeviceInfo();
@@ -463,7 +462,7 @@ export const FilesView: React.FC<FilesViewProps> = ({ mode = 'full' }) => {
   const searchInputRef = React.useRef<HTMLInputElement>(null);
 
   const [showMobilePageContent, setShowMobilePageContent] = React.useState(false);
-  const [wrapLines, setWrapLines] = React.useState(isMobile);
+  const [wrapLines, setWrapLines] = React.useState(true);
   const [isFullscreen, setIsFullscreen] = React.useState(false);
   const [isSearchOpen, setIsSearchOpen] = React.useState(false);
   const [textViewMode, setTextViewMode] = React.useState<'view' | 'edit'>('edit');
@@ -837,6 +836,27 @@ export const FilesView: React.FC<FilesViewProps> = ({ mode = 'full' }) => {
     await loadDirectory(root);
   }, [loadDirectory, root]);
 
+  /**
+   * Incrementally refresh a single directory without nuking the rest of the
+   * tree.  After the operation the parent directory is reloaded in-place so
+   * the new/renamed/deleted entry becomes visible immediately while every
+   * other expanded directory keeps its cached children.
+   */
+  const refreshDirectory = React.useCallback(async (dirPath: string) => {
+    if (!dirPath) {
+      await refreshRoot();
+      return;
+    }
+    const normalized = normalizePath(dirPath);
+    // Remove from loaded set so loadDirectory will actually fetch again.
+    loadedDirsRef.current = new Set(loadedDirsRef.current);
+    loadedDirsRef.current.delete(normalized);
+    // Also cancel any in-flight request for this dir so the new fetch wins.
+    inFlightDirsRef.current = new Set(inFlightDirsRef.current);
+    inFlightDirsRef.current.delete(normalized);
+    await loadDirectory(normalized);
+  }, [loadDirectory, refreshRoot]);
+
   const lastFilesViewDirRef = React.useRef<string>('');
   const lastFilesViewTreeKeyRef = React.useRef<string>('');
 
@@ -907,7 +927,7 @@ export const FilesView: React.FC<FilesViewProps> = ({ mode = 'full' }) => {
         .then(async (result) => {
           if (result.success) {
             toast.success('File created');
-            await refreshRoot();
+            await refreshDirectory(parentPath);
           }
           finishDialogOperation();
         })
@@ -930,7 +950,7 @@ export const FilesView: React.FC<FilesViewProps> = ({ mode = 'full' }) => {
         .then(async (result) => {
           if (result.success) {
             toast.success('Folder created');
-            await refreshRoot();
+            await refreshDirectory(parentPath);
           }
           finishDialogOperation();
         })
@@ -961,7 +981,7 @@ export const FilesView: React.FC<FilesViewProps> = ({ mode = 'full' }) => {
         .then(async (result) => {
           if (result.success) {
             toast.success('Renamed successfully');
-            await refreshRoot();
+            await refreshDirectory(parentDir);
             if (root) {
               removeOpenPathsByPrefix(root, oldPath);
             }
@@ -992,15 +1012,17 @@ export const FilesView: React.FC<FilesViewProps> = ({ mode = 'full' }) => {
         return;
       }
 
-      await files.delete(dialogData.path)
+      const deletedPath = dialogData.path;
+      const parentDir = deletedPath.split('/').slice(0, -1).join('/');
+      await files.delete(deletedPath)
         .then(async (result) => {
           if (result.success) {
             toast.success('Deleted successfully');
-            await refreshRoot();
+            await refreshDirectory(parentDir);
             if (root) {
-              removeOpenPathsByPrefix(root, dialogData.path);
+              removeOpenPathsByPrefix(root, deletedPath);
             }
-            if (selectedFile?.path === dialogData.path || selectedFile?.path.startsWith(`${dialogData.path}/`)) {
+            if (selectedFile?.path === deletedPath || selectedFile?.path.startsWith(`${deletedPath}/`)) {
               if (root) {
                 setSelectedPath(root, null);
               }
@@ -1021,7 +1043,7 @@ export const FilesView: React.FC<FilesViewProps> = ({ mode = 'full' }) => {
     }
 
     done();
-  }, [activeDialog, dialogData, dialogInputValue, files, refreshRoot, isMobile, removeOpenPathsByPrefix, root, selectedFile?.path, setSelectedPath]);
+  }, [activeDialog, dialogData, dialogInputValue, files, refreshDirectory, isMobile, removeOpenPathsByPrefix, root, selectedFile?.path, setSelectedPath]);
 
   React.useEffect(() => {
     if (!currentDirectory) {
@@ -2116,6 +2138,202 @@ export const FilesView: React.FC<FilesViewProps> = ({ mode = 'full' }) => {
     );
   }, [currentTheme.metadata.variant, pierreTheme, wrapLines]);
 
+  const renderFloatingFileControls = ({ exitFullscreenOnly = false }: { exitFullscreenOnly?: boolean } = {}) => {
+    if (!selectedFile) {
+      return null;
+    }
+
+    return (
+      <div className="pointer-events-auto flex items-center gap-1 rounded-lg border border-[var(--interactive-border)] bg-[var(--surface-elevated)]/95 p-1 shadow-sm backdrop-blur-sm">
+        {canEdit && textViewMode === 'edit' && (
+          isSaving ? (
+            <span className="flex items-center gap-1 px-1 text-muted-foreground typography-meta">
+              <RiLoader4Line className="h-3.5 w-3.5 animate-spin" />
+              Saving...
+            </span>
+          ) : autoSaveStatus === 'saved' && !isDirty ? (
+            <span className="flex items-center gap-1 px-1 text-[color:var(--status-success)] typography-meta">
+              <RiCheckLine className="h-3.5 w-3.5" />
+              Saved
+            </span>
+          ) : isDirty ? (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => void saveDraft()}
+              className="h-6 px-1 gap-1 text-muted-foreground opacity-80 hover:opacity-100"
+              title={`Save now (${getModifierLabel()}+S) - auto-saves after 1.5s`}
+              aria-label={`Save (${getModifierLabel()}+S)`}
+            >
+              <RiSave3Line className="h-4 w-4" />
+            </Button>
+          ) : null
+        )}
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-6 w-6 p-0 text-muted-foreground opacity-80 hover:opacity-100"
+              title={t(t('Open in desktop app'))}
+              aria-label={t(t('Open in desktop app'))}
+            >
+              <RiFileTransferLine className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56 max-h-[70vh] overflow-y-auto">
+            {openInApps.map((app) => (
+              <DropdownMenuItem
+                key={app.id}
+                className="flex items-center gap-2"
+                onClick={() => void handleOpenInApp(app)}
+              >
+                <OpenInAppListIcon label={app.label} iconDataUrl={app.iconDataUrl} />
+                <span className="typography-ui-label text-foreground">{app.label}</span>
+              </DropdownMenuItem>
+            ))}
+            {openInCacheStale ? (
+              <DropdownMenuItem
+                className="flex items-center gap-2"
+                onClick={() => void loadOpenInApps(true)}
+              >
+                <RiRefreshLine className="h-4 w-4" />
+                <span className="typography-ui-label text-foreground">Refresh Apps</span>
+              </DropdownMenuItem>
+            ) : null}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {!isSelectedImage && (
+          <>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setWrapLines(!wrapLines)}
+              className={cn(
+                'h-6 w-6 p-0 transition-opacity',
+                wrapLines ? 'text-foreground opacity-100' : 'text-muted-foreground opacity-65 hover:opacity-100'
+              )}
+              title={wrapLines ? 'Disable line wrap' : 'Enable line wrap'}
+            >
+              <RiTextWrap className="size-4" />
+            </Button>
+            {textViewMode === 'edit' && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsSearchOpen(!isSearchOpen)}
+                className={cn(
+                  'h-6 w-6 p-0 transition-opacity',
+                  isSearchOpen ? 'text-foreground opacity-100' : 'text-muted-foreground opacity-65 hover:opacity-100'
+                )}
+                title={t(t('Find in file'))}
+              >
+                <RiSearchLine className="size-4" />
+              </Button>
+            )}
+          </>
+        )}
+
+        {isMarkdown && (
+          <PreviewToggleButton
+            currentMode={getMdViewMode()}
+            onToggle={() => saveMdViewMode(getMdViewMode() === 'preview' ? 'edit' : 'preview')}
+          />
+        )}
+
+        {canCopy && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={async () => {
+              const result = await copyTextToClipboard(fileContent);
+              if (result.ok) {
+                setCopiedContent(true);
+                if (copiedContentTimeoutRef.current !== null) {
+                  window.clearTimeout(copiedContentTimeoutRef.current);
+                }
+                copiedContentTimeoutRef.current = window.setTimeout(() => {
+                  setCopiedContent(false);
+                }, 1200);
+              } else {
+                toast.error('Copy failed');
+              }
+            }}
+            className="h-6 w-6 p-0"
+            title={t(t('Copy file contents'))}
+            aria-label={t(t('Copy file contents'))}
+          >
+            {copiedContent ? (
+              <RiCheckLine className="h-4 w-4 text-[color:var(--status-success)]" />
+            ) : (
+              <RiClipboardLine className="h-4 w-4" />
+            )}
+          </Button>
+        )}
+
+        {canCopyPath && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={async () => {
+              const result = await copyTextToClipboard(displaySelectedPath);
+              if (result.ok) {
+                setCopiedPath(true);
+                if (copiedPathTimeoutRef.current !== null) {
+                  window.clearTimeout(copiedPathTimeoutRef.current);
+                }
+                copiedPathTimeoutRef.current = window.setTimeout(() => {
+                  setCopiedPath(false);
+                }, 1200);
+              } else {
+                toast.error('Copy failed');
+              }
+            }}
+            className="h-6 w-6 p-0"
+            title={`Copy file path (${displaySelectedPath})`}
+            aria-label={`Copy file path (${displaySelectedPath})`}
+          >
+            {copiedPath ? (
+              <RiCheckLine className="h-4 w-4 text-[color:var(--status-success)]" />
+            ) : (
+              <RiFileCopy2Line className="h-4 w-4" />
+            )}
+          </Button>
+        )}
+
+        {exitFullscreenOnly ? (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsFullscreen(false)}
+            className="h-6 w-6 p-0"
+            title={t(t('Exit fullscreen'))}
+            aria-label={t(t('Exit fullscreen'))}
+          >
+            <RiFullscreenExitLine className="h-4 w-4" />
+          </Button>
+        ) : (!isMobile && mode === 'full' && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsFullscreen(!isFullscreen)}
+            className="h-6 w-6 p-0"
+            title={isFullscreen ? t('Exit fullscreen') : 'Fullscreen'}
+            aria-label={isFullscreen ? t('Exit fullscreen') : 'Fullscreen'}
+          >
+            {isFullscreen ? (
+              <RiFullscreenExitLine className="h-4 w-4" />
+            ) : (
+              <RiFullscreenLine className="h-4 w-4" />
+            )}
+          </Button>
+        ))}
+      </div>
+    );
+  };
+
   const fileViewer = (
     <div
       className="relative flex h-full min-h-0 min-w-0 w-full flex-col overflow-hidden"
@@ -2146,7 +2364,7 @@ export const FilesView: React.FC<FilesViewProps> = ({ mode = 'full' }) => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      <div className="flex flex-col border-b border-border/40 flex-shrink-0">
+      <div className={cn('flex flex-col flex-shrink-0', showEditorTabsRow && 'border-b border-border/40')}>
         {/* Row 1: Tabs */}
         {showEditorTabsRow ? (
         <div className="flex min-w-0 items-center px-3 py-1.5">
@@ -2154,7 +2372,7 @@ export const FilesView: React.FC<FilesViewProps> = ({ mode = 'full' }) => {
             <button
               type="button"
               onClick={() => setShowMobilePageContent(false)}
-              aria-label={t('Back')}
+              aria-label={t(t('Back'))}
               className="inline-flex h-7 w-7 flex-shrink-0 items-center justify-center mr-1 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               <RiArrowLeftSLine className="h-5 w-5" />
@@ -2168,7 +2386,7 @@ export const FilesView: React.FC<FilesViewProps> = ({ mode = 'full' }) => {
                   <button
                     type="button"
                     className="inline-flex min-w-0 max-w-full items-center gap-1 text-left typography-ui-label font-medium"
-                    aria-label={t('Open files')}
+                    aria-label={t(t('Open files'))}
                   >
                     <FileTypeIcon filePath={selectedFile.path} extension={selectedFile.extension} className="h-3.5 w-3.5 flex-shrink-0" />
                     <span className="min-w-0 flex-1 truncate">{selectedFile.name}</span>
@@ -2290,199 +2508,14 @@ export const FilesView: React.FC<FilesViewProps> = ({ mode = 'full' }) => {
         </div>
         ) : null}
 
-        {/* Row 2: Actions (right-aligned) */}
-        {selectedFile && (
-          <div className={cn('flex items-center justify-end gap-1 px-3 pb-1.5', !showEditorTabsRow && 'pt-1.5')}>
-            {canEdit && textViewMode === 'edit' && (
-              isSaving ? (
-                <span className="flex items-center gap-1 text-muted-foreground typography-meta">
-                  <RiLoader4Line className="h-3.5 w-3.5 animate-spin" />
-                  Saving…
-                </span>
-              ) : autoSaveStatus === 'saved' && !isDirty ? (
-                <span className="flex items-center gap-1 text-[color:var(--status-success)] typography-meta">
-                  <RiCheckLine className="h-3.5 w-3.5" />
-                  Saved
-                </span>
-              ) : isDirty ? (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => void saveDraft()}
-                  className="h-5 px-1 gap-1 text-muted-foreground opacity-70 hover:opacity-100"
-                  title={`Save now (${getModifierLabel()}+S) — auto-saves after 1.5s`}
-                  aria-label={`Save (${getModifierLabel()}+S)`}
-                >
-                  <RiSave3Line className="h-3.5 w-3.5" />
-                </Button>
-              ) : null
-            )}
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-5 w-5 p-0 text-muted-foreground opacity-70 hover:opacity-100"
-                  title={t('Open in desktop app')}
-                  aria-label={t('Open in desktop app')}
-                >
-                  <RiFileTransferLine className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 max-h-[70vh] overflow-y-auto">
-                {openInApps.map((app) => (
-                  <DropdownMenuItem
-                    key={app.id}
-                    className="flex items-center gap-2"
-                    onClick={() => void handleOpenInApp(app)}
-                  >
-                    <OpenInAppListIcon label={app.label} iconDataUrl={app.iconDataUrl} />
-                    <span className="typography-ui-label text-foreground">{app.label}</span>
-                  </DropdownMenuItem>
-                ))}
-                {openInCacheStale ? (
-                  <DropdownMenuItem
-                    className="flex items-center gap-2"
-                    onClick={() => void loadOpenInApps(true)}
-                  >
-                    <RiRefreshLine className="h-4 w-4" />
-                    <span className="typography-ui-label text-foreground">Refresh Apps</span>
-                  </DropdownMenuItem>
-                ) : null}
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            {canEdit && !isSelectedImage && (
-              <span aria-hidden="true" className="mx-1 h-4 w-px bg-border/60" />
-            )}
-
-            {!isSelectedImage && (
-              <>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setWrapLines(!wrapLines)}
-                  className={cn(
-                    'h-5 w-5 p-0 transition-opacity',
-                    wrapLines ? 'text-foreground opacity-100' : 'text-muted-foreground opacity-60 hover:opacity-100'
-                  )}
-                  title={wrapLines ? 'Disable line wrap' : 'Enable line wrap'}
-                >
-                  <RiTextWrap className="size-4" />
-                </Button>
-                {textViewMode === 'edit' && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setIsSearchOpen(!isSearchOpen)}
-                    className={cn(
-                      'h-5 w-5 p-0 transition-opacity',
-                      isSearchOpen ? 'text-foreground opacity-100' : 'text-muted-foreground opacity-60 hover:opacity-100'
-                    )}
-                    title={t('Find in file')}
-                  >
-                    <RiSearchLine className="size-4" />
-                  </Button>
-                )}
-              </>
-            )}
-
-            {(canCopy || canCopyPath || isMarkdown) && (canEdit || !isSelectedImage) && (
-              <span aria-hidden="true" className="mx-1 h-4 w-px bg-border/60" />
-            )}
-
-            {isMarkdown && (
-              <PreviewToggleButton
-                currentMode={getMdViewMode()}
-                onToggle={() => saveMdViewMode(getMdViewMode() === 'preview' ? 'edit' : 'preview')}
-              />
-            )}
-
-            {canCopy && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={async () => {
-                  const result = await copyTextToClipboard(fileContent);
-                  if (result.ok) {
-                    setCopiedContent(true);
-                    if (copiedContentTimeoutRef.current !== null) {
-                      window.clearTimeout(copiedContentTimeoutRef.current);
-                    }
-                    copiedContentTimeoutRef.current = window.setTimeout(() => {
-                      setCopiedContent(false);
-                    }, 1200);
-                  } else {
-                    toast.error('Copy failed');
-                  }
-                }}
-                className="h-5 w-5 p-0"
-                title={t('Copy file contents')}
-                aria-label={t('Copy file contents')}
-              >
-                {copiedContent ? (
-                  <RiCheckLine className="h-4 w-4 text-[color:var(--status-success)]" />
-                ) : (
-                  <RiClipboardLine className="h-4 w-4" />
-                )}
-              </Button>
-            )}
-
-            {canCopyPath && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={async () => {
-                  const result = await copyTextToClipboard(displaySelectedPath);
-                  if (result.ok) {
-                    setCopiedPath(true);
-                    if (copiedPathTimeoutRef.current !== null) {
-                      window.clearTimeout(copiedPathTimeoutRef.current);
-                    }
-                    copiedPathTimeoutRef.current = window.setTimeout(() => {
-                      setCopiedPath(false);
-                    }, 1200);
-                  } else {
-                    toast.error('Copy failed');
-                  }
-                }}
-                className="h-5 w-5 p-0"
-                title={`Copy file path (${displaySelectedPath})`}
-                aria-label={`Copy file path (${displaySelectedPath})`}
-              >
-                {copiedPath ? (
-                  <RiCheckLine className="h-4 w-4 text-[color:var(--status-success)]" />
-                ) : (
-                  <RiFileCopy2Line className="h-4 w-4" />
-                )}
-              </Button>
-            )}
-
-            {!isMobile && mode === 'full' && (
-              <>
-                <span aria-hidden="true" className="mx-1 h-4 w-px bg-border/60" />
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsFullscreen(!isFullscreen)}
-                  className="h-5 w-5 p-0"
-                  title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
-                  aria-label={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
-                >
-                  {isFullscreen ? (
-                    <RiFullscreenExitLine className="h-4 w-4" />
-                  ) : (
-                    <RiFullscreenLine className="h-4 w-4" />
-                  )}
-                </Button>
-              </>
-            )}
-          </div>
-        )}
       </div>
 
       <div className="flex-1 min-h-0 min-w-0 relative">
+        {selectedFile && !isSearchOpen && (
+          <div className="absolute right-3 top-3 z-30">
+            {renderFloatingFileControls()}
+          </div>
+        )}
         <ScrollableOverlay outerClassName="h-full min-w-0" className="h-full min-w-0">
           {!selectedFile ? (
             <div className="p-3 typography-ui text-muted-foreground">Pick a file from the tree.</div>
@@ -2663,13 +2696,13 @@ export const FilesView: React.FC<FilesViewProps> = ({ mode = 'full' }) => {
               ref={searchInputRef}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={t('Search files…')}
+              placeholder={t(t('Search files…'))}
               className="h-8 pl-8 pr-8 typography-meta"
             />
             {searchQuery.trim().length > 0 && (
               <button
                 type="button"
-                aria-label={t('Clear search')}
+                aria-label={t(t('Clear search'))}
                 className="absolute right-2 top-2 inline-flex h-4 w-4 items-center justify-center text-muted-foreground hover:text-foreground"
                 onClick={() => {
                   setSearchQuery('');
@@ -2685,7 +2718,7 @@ export const FilesView: React.FC<FilesViewProps> = ({ mode = 'full' }) => {
             size="sm"
             onClick={() => handleOpenDialog('createFile', { path: currentDirectory, type: 'directory' })}
             className="h-8 w-8 p-0 flex-shrink-0"
-            title={t('New File')}
+            title={t(t('New File'))}
           >
             <RiFileAddLine className="h-4 w-4" />
           </Button>
@@ -2694,7 +2727,7 @@ export const FilesView: React.FC<FilesViewProps> = ({ mode = 'full' }) => {
             size="sm"
             onClick={() => handleOpenDialog('createFolder', { path: currentDirectory, type: 'directory' })}
             className="h-8 w-8 p-0 flex-shrink-0"
-            title={t('New Folder')}
+            title={t(t('New Folder'))}
           >
             <RiFolderAddLine className="h-4 w-4" />
           </Button>
@@ -2749,184 +2782,11 @@ export const FilesView: React.FC<FilesViewProps> = ({ mode = 'full' }) => {
   // Fullscreen file viewer overlay
   const fullscreenViewer = mode === 'full' && isFullscreen && selectedFile && (
     <div className="absolute inset-0 z-50 flex flex-col bg-background">
-      {/* Fullscreen header */}
-      <div className="flex min-w-0 items-center gap-2 border-b border-border/40 px-4 py-2 flex-shrink-0">
-        <div className="min-w-0 flex-1">
-          <div className="typography-ui-label font-medium truncate">
-            {selectedFile.name}
-          </div>
-          <div className="typography-meta text-muted-foreground truncate" title={displaySelectedPath}>
-            {displaySelectedPath}
-          </div>
-        </div>
-
-        <div className="flex items-center gap-1">
-          {canEdit && textViewMode === 'edit' && (
-            isSaving ? (
-              <span className="flex items-center gap-1 text-muted-foreground typography-meta">
-                <RiLoader4Line className="h-3.5 w-3.5 animate-spin" />
-                Saving…
-              </span>
-            ) : autoSaveStatus === 'saved' && !isDirty ? (
-              <span className="flex items-center gap-1 text-[color:var(--status-success)] typography-meta">
-                <RiCheckLine className="h-3.5 w-3.5" />
-                Saved
-              </span>
-            ) : isDirty ? (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => void saveDraft()}
-                className="h-6 px-1 gap-1 text-muted-foreground opacity-70 hover:opacity-100"
-                title={`Save now (${getModifierLabel()}+S) — auto-saves after 1.5s`}
-                aria-label={`Save (${getModifierLabel()}+S)`}
-              >
-                <RiSave3Line className="h-4 w-4" />
-              </Button>
-            ) : null
-          )}
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-6 w-6 p-0 text-muted-foreground opacity-70 hover:opacity-100"
-                title={t('Open in desktop app')}
-                aria-label={t('Open in desktop app')}
-              >
-                <RiFileTransferLine className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56 max-h-[70vh] overflow-y-auto">
-              {openInApps.map((app) => (
-                <DropdownMenuItem
-                  key={app.id}
-                  className="flex items-center gap-2"
-                  onClick={() => void handleOpenInApp(app)}
-                >
-                  <OpenInAppListIcon label={app.label} iconDataUrl={app.iconDataUrl} />
-                  <span className="typography-ui-label text-foreground">{app.label}</span>
-                </DropdownMenuItem>
-              ))}
-              {openInCacheStale ? (
-                <DropdownMenuItem
-                  className="flex items-center gap-2"
-                  onClick={() => void loadOpenInApps(true)}
-                >
-                  <RiRefreshLine className="h-4 w-4" />
-                  <span className="typography-ui-label text-foreground">Refresh Apps</span>
-                </DropdownMenuItem>
-              ) : null}
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          {canEdit && !isSelectedImage && (
-            <span aria-hidden="true" className="mx-1 h-4 w-px bg-border/60" />
-          )}
-
-          {!isSelectedImage && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setWrapLines(!wrapLines)}
-              className={cn(
-                'h-6 w-6 p-0 transition-opacity',
-                wrapLines ? 'text-foreground opacity-100' : 'text-muted-foreground opacity-60 hover:opacity-100'
-              )}
-              title={wrapLines ? 'Disable line wrap' : 'Enable line wrap'}
-            >
-              <RiTextWrap className="size-4" />
-            </Button>
-          )}
-
-          {(canCopy || canCopyPath || isMarkdown) && (canEdit || !isSelectedImage) && (
-            <span aria-hidden="true" className="mx-1 h-4 w-px bg-border/60" />
-          )}
-
-          {isMarkdown && (
-            <PreviewToggleButton
-              currentMode={getMdViewMode()}
-              onToggle={() => saveMdViewMode(getMdViewMode() === 'preview' ? 'edit' : 'preview')}
-            />
-          )}
-
-          {canCopy && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={async () => {
-                const result = await copyTextToClipboard(fileContent);
-                if (result.ok) {
-                  setCopiedContent(true);
-                  if (copiedContentTimeoutRef.current !== null) {
-                    window.clearTimeout(copiedContentTimeoutRef.current);
-                  }
-                  copiedContentTimeoutRef.current = window.setTimeout(() => {
-                    setCopiedContent(false);
-                  }, 1200);
-                } else {
-                  toast.error('Copy failed');
-                }
-              }}
-              className="h-6 w-6 p-0"
-              title={t('Copy file contents')}
-              aria-label={t('Copy file contents')}
-            >
-              {copiedContent ? (
-                <RiCheckLine className="h-4 w-4 text-[color:var(--status-success)]" />
-              ) : (
-                <RiClipboardLine className="h-4 w-4" />
-              )}
-            </Button>
-          )}
-
-          {canCopyPath && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={async () => {
-                const result = await copyTextToClipboard(displaySelectedPath);
-                if (result.ok) {
-                  setCopiedPath(true);
-                  if (copiedPathTimeoutRef.current !== null) {
-                    window.clearTimeout(copiedPathTimeoutRef.current);
-                  }
-                  copiedPathTimeoutRef.current = window.setTimeout(() => {
-                    setCopiedPath(false);
-                  }, 1200);
-                } else {
-                  toast.error('Copy failed');
-                }
-              }}
-              className="h-6 w-6 p-0"
-              title={`Copy file path (${displaySelectedPath})`}
-              aria-label={`Copy file path (${displaySelectedPath})`}
-            >
-              {copiedPath ? (
-                <RiCheckLine className="h-4 w-4 text-[color:var(--status-success)]" />
-              ) : (
-                <RiFileCopy2Line className="h-4 w-4" />
-              )}
-            </Button>
-          )}
-
-          <span aria-hidden="true" className="mx-1 h-4 w-px bg-border/60" />
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsFullscreen(false)}
-            className="h-6 w-6 p-0"
-            title={t('Exit fullscreen')}
-            aria-label={t('Exit fullscreen')}
-          >
-            <RiFullscreenExitLine className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
-
       {/* Fullscreen content */}
       <div className="flex-1 min-h-0 min-w-0 relative">
+        <div className="absolute right-4 top-4 z-30">
+          {renderFloatingFileControls({ exitFullscreenOnly: true })}
+        </div>
         <ScrollableOverlay outerClassName="h-full min-w-0" className="h-full min-w-0">
           {fileLoading ? (
             suppressFileLoadingIndicator

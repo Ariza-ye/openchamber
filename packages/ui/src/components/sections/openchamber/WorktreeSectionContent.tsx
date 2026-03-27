@@ -1,18 +1,19 @@
 import React from 'react';
-import {RiAddLine, RiCloseLine, RiDeleteBinLine, RiInformationLine} from '@remixicon/react';
+import { RiAddLine, RiCloseLine, RiDeleteBinLine, RiInformationLine } from '@remixicon/react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { useProjectsStore } from '@/stores/useProjectsStore';
+import { useSessionStore } from '@/stores/useSessionStore';
+import { useDirectoryStore } from '@/stores/useDirectoryStore';
+import { useDeviceInfo } from '@/lib/device';
+import { checkIsGitRepository } from '@/lib/gitApi';
+import { getWorktreeSetupCommands, saveWorktreeSetupCommands } from '@/lib/openchamberConfig';
+import { listProjectWorktrees } from '@/lib/worktrees/worktreeManager';
+import { sessionEvents } from '@/lib/sessionEvents';
+import type { WorktreeMetadata } from '@/types/worktree';
+import { formatPathForDisplay, cn } from '@/lib/utils';
 import {ButtonSmall} from '@/components/ui/button-small';
-import {Input} from '@/components/ui/input';
-import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
-import {useProjectsStore} from '@/stores/useProjectsStore';
-import {useSessionStore} from '@/stores/useSessionStore';
-import {useDirectoryStore} from '@/stores/useDirectoryStore';
-import {useDeviceInfo} from '@/lib/device';
-import {checkIsGitRepository} from '@/lib/gitApi';
-import {getWorktreeSetupCommands, saveWorktreeSetupCommands} from '@/lib/openchamberConfig';
-import {listProjectWorktrees} from '@/lib/worktrees/worktreeManager';
-import {sessionEvents} from '@/lib/sessionEvents';
-import type {WorktreeMetadata} from '@/types/worktree';
-import {cn, formatPathForDisplay} from '@/lib/utils';
 import {useI18n} from '@/contexts/useI18n';
 
 export interface WorktreeSectionContentProps {
@@ -308,7 +309,7 @@ export const WorktreeSectionContent: React.FC<WorktreeSectionContentProps> = ({ 
                 </button>
               </div>
             ))}
-            <ButtonSmall
+            <Button
               type="button"
               variant="ghost"
               size="xs"
@@ -317,7 +318,7 @@ export const WorktreeSectionContent: React.FC<WorktreeSectionContentProps> = ({ 
             >
               <RiAddLine className="h-3.5 w-3.5" />
               Add command
-            </ButtonSmall>
+            </Button>
           </div>
         )}
       </div>
