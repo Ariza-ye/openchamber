@@ -54,7 +54,6 @@ import { OpenChamberPage } from '@/components/sections/openchamber/OpenChamberPa
 import { McpIcon } from '@/components/icons/McpIcon';
 import { useDeviceInfo } from '@/lib/device';
 import { isDesktopShell, isVSCodeRuntime, isWebRuntime } from '@/lib/desktop';
-import { reloadOpenCodeConfiguration } from '@/stores/useAgentsStore';
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
 import {useI18n} from '@/contexts/useI18n';
 import {AboutSettings} from '@/components/sections/openchamber/AboutSettings';

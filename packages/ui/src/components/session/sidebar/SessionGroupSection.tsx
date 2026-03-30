@@ -10,11 +10,7 @@ import {
   RiGitBranchLine,
 } from '@remixicon/react';
 import {useI18n} from '@/contexts/useI18n';
-  renderHighlightedText
-  normalizePath,
-  isBranchDifferentFromLabel,
-  compareSessionsByPinnedAndTime,
-import {
+
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { sessionEvents } from '@/lib/sessionEvents';

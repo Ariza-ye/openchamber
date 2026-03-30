@@ -16,26 +16,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import {SortableTabsStrip, type SortableTabsStripItem} from '@/components/ui/sortable-tabs-strip';
 
-  RiTimerLine
-  RiTerminalBoxLine,
-  RiStackLine,
-  RiServerLine,
-  RiRefreshLine,
-  RiPlayListAddLine,
-  RiLayoutRightLine,
-  RiLayoutLeftLine,
-  RiGithubFill,
-  RiFolder6Line,
-  RiFileTextLine,
-  RiCommandLine,
-  RiCloseLine,
-  RiCheckLine,
-  RiChat4Line,
-  RiArrowRightSLine,
-  RiArrowLeftSLine,
-  RiArrowDownSLine,
-  type RemixiconComponentType,
-import {
+
 import { RiArrowLeftSLine, RiChat4Line, RiChatNewLine, RiCheckLine, RiCloseLine, RiCommandLine, RiFileTextLine, RiFolder6Line, RiGitBranchLine, RiGithubFill, RiLayoutLeftLine, RiLayoutRightLine, RiPlayListAddLine, RiRefreshLine, RiServerLine, RiStackLine, RiTerminalBoxLine, RiTimerLine, type RemixiconComponentType } from '@remixicon/react';
 import { DiffIcon } from '@/components/icons/DiffIcon';
 import { useUIStore, type MainTab } from '@/stores/useUIStore';

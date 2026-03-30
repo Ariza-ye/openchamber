@@ -6,7 +6,6 @@ import { useDeviceInfo } from '@/lib/device';
 import { toast } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import {ButtonSmall} from '@/components/ui/button-small';
 import {useI18n} from '@/contexts/useI18n';
 
 const GITHUB_URL = 'https://github.com/btriapitsyn/openchamber';

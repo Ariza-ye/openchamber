@@ -278,8 +278,8 @@ export const PullRequestSection: React.FC<{
   remotes?: GitRemote[];
   remoteBranches?: string[];
   onGeneratedDescription?: () => void;
-    const {t} = useI18n();
 }> = ({ directory, branch, baseBranch, trackingBranch, remotes = [], remoteBranches = [], onGeneratedDescription }) => {
+  const {t} = useI18n();
   const { github } = useRuntimeAPIs();
   const githubAuthStatus = useGitHubAuthStore((state) => state.status);
   const githubAuthChecked = useGitHubAuthStore((state) => state.hasChecked);

@@ -1,14 +1,4 @@
-    TerminalView
-    SettingsWindow,
-    SettingsView,
-    PlanView,
-    GitView,
-    FilesView,
-    DiffView,
-    ChatView,
-import {
 import {useI18n} from '@/contexts/useI18n';
-import {NavRail} from './NavRail';
 import React, { useRef, useEffect } from 'react';
 import { motion, useMotionValue, animate } from 'motion/react';
 import { Header } from './Header';

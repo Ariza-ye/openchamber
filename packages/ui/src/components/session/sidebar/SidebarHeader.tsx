@@ -18,13 +18,7 @@ import {
   RiExpandUpDownLine,
   RiStickyNoteLine,
 } from '@remixicon/react';
-} | null;
-type ActiveProject = {
-};
-  normalizedPath: string;
-  label?: string;
-  id: string;
-type ProjectItem = {
+
 import {useI18n} from '@/contexts/useI18n';
 import {formatProjectLabel} from './utils';
 import {formatDirectoryName} from '@/lib/utils';
