@@ -92,12 +92,14 @@ Skills catalog management including discovery, installation, and configuration o
 ## Build / dev commands (verified)
 
 All scripts are in `package.json`.
-
+- Dev: `bun run dev` (concurrently starts server, web, UI watch modes)
 - Validate: `bun run type-check`, `bun run lint`
 - Build all: `bun run build`
 - Desktop build: `bun run desktop:build`
 - VS Code build: `bun run vscode:build`
 - Release smoke build: `bun run release:test` (shell script: `scripts/test-release-build.sh`)
+
+Before finalizing changes, run `bun run type-check`, `bun run lint`, `bun run build` to keep baseline green.
 
 ## Runtime entry points
 
@@ -136,17 +138,8 @@ All scripts are in `package.json`.
 
 - Do not modify `../opencode` (separate repo).
 - Do not run git/GitHub commands unless explicitly asked.
-- Keep baseline green (run `bun run type-check`, `bun run lint` before finalizing changes).
-
-## Agent code of conduct
-
-- Prefer the smallest correct change.
-- Preserve working behavior before improving structure.
-- Do not add cleverness where a direct implementation is enough.
-- Do not infer critical state from weak signals when a stronger source exists.
-- Do not encode policy only in UI; enforce it in core logic.
-- Do not hide data loss, partial failure, or fallback behavior. Make it explicit in code.
-- Finish work end-to-end: implementation, verification, and cleanup.
+- Patches exist in `patches/`; do not modify unless necessary.
+- Keep baseline green (run `bun run type-check`, `bun run lint`, `bun run build` before finalizing changes).
 
 ## Development rules
 
