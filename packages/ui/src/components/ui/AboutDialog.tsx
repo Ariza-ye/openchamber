@@ -41,7 +41,7 @@ export const AboutDialog: React.FC<AboutDialogProps> = ({
       const result = await debugUtils.copyTextToClipboard(diagnosticsReport);
       if (result.ok) {
         setCopiedDiagnostics(true);
-        toast.success('诊断信息已复制');
+        toast.success('Diagnostics copied');
       } else {
         toast.error('Copy failed', {
           description: result.error,
@@ -146,10 +146,10 @@ export const AboutDialog: React.FC<AboutDialogProps> = ({
               )}
             >
               {copiedDiagnostics
-                ? '诊断信息已复制'
+                ? 'Diagnostics copied'
                 : isPreparingDiagnostics
-                  ? '正在准备诊断信息...'
-                  : '复制诊断信息'}
+                  ? 'Preparing diagnostics...'
+                  : 'Copy diagnostics'}
             </button>
             <p className="typography-micro text-muted-foreground">
               Includes OpenChamber state, OpenCode health, directories, and projects.

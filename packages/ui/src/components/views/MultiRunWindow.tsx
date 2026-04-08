@@ -51,7 +51,7 @@ export const MultiRunWindow: React.FC<MultiRunWindowProps> = ({
             <button
               type="button"
               onClick={() => onOpenChange(false)}
-              aria-label="关闭多运行"
+              aria-label="Close multi-run"
               className="inline-flex h-7 w-7 items-center justify-center rounded-md p-0.5 text-muted-foreground hover:text-foreground hover:bg-interactive-hover/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               <RiCloseLine className="h-5 w-5" />

@@ -232,7 +232,7 @@ export const NotificationSettings: React.FC = () => {
   const canShowNotifications = isDesktop || isVSCode || (isBrowser && typeof Notification !== 'undefined' && Notification.permission === 'granted');
 
   const updateTemplate = (
-    event: '完成' | '错误' | '问题' | '子任务',
+    event: 'completion' | 'error' | 'question' | 'subtask',
     field: 'title' | 'message',
     value: string,
   ) => {
@@ -542,7 +542,7 @@ export const NotificationSettings: React.FC = () => {
                 onChange={(checked) => {
                   void handleToggleChange(checked);
                 }}
-                ariaLabel="启用通知"
+                ariaLabel="Enable notifications"
               />
               <span className="typography-ui-label text-foreground">Enable Notifications</span>
             </div>
@@ -564,7 +564,7 @@ export const NotificationSettings: React.FC = () => {
                 <Checkbox
                   checked={notificationMode === 'always'}
                   onChange={(checked) => setNotificationMode(checked ? 'always' : 'hidden-only')}
-                  ariaLabel="应用获得焦点时通知"
+                  ariaLabel="Notify while app is focused"
                 />
                 <span className="typography-ui-label text-foreground">Notify While App is Focused</span>
               </div>
@@ -621,7 +621,7 @@ export const NotificationSettings: React.FC = () => {
                     }
                   }}
                 >
-                  <Checkbox checked={notifyOnCompletion} onChange={setNotifyOnCompletion} ariaLabel="代理完成" />
+                  <Checkbox checked={notifyOnCompletion} onChange={setNotifyOnCompletion} ariaLabel="Agent completion" />
                   <span className="typography-ui-label text-foreground">Agent Completion</span>
                 </div>
 
@@ -638,7 +638,7 @@ export const NotificationSettings: React.FC = () => {
                     }
                   }}
                 >
-                  <Checkbox checked={notifyOnSubtasks} onChange={setNotifyOnSubtasks} ariaLabel="子代理完成" />
+                  <Checkbox checked={notifyOnSubtasks} onChange={setNotifyOnSubtasks} ariaLabel="Subagent completion" />
                   <span className="typography-ui-label text-foreground">Subagent Completion</span>
                 </div>
 
@@ -655,7 +655,7 @@ export const NotificationSettings: React.FC = () => {
                     }
                   }}
                 >
-                  <Checkbox checked={notifyOnError} onChange={setNotifyOnError} ariaLabel="代理错误" />
+                  <Checkbox checked={notifyOnError} onChange={setNotifyOnError} ariaLabel="Agent errors" />
                   <span className="typography-ui-label text-foreground">Agent Errors</span>
                 </div>
 
@@ -672,7 +672,7 @@ export const NotificationSettings: React.FC = () => {
                     }
                   }}
                 >
-                  <Checkbox checked={notifyOnQuestion} onChange={setNotifyOnQuestion} ariaLabel="代理问题" />
+                  <Checkbox checked={notifyOnQuestion} onChange={setNotifyOnQuestion} ariaLabel="Agent questions" />
                   <span className="typography-ui-label text-foreground">Agent Questions</span>
                 </div>
               </section>
@@ -690,10 +690,10 @@ export const NotificationSettings: React.FC = () => {
               </div>
 
               <div className="grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-3">
-                {(['完成', '子任务', '错误', '问题'] as const).map((event) => (
+                {(['completion', 'subtask', 'error', 'question'] as const).map((event) => (
                   <section key={event} className="p-2">
                     <span className="typography-ui-label text-foreground font-normal capitalize block">
-                      {event === '子任务' ? 'Subagent Completion' : event}
+                      {event === 'subtask' ? 'Subagent Completion' : event}
                     </span>
                     <div className="mt-1.5 space-y-2">
                       <div>
@@ -745,7 +745,7 @@ export const NotificationSettings: React.FC = () => {
                   <Checkbox
                     checked={summarizeLastMessage}
                     onChange={setSummarizeLastMessage}
-                    ariaLabel="总结最后一条消息"
+                    ariaLabel="Summarize last message"
                   />
                   <span className="typography-ui-label text-foreground">Summarize Last Message</span>
                 </div>
@@ -789,7 +789,7 @@ export const NotificationSettings: React.FC = () => {
                     <div className="flex items-center gap-8 py-1.5 mt-1 border-t border-[var(--surface-subtle)]">
                       <div className="flex min-w-0 flex-col w-56 shrink-0">
                         <span className="typography-ui-label text-foreground">Threshold</span>
-                        <span className="typography-meta text-muted-foreground">超过此长度的消息将被总结</span>
+                        <span className="typography-meta text-muted-foreground">Messages longer than this will be summarized</span>
                       </div>
                       <div className="flex items-center gap-2 w-fit">
                         <NumberInput
@@ -816,7 +816,7 @@ export const NotificationSettings: React.FC = () => {
                     <div className="flex items-center gap-8 py-1.5">
                       <div className="flex min-w-0 flex-col w-56 shrink-0">
                         <span className="typography-ui-label text-foreground">Length</span>
-                        <span className="typography-meta text-muted-foreground">总结的目标字符长度</span>
+                        <span className="typography-meta text-muted-foreground">Target character length of the summary</span>
                       </div>
                       <div className="flex items-center gap-2 w-fit">
                         <NumberInput
@@ -902,8 +902,8 @@ export const NotificationSettings: React.FC = () => {
                   <span className={cn("typography-ui-label", !pushSupported ? "text-muted-foreground" : "text-foreground")}>Enable push notifications</span>
                   <span className="typography-meta text-muted-foreground">
                     {!pushSupported
-                      ? "不支持推送。桌面版 Chrome/Edge 和 Android 支持推送。iOS 需要安装 PWA。"
-                      : "通过操作系统后台服务接收警报"}
+                      ? "Push not supported. Desktop Chrome/Edge and Android support push. iOS requires an installed PWA."
+                      : "Receive alerts via your operating system background service"}
                   </span>
                 </div>
                 {pushBusy && (

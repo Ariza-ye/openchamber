@@ -32,7 +32,7 @@ export const AboutSettings: React.FC = () => {
         setShowChecking(false);
         // Show toast if check completed with no update available
         if (didInitiateCheck.current && !updateStore.available && !updateStore.error) {
-          toast.success('你已使用最新版本');
+          toast.success('You are on the latest version');
           didInitiateCheck.current = false;
         }
       }, MIN_CHECKING_DURATION);
@@ -52,8 +52,7 @@ export const AboutSettings: React.FC = () => {
             v{currentVersion}
           </span>
 
-          {/* 检查更新按钮已禁用 */}
-          {/* {!updateStore.available && !updateStore.error && (
+          {!updateStore.available && !updateStore.error && (
             <button
               onClick={() => updateStore.checkForUpdates()}
               disabled={isChecking}
@@ -64,7 +63,7 @@ export const AboutSettings: React.FC = () => {
             >
               Check updates
             </button>
-          )} */}
+          )}
 
           {!isChecking && updateStore.available && (
             <button
@@ -143,7 +142,7 @@ export const AboutSettings: React.FC = () => {
       <div className="rounded-lg bg-[var(--surface-elevated)]/70 overflow-hidden flex flex-col">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-4 py-3 border-b border-[var(--surface-subtle)]">
           <div className="flex min-w-0 flex-col">
-            <span className="typography-ui-label text-foreground">版本</span>
+            <span className="typography-ui-label text-foreground">Version</span>
             <span className="typography-meta text-muted-foreground font-mono">{currentVersion}</span>
           </div>
           
@@ -151,7 +150,7 @@ export const AboutSettings: React.FC = () => {
             {updateStore.checking && (
               <div className="flex items-center gap-2 text-muted-foreground">
                 <RiLoaderLine className="h-4 w-4 animate-spin" />
-                <span className="typography-meta">检查中...</span>
+                <span className="typography-meta">Checking...</span>
               </div>
             )}
 
@@ -166,17 +165,16 @@ export const AboutSettings: React.FC = () => {
             )}
 
             {!updateStore.checking && !updateStore.available && !updateStore.error && (
-              <span className="typography-meta text-muted-foreground">已是最新</span>
+              <span className="typography-meta text-muted-foreground">Up to date</span>
             )}
 
-            {/* 检查更新按钮已禁用 */}
-            {/* <Button size="sm"
+            <Button size="sm"
               variant="outline"
               onClick={() => updateStore.checkForUpdates()}
               disabled={updateStore.checking}
             >
               Check for updates
-            </Button> */}
+            </Button>
           </div>
         </div>
         

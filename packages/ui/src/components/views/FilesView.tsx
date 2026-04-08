@@ -2246,8 +2246,8 @@ export const FilesView: React.FC<FilesViewProps> = ({ mode = 'full' }) => {
               variant="ghost"
               size="sm"
               className="h-6 w-6 p-0 text-muted-foreground opacity-80 hover:opacity-100"
-              title="在桌面应用中打开"
-              aria-label="在桌面应用中打开"
+              title="Open in desktop app"
+              aria-label="Open in desktop app"
             >
               <RiFileTransferLine className="h-4 w-4" />
             </Button>
@@ -2298,7 +2298,7 @@ export const FilesView: React.FC<FilesViewProps> = ({ mode = 'full' }) => {
                   'h-6 w-6 p-0 transition-opacity',
                   isSearchOpen ? 'text-foreground opacity-100' : 'text-muted-foreground opacity-65 hover:opacity-100'
                 )}
-                title="在文件中查找"
+                title="Find in file"
               >
                 <RiSearchLine className="size-4" />
               </Button>
@@ -2354,8 +2354,8 @@ export const FilesView: React.FC<FilesViewProps> = ({ mode = 'full' }) => {
               }
             }}
             className="h-6 w-6 p-0"
-            title="复制文件内容"
-            aria-label="复制文件内容"
+            title="Copy file contents"
+            aria-label="Copy file contents"
           >
             {copiedContent ? (
               <RiCheckLine className="h-4 w-4 text-[color:var(--status-success)]" />

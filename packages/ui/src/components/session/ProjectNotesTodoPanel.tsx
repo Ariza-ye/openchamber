@@ -264,7 +264,7 @@ export const ProjectNotesTodoPanel: React.FC<ProjectNotesTodoPanelProps> = ({
           value={notes}
           onChange={(event) => setNotes(event.target.value.slice(0, OPENCHAMBER_PROJECT_NOTES_MAX_LENGTH))}
           onBlur={handleNotesBlur}
-          placeholder="捕获上下文、提醒或链接"
+          placeholder="Capture context, reminders, or links"
           className="min-h-28 max-h-80 resize-none"
           useScrollShadow
           scrollShadowSize={56}
@@ -299,7 +299,7 @@ export const ProjectNotesTodoPanel: React.FC<ProjectNotesTodoPanelProps> = ({
                 handleAddTodo();
               }
             }}
-            placeholder="添加待办事项"
+            placeholder="Add a todo"
             disabled={isLoading}
             className="h-8"
           />
@@ -308,7 +308,7 @@ export const ProjectNotesTodoPanel: React.FC<ProjectNotesTodoPanelProps> = ({
             onClick={handleAddTodo}
             disabled={isLoading || todoInputValue.trim().length === 0}
             className="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-md border border-border/70 text-muted-foreground hover:text-foreground hover:bg-interactive-hover/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 disabled:cursor-not-allowed disabled:opacity-50"
-            aria-label="添加待办事项"
+            aria-label="Add todo"
           >
             <RiAddLine className="h-4 w-4" />
           </button>

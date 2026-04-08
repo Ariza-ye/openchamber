@@ -101,7 +101,7 @@ export const OpenCodeCliSettings: React.FC = () => {
       <section className="px-2 pb-2 pt-0 space-y-0.5">
         <div className="flex flex-col gap-2 py-1.5 sm:flex-row sm:items-center sm:gap-3">
           <div className="flex min-w-0 flex-col shrink-0">
-            <span className="typography-ui-label text-foreground">OpenCode 二进制路径</span>
+            <span className="typography-ui-label text-foreground">OpenCode Binary Path</span>
           </div>
           <div className="flex min-w-0 items-center gap-2 sm:w-[20rem]">
             <Input
@@ -118,8 +118,8 @@ export const OpenCodeCliSettings: React.FC = () => {
               onClick={handleBrowse}
               disabled={isLoading || isSaving || !isDesktopShell() || !isTauriShell()}
               className="h-7 w-7 p-0"
-              aria-label="浏览 OpenCode 二进制路径"
-              title="浏览"
+              aria-label="Browse for OpenCode binary path"
+              title="Browse"
             >
               <RiFolderLine className="h-4 w-4" />
             </Button>
@@ -140,7 +140,7 @@ export const OpenCodeCliSettings: React.FC = () => {
             disabled={isLoading || isSaving}
             className="shrink-0 !font-normal"
           >
-            {isSaving ? '保存中...' : '保存 + 重新加载'}
+            {isSaving ? 'Saving…' : 'Save + Reload'}
           </Button>
         </div>
       </section>

@@ -533,7 +533,7 @@ const SkillsInstalledPage: React.FC = () => {
       >
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>删除支持文件</DialogTitle>
+            <DialogTitle>Delete Supporting File</DialogTitle>
             <DialogDescription>
               Are you sure you want to delete "{deleteFilePath}"?
             </DialogDescription>

@@ -48,35 +48,35 @@ export interface SettingsPageMeta {
 }
 
 export const SETTINGS_GROUP_LABELS: Record<SettingsPageGroup, string> = {
-  appearance: '外观',
-  projects: '项目',
-  general: '常规',
+  appearance: 'Appearance',
+  projects: 'Projects',
+  general: 'General',
   opencode: 'OpenCode',
   git: 'Git',
-  skills: '技能',
-  usage: '使用情况',
-  advanced: '高级',
+  skills: 'Skills',
+  usage: 'Usage',
+  advanced: 'Advanced',
 };
 
 export const SETTINGS_PAGE_METADATA: readonly SettingsPageMeta[] = [
   {
     slug: 'home',
-    title: '设置',
+    title: 'Settings',
     group: 'general',
     kind: 'single',
-    description: '搜索并跳转到常用页面。',
+    description: 'Search and jump to common pages.',
     keywords: ['search', 'settings'],
   },
   {
     slug: 'projects',
-    title: '项目',
+    title: 'Projects',
     group: 'projects',
     kind: 'split',
     keywords: ['project', 'projects', 'worktree', 'worktrees', 'repo', 'repository', 'directory'],
   },
   {
     slug: 'remote-instances',
-    title: '远程实例',
+    title: 'Remote Instances',
     group: 'projects',
     kind: 'split',
     keywords: ['ssh', 'remote', 'instances', 'tunnels', 'forwarding', 'connection'],
@@ -84,28 +84,28 @@ export const SETTINGS_PAGE_METADATA: readonly SettingsPageMeta[] = [
   },
   {
     slug: 'providers',
-    title: '提供商',
+    title: 'Providers',
     group: 'opencode',
     kind: 'split',
     keywords: ['provider', 'providers', 'models', 'model', 'api key', 'api keys', 'openai', 'anthropic', 'ollama', 'credentials'],
   },
   {
     slug: 'usage',
-    title: '使用情况',
+    title: 'Usage',
     group: 'usage',
     kind: 'split',
     keywords: ['quota', 'billing', 'tokens', 'usage', 'limits'],
   },
   {
     slug: 'agents',
-    title: '代理',
+    title: 'Agents',
     group: 'opencode',
     kind: 'split',
     keywords: ['agent', 'agents', 'prompts', 'tools', 'permissions'],
   },
   {
     slug: 'commands',
-    title: '命令',
+    title: 'Commands',
     group: 'opencode',
     kind: 'split',
     keywords: ['command', 'commands', 'slash', 'macros', 'automation'],
@@ -119,14 +119,14 @@ export const SETTINGS_PAGE_METADATA: readonly SettingsPageMeta[] = [
   },
   {
     slug: 'skills.installed',
-    title: '技能',
+    title: 'Skills',
     group: 'skills',
     kind: 'split',
     keywords: ['skill', 'skills', 'instructions', 'install', 'catalog'],
   },
   {
     slug: 'skills.catalog',
-    title: '技能目录',
+    title: 'Skills Catalog',
     group: 'skills',
     kind: 'single',
     keywords: ['install', 'catalog', 'external', 'repository', 'skills catalog'],
@@ -141,21 +141,21 @@ export const SETTINGS_PAGE_METADATA: readonly SettingsPageMeta[] = [
   },
   {
     slug: 'appearance',
-    title: '外观',
+    title: 'Appearance',
     group: 'appearance',
     kind: 'single',
     keywords: ['theme', 'font', 'spacing', 'padding', 'corner radius', 'radius', 'input bar', 'terminal', 'pwa', 'install name', 'app shortcuts'],
   },
   {
     slug: 'chat',
-    title: '聊天',
+    title: 'Chat',
     group: 'general',
     kind: 'single',
     keywords: ['tools', 'diff', 'reasoning', 'dotfiles', 'draft', 'queue', 'output'],
   },
   {
     slug: 'shortcuts',
-    title: '快捷键',
+    title: 'Shortcuts',
     group: 'general',
     kind: 'single',
     keywords: ['keyboard', 'hotkeys', 'shortcuts', 'bindings'],
@@ -163,7 +163,7 @@ export const SETTINGS_PAGE_METADATA: readonly SettingsPageMeta[] = [
   },
   {
     slug: 'sessions',
-    title: '会话',
+    title: 'Sessions',
     group: 'general',
     kind: 'single',
     keywords: ['defaults', 'default agent', 'default model', 'retention', 'memory', 'limits', 'zen'],
@@ -177,9 +177,9 @@ export const SETTINGS_PAGE_METADATA: readonly SettingsPageMeta[] = [
     isAvailable: (ctx) => !ctx.isVSCode,
   },
 
-  { slug: 'notifications', title: '通知', group: 'general', kind: 'single', keywords: ['alerts', 'native', 'summary', 'summarization'], },
-  { slug: 'voice', title: '语音', group: 'advanced', kind: 'single', keywords: ['tts', 'speech', 'voice'], isAvailable: (ctx) => !ctx.isVSCode },
-  { slug: 'tunnel', title: '远程隧道', group: 'advanced', kind: 'single', keywords: ['tunnel', 'cloudflare', 'qr', 'remote', 'mobile', 'share'], isAvailable: (ctx) => !ctx.isVSCode },
+  { slug: 'notifications', title: 'Notifications', group: 'general', kind: 'single', keywords: ['alerts', 'native', 'summary', 'summarization'], },
+  { slug: 'voice', title: 'Voice', group: 'advanced', kind: 'single', keywords: ['tts', 'speech', 'voice'], isAvailable: (ctx) => !ctx.isVSCode },
+  { slug: 'tunnel', title: 'Remote Tunnel', group: 'advanced', kind: 'single', keywords: ['tunnel', 'cloudflare', 'qr', 'remote', 'mobile', 'share'], isAvailable: (ctx) => !ctx.isVSCode },
 ] as const;
 
 export const LEGACY_SIDEBAR_SECTION_TO_SETTINGS_SLUG: Record<SidebarSection, SettingsPageSlug> = {

@@ -212,7 +212,7 @@ export const DefaultsSettings: React.FC = () => {
     <div className="mb-6">
       <div className="mb-0.5 px-1">
         <div className="flex items-center gap-2">
-          <h3 className="typography-ui-header font-medium text-foreground">会话默认设置</h3>
+          <h3 className="typography-ui-header font-medium text-foreground">Session Defaults</h3>
         </div>
       </div>
 
@@ -225,7 +225,7 @@ export const DefaultsSettings: React.FC = () => {
               {supportsVariants ? ` (${defaultVariant ?? 'default'})` : ''}
             </span>
           ) : (
-            <span className="text-foreground">opencode 代理默认</span>
+            <span className="text-foreground">opencode agent default</span>
           )}
           {defaultAgent && (
             <>
@@ -237,7 +237,7 @@ export const DefaultsSettings: React.FC = () => {
 
         <div className={cn('flex flex-col gap-2 py-1 sm:flex-row sm:items-center sm:gap-8')}>
           <div className="flex min-w-0 flex-col sm:w-56 shrink-0">
-            <span className="typography-ui-label text-foreground">默认模型</span>
+            <span className="typography-ui-label text-foreground">Default Model</span>
           </div>
           <div className="flex min-w-0 flex-1 items-center gap-2 sm:w-fit sm:flex-initial">
             <ModelSelector providerId={parsedModel.providerId} modelId={parsedModel.modelId} onChange={handleModelChange} />
@@ -246,12 +246,12 @@ export const DefaultsSettings: React.FC = () => {
 
         <div className="flex flex-col gap-2 py-1 sm:flex-row sm:items-center sm:gap-8">
           <div className="flex min-w-0 flex-col sm:w-56 shrink-0">
-            <span className="typography-ui-label text-foreground">默认思考</span>
+            <span className="typography-ui-label text-foreground">Default Thinking</span>
           </div>
           <div className="flex items-center gap-2 sm:w-fit">
             <Select value={defaultVariant ?? DEFAULT_VARIANT_VALUE} onValueChange={handleVariantChange} disabled={!supportsVariants}>
               <SelectTrigger className="w-fit min-w-[120px]">
-                <SelectValue placeholder="思考" />
+                <SelectValue placeholder="Thinking" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value={DEFAULT_VARIANT_VALUE}>Default</SelectItem>
@@ -267,7 +267,7 @@ export const DefaultsSettings: React.FC = () => {
 
         <div className="flex flex-col gap-2 py-1 sm:flex-row sm:items-center sm:gap-8">
           <div className="flex min-w-0 flex-col sm:w-56 shrink-0">
-            <span className="typography-ui-label text-foreground">默认代理</span>
+            <span className="typography-ui-label text-foreground">Default Agent</span>
           </div>
           <div className="flex min-w-0 flex-1 items-center gap-2 sm:w-fit sm:flex-initial">
             <AgentSelector agentName={defaultAgent || ''} onChange={handleAgentChange} />
@@ -287,8 +287,8 @@ export const DefaultsSettings: React.FC = () => {
             }
           }}
         >
-          <Checkbox checked={showDeletionDialog} onChange={setShowDeletionDialog} ariaLabel="显示删除对话框" />
-          <span className="typography-ui-label text-foreground">显示删除对话框</span>
+          <Checkbox checked={showDeletionDialog} onChange={setShowDeletionDialog} ariaLabel="Show deletion dialog" />
+          <span className="typography-ui-label text-foreground">Show Deletion Dialog</span>
         </div>
 
       </section>

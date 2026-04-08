@@ -129,7 +129,7 @@ export const KeyboardShortcutsSettings: React.FC = () => {
     <div className="mb-8">
       <div className="mb-1 px-1">
         <div className="flex items-center gap-2">
-          <h3 className="typography-ui-header font-medium text-foreground">键盘快捷键</h3>
+          <h3 className="typography-ui-header font-medium text-foreground">Keyboard Shortcuts</h3>
           <Button
             type="button"
             variant="outline"
@@ -164,8 +164,8 @@ export const KeyboardShortcutsSettings: React.FC = () => {
                 This combo is already used by another shortcut. Overwrite and clear that other mapping?
               </span>
               <div className="flex gap-2 shrink-0">
-                <Button type="button" size="xs" className="!font-normal" onClick={confirmOverwrite}>覆盖</Button>
-                <Button type="button" size="xs" className="!font-normal" variant="ghost" onClick={() => setPendingOverwrite(null)}>取消</Button>
+                <Button type="button" size="xs" className="!font-normal" onClick={confirmOverwrite}>Overwrite</Button>
+                <Button type="button" size="xs" className="!font-normal" variant="ghost" onClick={() => setPendingOverwrite(null)}>Cancel</Button>
               </div>
             </div>
           )}
@@ -197,7 +197,7 @@ export const KeyboardShortcutsSettings: React.FC = () => {
               <div className="flex min-w-0 flex-1 items-center gap-2 sm:w-fit sm:flex-initial">
                 <Input
                   readOnly
-                  value={capturingActionId === action.id ? '按键...' : formatShortcutForDisplay(displayCombo)}
+                  value={capturingActionId === action.id ? 'Press keys...' : formatShortcutForDisplay(displayCombo)}
                   onFocus={() => {
                     setCapturingActionId(action.id);
                     setErrorText('');
@@ -239,7 +239,7 @@ export const KeyboardShortcutsSettings: React.FC = () => {
                   onClick={() => {
                     const next = draftByAction[action.id];
                     if (!next) {
-                      setErrorText('请先捕获快捷键。');
+                      setErrorText('Capture a shortcut first.');
                       return;
                     }
                     saveCombo(action.id, next);

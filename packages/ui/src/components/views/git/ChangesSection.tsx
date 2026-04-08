@@ -116,7 +116,7 @@ export const ChangesSection: React.FC<ChangesSectionProps> = ({
                 onClick={areAllSelected ? onClearSelection : onSelectAll}
                 disabled={isRevertingAll}
                 aria-checked={isPartiallySelected ? 'mixed' : hasAnySelected}
-                aria-label={areAllSelected ? '清除文件选择' : '选择所有文件'}
+                aria-label={areAllSelected ? 'Clear file selection' : 'Select all files'}
                 className={cn(
                   'inline-flex h-6 items-center gap-1 rounded px-1.5 text-muted-foreground',
                   'hover:bg-interactive-hover/55 hover:text-foreground',
@@ -188,7 +188,7 @@ export const ChangesSection: React.FC<ChangesSectionProps> = ({
                 })}
               </div>
             ) : (
-              <div role="list" aria-label="更改的文件">
+              <div role="list" aria-label="Changed files">
                 {changeEntries.map((file, index) => (
                   <div
                     key={file.path}

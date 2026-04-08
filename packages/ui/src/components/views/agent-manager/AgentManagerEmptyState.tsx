@@ -289,7 +289,7 @@ export const AgentManagerEmptyState: React.FC<AgentManagerEmptyStateProps> = ({
             id="group-name"
             value={groupName}
             onChange={(e) => setGroupName(e.target.value)}
-            placeholder="例如 feature-auth, bugfix-login"
+            placeholder="e.g. feature-auth, bugfix-login"
             className="typography-body"
           />
           <p className="typography-micro text-muted-foreground">
@@ -347,7 +347,7 @@ export const AgentManagerEmptyState: React.FC<AgentManagerEmptyStateProps> = ({
                           newCommands[index] = e.target.value;
                           setSetupCommands(newCommands);
                         }}
-                        placeholder="例如 bun install"
+                        placeholder="e.g., bun install"
                         className="h-8 flex-1 font-mono text-xs"
                       />
                       <button
@@ -357,7 +357,7 @@ export const AgentManagerEmptyState: React.FC<AgentManagerEmptyStateProps> = ({
                           setSetupCommands(newCommands);
                         }}
                         className="flex-shrink-0 flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
-                        aria-label="移除命令"
+                        aria-label="Remove command"
                       >
                         <RiCloseLine className="h-4 w-4" />
                       </button>
@@ -423,7 +423,7 @@ export const AgentManagerEmptyState: React.FC<AgentManagerEmptyStateProps> = ({
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="问任何事..."
+              placeholder="Ask anything..."
               className="min-h-[100px] max-h-[300px] resize-none border-0 bg-transparent dark:bg-transparent px-4 py-3 typography-markdown focus-visible:ring-0 focus-visible:ring-offset-0"
             />
             
@@ -471,7 +471,7 @@ export const AgentManagerEmptyState: React.FC<AgentManagerEmptyStateProps> = ({
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
                   className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:text-foreground transition-colors"
-                  aria-label="添加附件"
+                  aria-label="Add attachment"
                 >
                   <RiAddCircleLine className="h-[18px] w-[18px]" />
                 </button>
@@ -493,7 +493,7 @@ export const AgentManagerEmptyState: React.FC<AgentManagerEmptyStateProps> = ({
                           ? 'text-primary hover:text-primary'
                           : 'opacity-30'
                   )}
-                  aria-label="启动代理组"
+                  aria-label="Start Agent Group"
                 >
                   {isSubmittingOrCreating ? (
                     <RiHourglassFill className="h-[18px] w-[18px] animate-spin" />

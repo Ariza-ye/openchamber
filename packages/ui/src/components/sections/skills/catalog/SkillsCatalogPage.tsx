@@ -218,7 +218,7 @@ export const SkillsCatalogPage: React.FC<SkillsCatalogPageProps> = ({ mode, onMo
                   className="!font-normal h-6 w-6 px-0 text-[var(--status-error)] hover:text-[var(--status-error)]"
                   onClick={() => setIsRemoveCatalogDialogOpen(true)}
                   disabled={isRemovingCatalog}
-                  title="移除目录"
+                  title="Remove Catalog"
                 >
                   <RiDeleteBinLine className="h-3.5 w-3.5" />
                 </Button>
@@ -376,8 +376,8 @@ export const SkillsCatalogPage: React.FC<SkillsCatalogPageProps> = ({ mode, onMo
         >
           <DialogContent className="max-w-md">
             <DialogHeader>
-              <DialogTitle>移除目录</DialogTitle>
-              <DialogDescription>确定要移除此目录吗？</DialogDescription>
+              <DialogTitle>Remove Catalog</DialogTitle>
+              <DialogDescription>Are you sure you want to remove this catalog?</DialogDescription>
             </DialogHeader>
             <DialogFooter>
               <Button

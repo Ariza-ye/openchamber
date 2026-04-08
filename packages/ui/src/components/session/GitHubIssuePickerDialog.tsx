@@ -494,7 +494,7 @@ export function GitHubIssuePickerDialog({
       <div className="relative mt-2">
         <RiSearchLine className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder="按标题或 #123 搜索，或粘贴问题 URL"
+          placeholder="Search by title or #123, or paste issue URL"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           className="pl-9 w-full"
@@ -582,7 +582,7 @@ export function GitHubIssuePickerDialog({
                     rel="noopener noreferrer"
                     className="hidden group-hover:flex h-5 w-5 items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
                     onClick={(e) => e.stopPropagation()}
-                    aria-label="在 GitHub 中打开"
+                    aria-label="Open in GitHub"
                   >
                     <RiExternalLinkLine className="h-4 w-4" />
                   </a>
@@ -639,7 +639,7 @@ export function GitHubIssuePickerDialog({
                   e.stopPropagation();
                   setCreateInWorktree((v) => !v);
                 }}
-                aria-label="切换工作树"
+                aria-label="Toggle worktree"
                 className="flex h-5 w-5 shrink-0 items-center justify-center rounded text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               >
                 {createInWorktree ? (

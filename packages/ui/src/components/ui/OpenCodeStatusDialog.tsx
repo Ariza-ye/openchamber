@@ -22,17 +22,17 @@ export const OpenCodeStatusDialog: React.FC = () => {
 
     const result = await copyTextToClipboard(openCodeStatusText);
     if (result.ok) {
-      toast.success('已复制', { description: 'OpenCode 状态已复制到剪贴板。' });
+      toast.success('Copied', { description: 'OpenCode status copied to clipboard.' });
       return;
     }
-    toast.error('复制失败');
+    toast.error('Copy failed');
   }, [openCodeStatusText]);
 
   return (
     <Dialog open={isOpenCodeStatusDialogOpen} onOpenChange={setOpenCodeStatusDialogOpen}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>OpenCode 状态</DialogTitle>
+          <DialogTitle>OpenCode Status</DialogTitle>
           <DialogDescription>
             Diagnostic snapshot for support and debugging.
           </DialogDescription>

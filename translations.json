@@ -1,0 +1,23 @@
+{
+  "Open Command Palette": "打开命令面板",
+  "Show Keyboard Shortcuts": "显示键盘快捷键",
+  "Toggle Session Sidebar": "切换会话侧边栏",
+  "Toggle Right Sidebar": "切换右侧边栏",
+  "Navigation & Commands": "导航与命令",
+  "Settings": "设置",
+  "Help": "帮助",
+  "Close": "关闭",
+  "Cancel": "取消",
+  "Save": "保存",
+  "Delete": "删除",
+  "Edit": "编辑",
+  "Add": "添加",
+  "Remove": "移除",
+  "Search": "搜索",
+  "Filter": "筛选",
+  "Loading": "加载中",
+  "Error": "错误",
+  "Success": "成功",
+  "Warning": "警告",
+  "Info": "信息"
+}

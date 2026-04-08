@@ -461,8 +461,8 @@ export const ContextPanel: React.FC = () => {
           size="sm"
           onClick={handleToggleExpanded}
           className="h-7 w-7 p-0"
-          title={isExpanded ? '折叠面板' : '展开面板'}
-          aria-label={isExpanded ? '折叠面板' : '展开面板'}
+          title={isExpanded ? 'Collapse panel' : 'Expand panel'}
+          aria-label={isExpanded ? 'Collapse panel' : 'Expand panel'}
         >
           {isExpanded ? <RiFullscreenExitLine className="h-3.5 w-3.5" /> : <RiFullscreenLine className="h-3.5 w-3.5" />}
         </Button>
@@ -472,8 +472,8 @@ export const ContextPanel: React.FC = () => {
           size="sm"
           onClick={handleClose}
           className="h-7 w-7 p-0"
-          title="关闭面板"
-          aria-label="关闭面板"
+          title="Close panel"
+          aria-label="Close panel"
         >
           <RiCloseLine className="h-3.5 w-3.5" />
         </Button>
@@ -527,7 +527,7 @@ export const ContextPanel: React.FC = () => {
           onPointerCancel={handleResizeEnd}
           role="separator"
           aria-orientation="vertical"
-          aria-label="调整上下文面板大小"
+          aria-label="Resize context panel"
         />
       )}
       {header}
