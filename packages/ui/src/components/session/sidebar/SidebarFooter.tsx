@@ -28,27 +28,27 @@ export function SidebarFooter({
         <>
           <Tooltip>
             <TooltipTrigger asChild>
-              <button type="button" onClick={onOpenSettings} className={footerButtonClassName} aria-label="Settings">
+              <button type="button" onClick={onOpenSettings} className={footerButtonClassName} aria-label="设置">
                 <RiSettings3Line className="h-4.5 w-4.5" />
               </button>
             </TooltipTrigger>
-            <TooltipContent side="top" sideOffset={4}><p>Settings</p></TooltipContent>
+            <TooltipContent side="top" sideOffset={4}><p>设置</p></TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
-              <button type="button" onClick={onOpenShortcuts} className={footerButtonClassName} aria-label="Shortcuts">
+              <button type="button" onClick={onOpenShortcuts} className={footerButtonClassName} aria-label="快捷键">
                 <RiQuestionLine className="h-4.5 w-4.5" />
               </button>
             </TooltipTrigger>
-            <TooltipContent side="top" sideOffset={4}><p>Shortcuts</p></TooltipContent>
+            <TooltipContent side="top" sideOffset={4}><p>快捷键</p></TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
-              <button type="button" onClick={onOpenAbout} className={footerButtonClassName} aria-label="About OpenChamber">
+              <button type="button" onClick={onOpenAbout} className={footerButtonClassName} aria-label="关于 OpenChamber">
                 <RiInformationLine className="h-4.5 w-4.5" />
               </button>
             </TooltipTrigger>
-            <TooltipContent side="top" sideOffset={4}><p>About OpenChamber</p></TooltipContent>
+            <TooltipContent side="top" sideOffset={4}><p>关于 OpenChamber</p></TooltipContent>
           </Tooltip>
         </>
       ) : null}

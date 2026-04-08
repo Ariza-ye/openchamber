@@ -406,8 +406,8 @@ export const PlanView: React.FC = () => {
                 }
               }}
               className="h-5 w-5 p-0"
-              title="Copy plan contents"
-              aria-label="Copy plan contents"
+              title="复制计划内容"
+              aria-label="复制计划内容"
             >
               {copiedContent ? (
                 <RiCheckLine className="h-4 w-4 text-[color:var(--status-success)]" />

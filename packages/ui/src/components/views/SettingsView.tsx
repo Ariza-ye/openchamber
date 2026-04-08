@@ -665,7 +665,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
           <button
             type="button"
             onClick={showBackButton ? handleBack : onClose}
-            aria-label={showBackButton ? 'Back to Settings' : 'Close settings'}
+            aria-label={showBackButton ? '返回设置' : '关闭设置'}
             className="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg p-2 text-muted-foreground hover:text-foreground hover:bg-interactive-hover/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
             <RiArrowLeftSLine className="h-5 w-5" />
@@ -681,7 +681,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
             <button
               type="button"
               onClick={handleOpenPageSidebar}
-              aria-label="Open section list"
+              aria-label="打开部分列表"
               className="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg p-2 text-muted-foreground hover:text-foreground hover:bg-interactive-hover/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               <RiListUnordered className="h-5 w-5" />
@@ -692,7 +692,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
             <button
               type="button"
               onClick={onClose}
-              aria-label="Close settings"
+              aria-label="关闭设置"
               title={`Close Settings (${shortcutKey}+,)`}
               className="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg p-2 text-muted-foreground hover:text-foreground hover:bg-interactive-hover/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
@@ -707,7 +707,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
               <button
                 type="button"
                 onClick={handleBack}
-                aria-label="Back"
+                aria-label="返回"
                 className="inline-flex h-9 w-9 items-center justify-center rounded-lg p-2 text-muted-foreground hover:text-foreground hover:bg-interactive-hover/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               >
                 <RiArrowLeftSLine className="h-5 w-5" />
@@ -720,7 +720,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close settings"
+            aria-label="关闭设置"
             title={`Close Settings (${shortcutKey}+,)`}
             className="inline-flex h-7 w-7 items-center justify-center rounded-md p-0.5 text-muted-foreground hover:text-foreground hover:bg-interactive-hover/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
@@ -761,7 +761,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
                   onPointerDown={handlePointerDown}
                   role="separator"
                   aria-orientation="vertical"
-                  aria-label="Resize settings navigation"
+                  aria-label="调整设置导航大小"
                 />
               )}
               <ErrorBoundary>

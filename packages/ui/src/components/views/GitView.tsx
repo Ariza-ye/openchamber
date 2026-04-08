@@ -2176,12 +2176,12 @@ export const GitView: React.FC = () => {
           </DialogHeader>
           <Command className="h-[420px]">
             <CommandInput
-              placeholder="Search gitmojis..."
+              placeholder="搜索 gitmojis..."
               value={gitmojiSearch}
               onValueChange={setGitmojiSearch}
             />
             <CommandList>
-              <CommandEmpty>No gitmojis found.</CommandEmpty>
+              <CommandEmpty>未找到 gitmojis。</CommandEmpty>
               <CommandGroup>
                 {(gitmojiEmojis.length === 0
                   ? []

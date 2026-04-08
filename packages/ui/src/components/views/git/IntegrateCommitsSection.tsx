@@ -356,7 +356,7 @@ export const IntegrateCommitsSection: React.FC<{
       <div className={bodyClassName}>
         <div className="flex flex-wrap items-center gap-2">
           <div className="min-w-0">
-            <div className="typography-ui-label text-foreground">Move commits</div>
+            <div className="typography-ui-label text-foreground">移动提交</div>
               <div className="typography-micro text-muted-foreground truncate">
                 {sourceBranch} → {targetBranch}
               </div>
@@ -377,13 +377,13 @@ export const IntegrateCommitsSection: React.FC<{
                 className="w-72 p-0 max-h-(--radix-dropdown-menu-content-available-height) flex flex-col overflow-hidden"
               >
                 <Command className="h-full min-h-0">
-                  <CommandInput ref={searchInputRef} placeholder="Search branches..." />
+                  <CommandInput ref={searchInputRef} placeholder="搜索分支..." />
                   <CommandList
                     className="h-full min-h-0"
                     scrollbarClassName="overlay-scrollbar--flush overlay-scrollbar--dense overlay-scrollbar--zero"
                     disableHorizontal
                   >
-                    <CommandEmpty>No branches found.</CommandEmpty>
+                    <CommandEmpty>未找到分支。</CommandEmpty>
                     <CommandGroup heading="Local branches">
                       {localBranches.map((branch) => (
                         <CommandItem

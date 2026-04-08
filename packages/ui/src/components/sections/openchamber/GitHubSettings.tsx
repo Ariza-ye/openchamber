@@ -101,7 +101,7 @@ export const GitHubSettings: React.FC = () => {
       void openExternal(url);
     } catch (error) {
       console.error('Failed to start GitHub connect:', error);
-      toast.error('Failed to start GitHub connect');
+      toast.error('启动 GitHub 连接失败');
     } finally {
       setIsBusy(false);
     }
@@ -141,7 +141,7 @@ export const GitHubSettings: React.FC = () => {
         try {
           const result = await pollOnce(flow.deviceCode);
             if (result.connected) {
-              toast.success('GitHub connected');
+              toast.success('GitHub 已连接');
               setFlow(null);
               stopPolling();
               await refreshStatus(runtimeGitHub, { force: true });
@@ -153,7 +153,7 @@ export const GitHubSettings: React.FC = () => {
           }
 
           if (result.status === 'expired_token' || result.status === 'access_denied') {
-            toast.error(result.error || 'GitHub authorization failed');
+            toast.error(result.error || 'GitHub 授权失败');
             setFlow(null);
             stopPolling();
           }
@@ -187,11 +187,11 @@ export const GitHubSettings: React.FC = () => {
           throw new Error(response.statusText);
         }
       }
-      toast.success('GitHub disconnected');
+      toast.success('GitHub 已断开连接');
       await refreshStatus(runtimeGitHub, { force: true });
     } catch (error) {
       console.error('Failed to disconnect GitHub:', error);
-      toast.error('Failed to disconnect GitHub');
+      toast.error('断开 GitHub 连接失败');
     } finally {
       setIsBusy(false);
     }
@@ -220,10 +220,10 @@ export const GitHubSettings: React.FC = () => {
           })();
 
       setStatus(payload);
-      toast.success('GitHub account switched');
+      toast.success('GitHub 账户已切换');
     } catch (error) {
       console.error('Failed to switch GitHub account:', error);
-      toast.error('Failed to switch GitHub account');
+      toast.error('切换 GitHub 账户失败');
     } finally {
       setIsBusy(false);
     }
@@ -292,7 +292,7 @@ export const GitHubSettings: React.FC = () => {
         ) : (
           <div className="flex items-center justify-between gap-4 px-4 py-4">
             <div className="flex min-w-0 flex-col">
-              <span className="typography-ui-label text-foreground">Not Connected</span>
+              <span className="typography-ui-label text-foreground">未连接</span>
             </div>
             <Button size="sm" variant="default" onClick={startConnect} disabled={isBusy}>
               Connect GitHub
@@ -302,7 +302,7 @@ export const GitHubSettings: React.FC = () => {
 
         {accounts.length > 1 && (
           <div className="mt-2 border-t border-[var(--surface-subtle)] pt-2 px-2 pb-1">
-            <div className="typography-micro text-muted-foreground mb-2 px-1">Other Accounts</div>
+            <div className="typography-micro text-muted-foreground mb-2 px-1">其他账户</div>
             <div className="space-y-1">
               {accounts.map((account) => {
                 const accountUser = account.user;
@@ -338,7 +338,7 @@ export const GitHubSettings: React.FC = () => {
                       </div>
                     </div>
                     {isCurrent ? (
-                      <span className="typography-micro text-[var(--primary-base)] bg-[var(--primary-base)]/10 px-1.5 py-0.5 rounded">Active</span>
+                      <span className="typography-micro text-[var(--primary-base)] bg-[var(--primary-base)]/10 px-1.5 py-0.5 rounded">活跃</span>
                     ) : (
                       <Button size="sm"
                         variant="ghost"
@@ -373,7 +373,7 @@ export const GitHubSettings: React.FC = () => {
       {flow && (
         <div className="mt-4 rounded-lg bg-[var(--surface-elevated)]/70 p-4 border border-[var(--interactive-border)]">
           <div className="space-y-1">
-            <h4 className="typography-ui-label text-foreground">Authorize OpenChamber</h4>
+            <h4 className="typography-ui-label text-foreground">授权 OpenChamber</h4>
             <p className="typography-meta text-muted-foreground">
               In GitHub, enter the following code to authorize this device:
             </p>

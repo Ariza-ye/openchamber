@@ -340,7 +340,7 @@ export const SkillsSidebar: React.FC<SkillsSidebarProps> = ({ onItemSelect }) =>
       >
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Delete Skill</DialogTitle>
+            <DialogTitle>删除技能</DialogTitle>
             <DialogDescription>
               Are you sure you want to delete skill "{deleteDialogSkill?.name}"?
             </DialogDescription>
@@ -366,7 +366,7 @@ export const SkillsSidebar: React.FC<SkillsSidebarProps> = ({ onItemSelect }) =>
       <Dialog open={renameDialogSkill !== null} onOpenChange={(open) => !open && setRenameDialogSkill(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Rename Skill</DialogTitle>
+            <DialogTitle>重命名技能</DialogTitle>
             <DialogDescription>
               Enter a new name for the skill "{renameDialogSkill?.name}"
             </DialogDescription>

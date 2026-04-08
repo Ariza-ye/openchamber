@@ -280,7 +280,7 @@ export const InstallFromRepoDialog: React.FC<InstallFromRepoDialogProps> = ({ op
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="max-w-3xl max-h-[85vh] flex flex-col">
           <DialogHeader className="flex-shrink-0">
-            <DialogTitle>Install from Git repository</DialogTitle>
+            <DialogTitle>从 Git 仓库安装</DialogTitle>
             <DialogDescription>
               Scan a repository for folders containing <code className="font-mono">SKILL.md</code>, then install selected skills.
             </DialogDescription>
@@ -427,8 +427,8 @@ export const InstallFromRepoDialog: React.FC<InstallFromRepoDialogProps> = ({ op
                     className="max-w-sm"
                   />
                   <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm" onClick={() => toggleAll(true)}>Select all</Button>
-                    <Button variant="outline" size="sm" onClick={() => toggleAll(false)}>Select none</Button>
+                    <Button variant="outline" size="sm" onClick={() => toggleAll(true)}>全选</Button>
+                    <Button variant="outline" size="sm" onClick={() => toggleAll(false)}>取消全选</Button>
                   </div>
                 </div>
 

@@ -81,7 +81,7 @@ export const SessionRetentionSettings: React.FC = () => {
           <Checkbox
             checked={autoDeleteEnabled}
             onChange={setAutoDeleteEnabled}
-            ariaLabel="Enable auto-cleanup"
+            ariaLabel="启用自动清理"
           />
           <span className="typography-ui-label text-foreground">Enable Auto-Cleanup</span>
         </div>
@@ -107,7 +107,7 @@ export const SessionRetentionSettings: React.FC = () => {
               onClick={() => setAutoDeleteAfterDays(DEFAULT_RETENTION_DAYS)}
               disabled={autoDeleteAfterDays === DEFAULT_RETENTION_DAYS}
               className="h-7 w-7 px-0 text-muted-foreground hover:text-foreground"
-              aria-label="Reset retention period"
+              aria-label="重置保留期"
               title="Reset"
             >
               <RiRestartLine className="h-3.5 w-3.5" />
@@ -144,7 +144,7 @@ export const SessionRetentionSettings: React.FC = () => {
       <div className="mt-1 px-2 py-1.5 space-y-1">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-8">
           <div className="flex min-w-0 flex-col sm:w-56 shrink-0">
-            <p className="typography-meta text-foreground font-medium">Manual Cleanup</p>
+            <p className="typography-meta text-foreground font-medium">手动清理</p>
           </div>
           <div className="flex items-center gap-2 sm:w-fit">
             <Button
@@ -155,7 +155,7 @@ export const SessionRetentionSettings: React.FC = () => {
               disabled={isRunning}
               className="!font-normal"
             >
-              {isRunning ? 'Cleaning up...' : 'Run cleanup now'}
+              {isRunning ? '清理中...' : '立即运行清理'}
             </Button>
           </div>
         </div>

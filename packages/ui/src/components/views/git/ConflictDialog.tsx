@@ -119,7 +119,7 @@ export const ConflictDialog: React.FC<ConflictDialogProps> = ({
   const handleResolveInCurrentSession = async () => {
     const context = await buildConflictContext();
     if (!context) {
-      toast.error('No conflict details available');
+      toast.error('没有可用的冲突详情');
       return;
     }
 
@@ -143,7 +143,7 @@ export const ConflictDialog: React.FC<ConflictDialogProps> = ({
   const handleResolveInNewSession = async () => {
     const context = await buildConflictContext();
     if (!context) {
-      toast.error('No conflict details available');
+      toast.error('没有可用的冲突详情');
       return;
     }
 

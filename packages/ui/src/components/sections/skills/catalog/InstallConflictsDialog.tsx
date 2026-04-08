@@ -62,7 +62,7 @@ export const InstallConflictsDialog: React.FC<InstallConflictsDialogProps> = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Skills already exist</DialogTitle>
+          <DialogTitle>技能已存在</DialogTitle>
           <DialogDescription>
             Some selected skills are already installed in this scope. Choose whether to skip or overwrite them.
           </DialogDescription>
@@ -72,8 +72,8 @@ export const InstallConflictsDialog: React.FC<InstallConflictsDialogProps> = ({
           <div className="flex items-center justify-between gap-2">
             <span className="typography-meta text-muted-foreground">{conflicts.length} conflict(s)</span>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="xs" className="!font-normal" onClick={() => setAll('skip')}>Skip all</Button>
-              <Button variant="outline" size="xs" className="!font-normal" onClick={() => setAll('overwrite')}>Overwrite all</Button>
+              <Button variant="outline" size="xs" className="!font-normal" onClick={() => setAll('skip')}>全部跳过</Button>
+              <Button variant="outline" size="xs" className="!font-normal" onClick={() => setAll('overwrite')}>全部覆盖</Button>
             </div>
           </div>
 

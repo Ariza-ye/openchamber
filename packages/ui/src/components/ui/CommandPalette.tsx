@@ -173,9 +173,9 @@ export const CommandPalette: React.FC = () => {
 
   return (
     <CommandDialog open={isCommandPaletteOpen} onOpenChange={setCommandPaletteOpen}>
-      <CommandInput placeholder="Type a command or search..." />
+      <CommandInput placeholder="输入命令或搜索..." />
       <CommandList>
-        <CommandEmpty>No results found.</CommandEmpty>
+        <CommandEmpty>未找到结果。</CommandEmpty>
 
         <CommandGroup heading="Actions">
           <CommandItem onSelect={handleOpenSessionList}>

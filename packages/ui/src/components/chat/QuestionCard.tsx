@@ -371,7 +371,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ question }) => {
                           el.style.height = `${Math.min(Math.max(el.scrollHeight, minHeight), maxHeight)}px`;
                           setCustomText((prev) => ({ ...prev, [activeIndex]: el.value }));
                         }}
-                        placeholder="Your answer"
+                        placeholder="你的答案"
                         disabled={isResponding}
                         rows={2}
                         className="w-full bg-transparent border border-border/30 focus:border-primary rounded px-2 py-1 outline-none typography-meta text-foreground placeholder:text-muted-foreground/50 transition-colors resize-none overflow-hidden"

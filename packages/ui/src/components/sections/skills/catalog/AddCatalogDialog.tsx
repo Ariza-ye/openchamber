@@ -232,7 +232,7 @@ export const AddCatalogDialog: React.FC<AddCatalogDialogProps> = ({ open, onOpen
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-xl" keyboardAvoid>
         <DialogHeader>
-          <DialogTitle>Add skills catalog</DialogTitle>
+          <DialogTitle>添加技能目录</DialogTitle>
           <DialogDescription>
             Add a Git repository as a new catalog source. OpenChamber will scan it for folders containing <code className="font-mono">SKILL.md</code>.
           </DialogDescription>

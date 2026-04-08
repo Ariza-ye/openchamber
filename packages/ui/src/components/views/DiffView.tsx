@@ -836,7 +836,7 @@ const MultiFileDiffEntry = React.memo<MultiFileDiffEntryProps>(({
                                 variant="ghost"
                                 size="sm"
                                 className="h-5 w-5 p-0 opacity-70 hover:opacity-100"
-                                title="Open this file in editor at change"
+                                title="在编辑器中打开此文件以进行更改"
                                 onClick={(event) => {
                                     event.stopPropagation();
                                     onOpenInEditor(file.path, diffData);
@@ -1717,7 +1717,7 @@ export const DiffView: React.FC<DiffViewProps> = ({
                             'h-5 w-5 p-0 transition-opacity',
                             diffWrapLines ? 'text-foreground opacity-100' : 'text-muted-foreground opacity-60 hover:opacity-100'
                         )}
-                        title={diffWrapLines ? 'Disable line wrap' : 'Enable line wrap'}
+                        title={diffWrapLines ? '禁用行换行' : '启用行换行'}
                     >
                         <RiTextWrap className="size-4" />
                     </Button>
@@ -1731,7 +1731,7 @@ export const DiffView: React.FC<DiffViewProps> = ({
                             void openSelectedFileInEditorAtChange();
                         }}
                         disabled={isOpeningSelectedInEditor}
-                        title="Open this file at first changed line"
+                        title="在第一个更改行打开此文件"
                     >
                         {isOpeningSelectedInEditor ? (
                             <RiLoader4Line className="size-3.5 animate-spin" />

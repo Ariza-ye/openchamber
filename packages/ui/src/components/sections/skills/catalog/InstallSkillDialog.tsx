@@ -158,7 +158,7 @@ export const InstallSkillDialog: React.FC<InstallSkillDialogProps> = ({ open, on
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="max-w-md" keyboardAvoid>
           <DialogHeader>
-            <DialogTitle>Install skill</DialogTitle>
+            <DialogTitle>安装技能</DialogTitle>
             <DialogDescription>
               Install <span className="font-semibold text-foreground">{item.skillName}</span> into one of four target locations.
             </DialogDescription>

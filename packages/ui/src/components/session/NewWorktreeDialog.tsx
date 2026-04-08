@@ -1056,7 +1056,7 @@ export function NewWorktreeDialog({
       {isMobile ? (
         <MobileOverlayPanel
           open={open}
-          title="New Worktree"
+          title="新工作树"
           onClose={() => onOpenChange(false)}
           footer={footerContent}
         >

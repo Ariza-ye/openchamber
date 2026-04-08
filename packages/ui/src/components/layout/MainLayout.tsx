@@ -165,41 +165,42 @@ export const MainLayout: React.FC = () => {
         }
     }, [isRightSidebarOpen, isMobile]);
 
+    // 自动检测升级功能已禁用
     // Trigger initial update check shortly after mount, then repeat using server-suggested cadence.
-    const checkForUpdates = useUpdateStore((state) => state.checkForUpdates);
-    React.useEffect(() => {
-        const initialDelayMs = 3000;
-        const defaultIntervalMs = 60 * 60 * 1000;
-        const minIntervalMs = 5 * 60 * 1000;
-        const maxIntervalMs = 24 * 60 * 60 * 1000;
-        let disposed = false;
-        let timer: number | null = null;
+    // const checkForUpdates = useUpdateStore((state) => state.checkForUpdates);
+    // React.useEffect(() => {
+    //     const initialDelayMs = 3000;
+    //     const defaultIntervalMs = 60 * 60 * 1000;
+    //     const minIntervalMs = 5 * 60 * 1000;
+    //     const maxIntervalMs = 24 * 60 * 60 * 1000;
+    //     let disposed = false;
+    //     let timer: number | null = null;
 
-        const clampIntervalMs = (seconds: number): number => {
-            const ms = Math.round(seconds * 1000);
-            return Math.max(minIntervalMs, Math.min(maxIntervalMs, ms));
-        };
+    //     const clampIntervalMs = (seconds: number): number => {
+    //         const ms = Math.round(seconds * 1000);
+    //         return Math.max(minIntervalMs, Math.min(maxIntervalMs, ms));
+    //     };
 
-        const scheduleNext = (delayMs: number) => {
-            if (disposed) return;
-            timer = window.setTimeout(async () => {
-                const suggestedSec = await checkForUpdates();
-                const nextDelay = typeof suggestedSec === 'number' && Number.isFinite(suggestedSec)
-                    ? clampIntervalMs(suggestedSec)
-                    : defaultIntervalMs;
-                scheduleNext(nextDelay);
-            }, delayMs);
-        };
+    //     const scheduleNext = (delayMs: number) => {
+    //         if (disposed) return;
+    //         timer = window.setTimeout(async () => {
+    //             const suggestedSec = await checkForUpdates();
+    //             const nextDelay = typeof suggestedSec === 'number' && Number.isFinite(suggestedSec)
+    //                 ? clampIntervalMs(suggestedSec)
+    //                 : defaultIntervalMs;
+    //             scheduleNext(nextDelay);
+    //         }, delayMs);
+    //     };
 
-        scheduleNext(initialDelayMs);
+    //     scheduleNext(initialDelayMs);
 
-        return () => {
-            disposed = true;
-            if (timer !== null) {
-                window.clearTimeout(timer);
-            }
-        };
-    }, [checkForUpdates]);
+    //     return () => {
+    //         disposed = true;
+    //         if (timer !== null) {
+    //             window.clearTimeout(timer);
+    //         }
+    //     };
+    // }, [checkForUpdates]);
 
     React.useEffect(() => {
         const previous = useUIStore.getState().isMobile;

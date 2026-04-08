@@ -95,12 +95,12 @@ export function SidebarHeader(props: Props): React.ReactNode {
                     type="button"
                     onClick={handleOpenDirectoryDialog}
                     className={headerActionButtonClass}
-                    aria-label="Add project"
+                    aria-label="添加项目"
                   >
                     <RiFolderAddLine className={headerActionIconClass} />
                   </button>
                 </TooltipTrigger>
-                <TooltipContent side="bottom" sideOffset={4}><p>Add project</p></TooltipContent>
+                <TooltipContent side="bottom" sideOffset={4}><p>添加项目</p></TooltipContent>
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -108,12 +108,12 @@ export function SidebarHeader(props: Props): React.ReactNode {
                     type="button"
                     onClick={handleNewSession}
                     className={headerActionButtonClass}
-                    aria-label="New session"
+                    aria-label="新会话"
                   >
                     <RiChatNewLine className={headerActionIconClass} />
                   </button>
                 </TooltipTrigger>
-                <TooltipContent side="bottom" sideOffset={4}><p>New session</p></TooltipContent>
+                <TooltipContent side="bottom" sideOffset={4}><p>新会话</p></TooltipContent>
               </Tooltip>
             </div>
 
@@ -124,13 +124,13 @@ export function SidebarHeader(props: Props): React.ReactNode {
                     type="button"
                     onClick={openMultiRunLauncher}
                     className={headerActionButtonClass}
-                    aria-label="New multi-run"
+                    aria-label="新多运行"
                     disabled={!canOpenMultiRun}
                   >
                     <ArrowsMerge className={headerActionIconClass} />
                   </button>
                 </TooltipTrigger>
-                <TooltipContent side="bottom" sideOffset={4}><p>New multi-run</p></TooltipContent>
+                <TooltipContent side="bottom" sideOffset={4}><p>新多运行</p></TooltipContent>
               </Tooltip>
 
               {useMobileNotesPanel ? (
@@ -140,13 +140,13 @@ export function SidebarHeader(props: Props): React.ReactNode {
                       type="button"
                       onClick={() => setProjectNotesPanelOpen(true)}
                       className={headerActionButtonClass}
-                      aria-label="Project notes"
+                      aria-label="项目笔记"
                       disabled={!activeProjectRefForHeader}
                     >
                       <RiStickyNoteLine className={headerActionIconClass} />
                     </button>
                   </TooltipTrigger>
-                  <TooltipContent side="bottom" sideOffset={4}><p>Project notes</p></TooltipContent>
+                  <TooltipContent side="bottom" sideOffset={4}><p>项目笔记</p></TooltipContent>
                 </Tooltip>
               ) : (
                 <DropdownMenu open={projectNotesPanelOpen} onOpenChange={setProjectNotesPanelOpen} modal={false}>
@@ -156,14 +156,14 @@ export function SidebarHeader(props: Props): React.ReactNode {
                         <button
                           type="button"
                           className={headerActionButtonClass}
-                          aria-label="Project notes"
+                          aria-label="项目笔记"
                           disabled={!activeProjectRefForHeader}
                         >
                           <RiStickyNoteLine className={headerActionIconClass} />
                         </button>
                       </DropdownMenuTrigger>
                     </TooltipTrigger>
-                    <TooltipContent side="bottom" sideOffset={4}><p>Project notes</p></TooltipContent>
+                    <TooltipContent side="bottom" sideOffset={4}><p>项目笔记</p></TooltipContent>
                   </Tooltip>
                   <DropdownMenuContent align="start" className="w-[420px] max-w-[min(92vw,420px)] p-0">
                     <ProjectNotesTodoPanel
@@ -182,13 +182,13 @@ export function SidebarHeader(props: Props): React.ReactNode {
                     type="button"
                     onClick={() => setIsSessionSearchOpen((prev) => !prev)}
                     className={headerActionButtonClass}
-                    aria-label="Search sessions"
+                    aria-label="搜索会话"
                     aria-expanded={isSessionSearchOpen}
                   >
                     <RiSearchLine className={headerActionIconClass} />
                   </button>
                 </TooltipTrigger>
-                <TooltipContent side="bottom" sideOffset={4}><p>Search sessions</p></TooltipContent>
+                <TooltipContent side="bottom" sideOffset={4}><p>搜索会话</p></TooltipContent>
               </Tooltip>
 
               <DropdownMenu>
@@ -198,7 +198,7 @@ export function SidebarHeader(props: Props): React.ReactNode {
                       <button
                         type="button"
                         className={headerActionButtonClass}
-                        aria-label="Session display mode"
+                        aria-label="会话显示模式"
                       >
                         <RiEqualizer2Line className={headerActionIconClass} />
                       </button>
@@ -249,7 +249,7 @@ export function SidebarHeader(props: Props): React.ReactNode {
                   ref={sessionSearchInputRef}
                   value={sessionSearchQuery}
                   onChange={(event) => setSessionSearchQuery(event.target.value)}
-                  placeholder="Search sessions..."
+                  placeholder="搜索会话..."
                   className="h-8 w-full rounded-md border border-border bg-transparent pl-8 pr-8 typography-ui-label text-foreground outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
                   onKeyDown={(event) => {
                     if (event.key === 'Escape') {
@@ -267,7 +267,7 @@ export function SidebarHeader(props: Props): React.ReactNode {
                     type="button"
                     onClick={() => setSessionSearchQuery('')}
                     className="absolute right-1 top-1/2 inline-flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground hover:bg-interactive-hover/60 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
-                    aria-label="Clear search"
+                    aria-label="清除搜索"
                   >
                     <RiCloseLine className="h-3.5 w-3.5" />
                   </button>
