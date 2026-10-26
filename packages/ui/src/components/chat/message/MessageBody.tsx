@@ -748,7 +748,7 @@ const UserMessageBody = React.memo(({ messageId, parts, messageCreatedAt, isMobi
                 compact
                 className={userContentParts.length > 0 ? 'mb-2' : 'mt-0'}
             />
-            <div className="leading-relaxed text-foreground/90 text-base overflow-hidden">
+            <div className="leading-relaxed text-foreground text-base overflow-hidden">
                 {/* Positional keys, not part ids: the server echo of a just-sent
                     message swaps the optimistic part id, and id-based keys would
                     remount the text subtree (blank frame + height jump). */}
@@ -2136,7 +2136,7 @@ const AssistantMessageBody = React.memo(({
              ) : null}
               <div>
                  <div
-                     className="message-content-text leading-relaxed overflow-hidden text-foreground/90 [&_p:last-child]:mb-0 [&_ul:last-child]:mb-0 [&_ol:last-child]:mb-0"
+                     className="message-content-text leading-relaxed overflow-hidden text-foreground [&_p:last-child]:mb-0 [&_ul:last-child]:mb-0 [&_ol:last-child]:mb-0"
                  >
                     {renderedParts}
                     {showErrorMessage && (

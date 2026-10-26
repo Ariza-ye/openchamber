@@ -98,6 +98,7 @@ const AssistantTextPart: React.FC<AssistantTextPartProps> = ({
             data-streaming-reply={isStreaming && part.type === 'text' ? '' : undefined}
         >
             <MarkdownRenderer
+                className={part.type === 'text' ? 'font-medium' : undefined}
                 content={displayTextContent}
                 part={part}
                 messageId={messageId}

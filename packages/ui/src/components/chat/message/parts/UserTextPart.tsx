@@ -310,7 +310,7 @@ const UserTextPart: React.FC<UserTextPartProps> = ({
         <div className="relative" key={part.id || `${messageId}-user-text`}>
             <div
                 className={cn(
-                    "break-words font-sans typography-markdown-body",
+                    "break-words font-sans font-medium typography-markdown-body",
                     normalizedRenderingMode === 'plain' && 'whitespace-pre-wrap [unicode-bidi:plaintext] text-start',
                     isCollapsed && "line-clamp-2",
                     collapsibleUserMessages && isTruncated && !messageExpanded && "cursor-pointer"

@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { isElectronShell } from '@/lib/desktop';
 import { useUpdateStore } from '@/stores/useUpdateStore';
 
 export function useUpdatePolling() {
@@ -11,6 +12,8 @@ export function useUpdatePolling() {
   }, [checkForUpdates]);
 
   React.useEffect(() => {
+    if (isElectronShell()) return;
+
     const initialDelayMs = 3000;
     const defaultIntervalMs = 60 * 60 * 1000;
     const minIntervalMs = 5 * 60 * 1000;
