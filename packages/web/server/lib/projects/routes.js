@@ -3,7 +3,7 @@
  * (worktree setup commands, project actions, draft starters).
  *
  * These replace the shared UI's direct `/api/fs/*` access to
- * `~/.config/openchamber/projects/<projectId>.json`. The client no longer
+ * `~/.config/pichamber/projects/<projectId>.json`. The client no longer
  * resolves the home directory or composes the path, and every write goes
  * through the same lock the scheduled-task writers hold.
  *

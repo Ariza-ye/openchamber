@@ -144,7 +144,7 @@ export const UpdateDialog: React.FC<UpdateDialogProps> = ({
   // A desktop host installed from a Linux package asks for the password on its own screen.
   const desktopHostInstall = isWebRuntime && info?.installBlocked === 'desktop-host';
   const isMobileRuntime = runtimeType === 'mobile';
-  const updateCommand = info?.updateCommand || 'openchamber update';
+  const updateCommand = info?.updateCommand || 'pichamber update';
 
   // Reset state when dialog closes
   useEffect(() => {

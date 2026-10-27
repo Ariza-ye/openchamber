@@ -334,7 +334,7 @@ export type SpaceCleanUp = z.infer<typeof spaceCleanUpSchema>;
 export const readSpaceDisk = (placeId: string, signal?: AbortSignal): Promise<SpaceDisk> =>
   request(`${SPACES_ROUTE}/places/${encodeURIComponent(placeId)}/disk`, spaceDiskSchema, { signal });
 
-/** Removes what OpenChamber can make again on the place; Docker keeps whatever is in use. */
+/** Removes what Pichamber can make again on the place; Docker keeps whatever is in use. */
 export const cleanUpSpaceDisk = (placeId: string): Promise<SpaceCleanUp> =>
   request(`${SPACES_ROUTE}/places/${encodeURIComponent(placeId)}/clean-up`, spaceCleanUpSchema, { method: 'POST' });
 

@@ -1,11 +1,11 @@
 {
   "metadata": {
     "id": "openchamber-light",
-    "name": "OpenChamber",
+    "name": "Pichamber",
     "variant": "light",
-    "description": "The OpenChamber signature - Vitesse syntax on warm paper with Flexoki accents, harmonized in OKLCH (light variant)",
+    "description": "The Pichamber signature - Vitesse syntax on warm paper with Flexoki accents, harmonized in OKLCH (light variant)",
     "version": "1.0.0",
-    "author": "OpenChamber",
+    "author": "Pichamber",
     "tags": [
       "light",
       "brand",

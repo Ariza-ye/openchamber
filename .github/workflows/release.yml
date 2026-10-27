@@ -161,21 +161,6 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Get bundled OpenCode CLI version
-        id: opencode_cli_version
-        shell: bash
-        run: |
-          VERSION=$(node -p "require('./packages/electron/package.json').opencodeCli.version")
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-
-      - name: Cache bundled OpenCode CLI artifact
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
-        with:
-          path: packages/electron/.cache/opencode-cli
-          key: opencode-cli-${{ runner.os }}-${{ matrix.arch }}-${{ steps.opencode_cli_version.outputs.version }}
-          restore-keys: |
-            opencode-cli-${{ runner.os }}-${{ matrix.arch }}-
-
       - name: Install Apple Certificate
         env:
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
@@ -209,8 +194,6 @@ jobs:
           ELECTRON_BUILDER_ARCH: ${{ matrix.arch }}
         run: |
           bun run build:web-assets
-          bun run prepare:opencode-cli
-          bun run verify:opencode-cli
           bun run bundle:main
           # npmRebuild=false in package.json, so electron-builder won't
           # recompile native deps on its own — we must rebuild against the
@@ -218,7 +201,6 @@ jobs:
           # crash on require inside the packaged app.
           bun run rebuild:native
           bunx electron-builder --mac --${{ matrix.arch }} --publish=never
-          bun run verify:opencode-cli:packaged
 
       - name: Verify signature + entitlements + notarization
         run: |
@@ -313,31 +295,9 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Get bundled OpenCode CLI version
-        id: opencode_cli_version
-        shell: bash
-        run: |
-          VERSION=$(node -p "require('./packages/electron/package.json').opencodeCli.version")
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-
-      - name: Cache bundled OpenCode CLI artifact
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
-        with:
-          path: packages/electron/.cache/opencode-cli
-          key: opencode-cli-${{ runner.os }}-${{ matrix.arch }}-${{ steps.opencode_cli_version.outputs.version }}
-          restore-keys: |
-            opencode-cli-${{ runner.os }}-${{ matrix.arch }}-
-
       - name: Build web assets
         working-directory: packages/electron
         run: bun run build:web-assets
-
-      - name: Prepare bundled OpenCode CLI
-        working-directory: packages/electron
-        shell: bash
-        run: |
-          bun run prepare:opencode-cli
-          bun run verify:opencode-cli
 
       - name: Bundle main process
         working-directory: packages/electron
@@ -359,7 +319,6 @@ jobs:
         shell: bash
         run: |
           node ./scripts/package.mjs --win --${{ matrix.arch }} --publish=never
-          bun run verify:opencode-cli:packaged
 
       - name: Upload installer to release
         uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2.6.2
@@ -427,21 +386,6 @@ jobs:
       - name: Install rpmbuild for the .rpm package
         run: sudo apt-get update && sudo apt-get install -y rpm
 
-      - name: Get bundled OpenCode CLI version
-        id: opencode_cli_version
-        shell: bash
-        run: |
-          VERSION=$(node -p "require('./packages/electron/package.json').opencodeCli.version")
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-
-      - name: Cache bundled OpenCode CLI artifact
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
-        with:
-          path: packages/electron/.cache/opencode-cli
-          key: opencode-cli-${{ runner.os }}-${{ matrix.arch }}-${{ steps.opencode_cli_version.outputs.version }}
-          restore-keys: |
-            opencode-cli-${{ runner.os }}-${{ matrix.arch }}-
-
       - name: Run focused Electron release tests
         working-directory: packages/electron
         run: |
@@ -455,12 +399,9 @@ jobs:
         run: |
           set -euo pipefail
           bun run build:web-assets
-          bun run prepare:opencode-cli
-          bun run verify:opencode-cli
           bun run bundle:main
           bun run rebuild:native
           node ./scripts/package.mjs --linux --${{ matrix.arch }} --publish=never
-          bun run verify:opencode-cli:packaged
           bun run verify:linux-appimage
 
       - name: Validate Linux update manifest
@@ -474,18 +415,18 @@ jobs:
         run: |
           set -euo pipefail
           node ./scripts/verify-update-manifest.mjs "dist/${MANIFEST}" "$VERSION" \
-            "dist/OpenChamber-${VERSION}-linux-${ARTIFACT_ARCH}.AppImage" \
-            "dist/OpenChamber-${VERSION}-linux-${DEB_ARCH}.deb" \
-            "dist/OpenChamber-${VERSION}-linux-${RPM_ARCH}.rpm"
+            "dist/Pichamber-${VERSION}-linux-${ARTIFACT_ARCH}.AppImage" \
+            "dist/Pichamber-${VERSION}-linux-${DEB_ARCH}.deb" \
+            "dist/Pichamber-${VERSION}-linux-${RPM_ARCH}.rpm"
 
       - name: Upload validated Linux release files
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: linux-release-${{ matrix.arch }}
           path: |
-            packages/electron/dist/OpenChamber-${{ needs.create-release.outputs.version }}-linux-${{ matrix.artifact_arch }}.AppImage
-            packages/electron/dist/OpenChamber-${{ needs.create-release.outputs.version }}-linux-${{ matrix.deb_arch }}.deb
-            packages/electron/dist/OpenChamber-${{ needs.create-release.outputs.version }}-linux-${{ matrix.rpm_arch }}.rpm
+            packages/electron/dist/Pichamber-${{ needs.create-release.outputs.version }}-linux-${{ matrix.artifact_arch }}.AppImage
+            packages/electron/dist/Pichamber-${{ needs.create-release.outputs.version }}-linux-${{ matrix.deb_arch }}.deb
+            packages/electron/dist/Pichamber-${{ needs.create-release.outputs.version }}-linux-${{ matrix.rpm_arch }}.rpm
             packages/electron/dist/${{ matrix.manifest }}
           if-no-files-found: error
           retention-days: 1
@@ -515,14 +456,14 @@ jobs:
           set -euo pipefail
           node packages/electron/scripts/verify-update-manifest.mjs \
             artifacts/x64/latest-linux.yml "$VERSION" \
-            "artifacts/x64/OpenChamber-${VERSION}-linux-x86_64.AppImage" \
-            "artifacts/x64/OpenChamber-${VERSION}-linux-amd64.deb" \
-            "artifacts/x64/OpenChamber-${VERSION}-linux-x86_64.rpm"
+            "artifacts/x64/Pichamber-${VERSION}-linux-x86_64.AppImage" \
+            "artifacts/x64/Pichamber-${VERSION}-linux-amd64.deb" \
+            "artifacts/x64/Pichamber-${VERSION}-linux-x86_64.rpm"
           node packages/electron/scripts/verify-update-manifest.mjs \
             artifacts/arm64/latest-linux-arm64.yml "$VERSION" \
-            "artifacts/arm64/OpenChamber-${VERSION}-linux-arm64.AppImage" \
-            "artifacts/arm64/OpenChamber-${VERSION}-linux-arm64.deb" \
-            "artifacts/arm64/OpenChamber-${VERSION}-linux-aarch64.rpm"
+            "artifacts/arm64/Pichamber-${VERSION}-linux-arm64.AppImage" \
+            "artifacts/arm64/Pichamber-${VERSION}-linux-arm64.deb" \
+            "artifacts/arm64/Pichamber-${VERSION}-linux-aarch64.rpm"
 
       - name: Upload Linux packages and manifests to release
         if: ${{ github.event.inputs.dry_run != 'true' }}
@@ -531,13 +472,13 @@ jobs:
           tag_name: v${{ needs.create-release.outputs.version }}
           draft: true
           files: |
-            artifacts/x64/OpenChamber-${{ needs.create-release.outputs.version }}-linux-x86_64.AppImage
-            artifacts/x64/OpenChamber-${{ needs.create-release.outputs.version }}-linux-amd64.deb
-            artifacts/x64/OpenChamber-${{ needs.create-release.outputs.version }}-linux-x86_64.rpm
+            artifacts/x64/Pichamber-${{ needs.create-release.outputs.version }}-linux-x86_64.AppImage
+            artifacts/x64/Pichamber-${{ needs.create-release.outputs.version }}-linux-amd64.deb
+            artifacts/x64/Pichamber-${{ needs.create-release.outputs.version }}-linux-x86_64.rpm
             artifacts/x64/latest-linux.yml
-            artifacts/arm64/OpenChamber-${{ needs.create-release.outputs.version }}-linux-arm64.AppImage
-            artifacts/arm64/OpenChamber-${{ needs.create-release.outputs.version }}-linux-arm64.deb
-            artifacts/arm64/OpenChamber-${{ needs.create-release.outputs.version }}-linux-aarch64.rpm
+            artifacts/arm64/Pichamber-${{ needs.create-release.outputs.version }}-linux-arm64.AppImage
+            artifacts/arm64/Pichamber-${{ needs.create-release.outputs.version }}-linux-arm64.deb
+            artifacts/arm64/Pichamber-${{ needs.create-release.outputs.version }}-linux-aarch64.rpm
             artifacts/arm64/latest-linux-arm64.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -613,13 +554,13 @@ jobs:
           (async () => {
           const { REPOSITORY: repo, VERSION: version, RELEASE_ID: releaseId, GITHUB_TOKEN: token } = process.env;
           const expected = [
-            `OpenChamber-${version}-linux-x86_64.AppImage`,
-            `OpenChamber-${version}-linux-amd64.deb`,
-            `OpenChamber-${version}-linux-x86_64.rpm`,
+            `Pichamber-${version}-linux-x86_64.AppImage`,
+            `Pichamber-${version}-linux-amd64.deb`,
+            `Pichamber-${version}-linux-x86_64.rpm`,
             'latest-linux.yml',
-            `OpenChamber-${version}-linux-arm64.AppImage`,
-            `OpenChamber-${version}-linux-arm64.deb`,
-            `OpenChamber-${version}-linux-aarch64.rpm`,
+            `Pichamber-${version}-linux-arm64.AppImage`,
+            `Pichamber-${version}-linux-arm64.deb`,
+            `Pichamber-${version}-linux-aarch64.rpm`,
             'latest-linux-arm64.yml',
           ];
           // The release is still a draft here, and the by-tag endpoint

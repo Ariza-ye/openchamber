@@ -99,7 +99,7 @@ export const reportSessionKnowledgeDelivered = async (
  * `packages/web/server/lib/session-knowledge/runtime.js`, whose test pins this
  * copy to it. A synthetic message starting with it carries the block.
  */
-export const SESSION_KNOWLEDGE_HEADER = 'Standing context for this session, added by OpenChamber.'
+export const SESSION_KNOWLEDGE_HEADER = 'Standing context for this session, added by Pichamber.'
   + ' It is background, not a request: act on the user\'s messages, and carry on'
   + ' with any task already in progress.';
 

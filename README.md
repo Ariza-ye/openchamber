@@ -9,7 +9,7 @@
 
 ## Run agent work. Keep control. Ship from anywhere.
 
-**OpenChamber is an open-source workspace for running and reviewing AI coding work on desktop, web, VS Code, and mobile.**
+**OpenChamber is an open-source workspace for running and reviewing AI coding work on desktop, web, and mobile.**
 
 Start agent work, see what changed, and take it through review and release. Your projects and sessions remain available when you switch devices or step away.
 
@@ -17,8 +17,6 @@ Start agent work, see what changed, and take it through review and release. Your
 
 <details>
 <summary>More screenshots</summary>
-
-![VS Code Extension](packages/vscode/extension.jpg)
 
 <p>
 <img src="docs/references/pwa_chat_example.png" width="45%" alt="OpenChamber PWA chat">
@@ -51,7 +49,7 @@ Start a session from a GitHub issue or pull request with its context attached. S
 
 ### Continue on another device
 
-Open the same projects and sessions from Desktop, Web/PWA, VS Code, iOS, or Android. Check progress, answer questions, review changes, and reattach to a running terminal.
+Open the same projects and sessions from Desktop, Web/PWA, iOS, or Android. Check progress, answer questions, review changes, and reattach to a running terminal.
 
 ### Private remote access
 
@@ -71,7 +69,6 @@ Run a prompt once, daily, weekly, or on a cron schedule. Scheduled tasks can use
 | --- | --- |
 | **Desktop** | The complete workspace for macOS, Windows, and Linux, with multiple windows, Mini Chat, remote machines, SSH, and native notifications |
 | **Web / PWA** | Open your workspace in a browser, install it as an app, and stay up to date through background notifications |
-| **VS Code** | Keep sessions beside your code, send selections to the agent, open results in the editor, and compare parallel runs |
 | **iOS / Android** | Review and steer work away from your desk, receive completion alerts, and use the terminal with touch controls |
 | **CLI / Server** | Run OpenChamber on a workstation or server, schedule work, manage remote access, and keep it available after login |
 
@@ -79,7 +76,7 @@ Run a prompt once, daily, weekly, or on a cron schedule. Scheduled tasks can use
 
 ### Desktop for macOS, Windows, and Linux
 
-Download the latest release from [GitHub Releases](https://github.com/openchamber/openchamber/releases/latest). Desktop bundles the matching OpenCode CLI, so no separate OpenCode installation is required.
+Download the latest release from [GitHub Releases](https://github.com/openchamber/openchamber/releases/latest). Desktop runs pi; install pi and point Pichamber at it in Settings > General.
 
 Linux releases come for x86_64 and ARM64 as a `.deb` (Debian, Ubuntu), an `.rpm` (Fedora, openSUSE) and an AppImage. The packages install OpenChamber into the app menu, and in-app updates ask for your password to install the new package:
 
@@ -97,13 +94,9 @@ chmod +x OpenChamber-*.AppImage
 
 Linux AppImages require FUSE (`libfuse.so.2`). Without FUSE, run with `APPIMAGE_EXTRACT_AND_RUN=1`.
 
-### VS Code
-
-Install [OpenChamber from the Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=fedaykindev.openchamber), or search for "OpenChamber" in Extensions.
-
 ### CLI for Web and PWA
 
-Requires Node.js 24.14+. CLI/Web and VS Code use your installed [OpenCode CLI](https://opencode.ai).
+Requires Node.js 24.14+. CLI/Web use your installed [pi CLI](https://pi.dev).
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/openchamber/openchamber/main/scripts/install.sh | bash

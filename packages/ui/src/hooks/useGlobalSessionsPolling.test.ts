@@ -317,7 +317,6 @@ test('the mounted poller recovers real store failure and starts a fresh load on 
 describe('global session polling root coverage', () => {
   const rootSources: Array<[string, string]> = [
     ['App', '../App.tsx'],
-    ['VSCodeApp', '../apps/VSCodeApp.tsx'],
     ['ElectronMiniChatApp', '../apps/ElectronMiniChatApp.tsx'],
   ];
 

@@ -130,7 +130,7 @@ function requestIssueNumber(value) {
 export function registerGitLabRoutes(app, options = {}) {
   const fetchImpl = options.fetch ?? fetch;
   const timeoutMs = options.timeoutMs ?? 10_000;
-  const authFile = options.authFile ?? path.join(options.configRoot ?? process.env.OPENCHAMBER_DATA_DIR ?? path.join(os.homedir(), '.config', 'openchamber'), 'source-control-auth.json');
+  const authFile = options.authFile ?? path.join(options.configRoot ?? process.env.OPENCHAMBER_DATA_DIR ?? path.join(os.homedir(), '.config', 'pichamber'), 'source-control-auth.json');
   const store = options.store ?? createSourceControlAuthStore({ filePath: authFile });
   const oauthFlowRegistry = options.oauthFlowRegistry ?? createOAuthFlowRegistry();
   const readSettings = options.readSettings ?? (async () => ({}));

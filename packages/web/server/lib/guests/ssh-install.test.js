@@ -99,7 +99,7 @@ beforeAll(async () => {
   }
   repo = path.join(root, 'repository');
   const bin = path.join(root, 'bin');
-  profilesPath = path.join(root, '.config/openchamber/git-identities.json');
+  profilesPath = path.join(root, '.config/pichamber/git-identities.json');
   logPath = path.join(root, 'ssh-calls.jsonl');
   globalKey = path.join(root, 'global key');
   workKey = path.join(root, 'work key');

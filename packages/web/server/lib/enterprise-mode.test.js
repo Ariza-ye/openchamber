@@ -243,27 +243,27 @@ describe('enterprise policy', () => {
 
   describe('file location', () => {
     it('is fixed per platform', () => {
-      expect(policyFilePaths({ platform: 'darwin', env: {} })).toEqual(['/Library/Application Support/OpenChamber/policy.json']);
+      expect(policyFilePaths({ platform: 'darwin', env: {} })).toEqual(['/Library/Application Support/Pichamber/policy.json']);
       expect(policyFilePaths({ platform: 'linux', env: {} })).toEqual([LINUX_POLICY]);
-      expect(policyFilePaths({ platform: 'win32', env: {} })).toEqual(['C:\\ProgramData\\OpenChamber\\policy.json']);
+      expect(policyFilePaths({ platform: 'win32', env: {} })).toEqual(['C:\\ProgramData\\Pichamber\\policy.json']);
     });
 
     it('on Windows reads C:\\ProgramData first, so redirecting ProgramData cannot hide the policy', () => {
       const env = { ProgramData: 'D:\\Elsewhere' };
       expect(policyFilePaths({ platform: 'win32', env })).toEqual([
-        'C:\\ProgramData\\OpenChamber\\policy.json',
-        'D:\\Elsewhere\\OpenChamber\\policy.json',
+        'C:\\ProgramData\\Pichamber\\policy.json',
+        'D:\\Elsewhere\\Pichamber\\policy.json',
       ]);
       const options = machine({
-        'C:\\ProgramData\\OpenChamber\\policy.json': '{"enterpriseMode": true}',
-        'D:\\Elsewhere\\OpenChamber\\policy.json': '{"enterpriseMode": false}',
+        'C:\\ProgramData\\Pichamber\\policy.json': '{"enterpriseMode": true}',
+        'D:\\Elsewhere\\Pichamber\\policy.json': '{"enterpriseMode": false}',
       }, { platform: 'win32', env });
       expect(isEnterpriseMode(options)).toBe(true);
     });
 
     it('on Windows falls back to the ProgramData folder when the system drive is not C:', () => {
       const options = machine(
-        { 'D:\\ProgramData\\OpenChamber\\policy.json': '{"enterpriseMode": true}' },
+        { 'D:\\ProgramData\\Pichamber\\policy.json': '{"enterpriseMode": true}' },
         { platform: 'win32', env: { ProgramData: 'D:\\ProgramData' } },
       );
       expect(isEnterpriseMode(options)).toBe(true);

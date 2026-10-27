@@ -70,7 +70,7 @@ export function readHostToolVersions(packageJsonUrl = new URL('../../../package.
   try {
     manifest = JSON.parse(fs.readFileSync(packageJsonUrl, 'utf8'));
   } catch (error) {
-    throw new SpaceError('tools_versions_unreadable', `Could not read the package.json of the OpenChamber server: ${error.message}`);
+    throw new SpaceError('tools_versions_unreadable', `Could not read the package.json of the Pichamber server: ${error.message}`);
   }
   return {
     webVersion: requireVersion(manifest.version, '@openchamber/web'),

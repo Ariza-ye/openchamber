@@ -5707,7 +5707,7 @@ describe('git environment through simple-git', () => {
     return { repo, readHookLog: () => fs.readFileSync(hookLog, 'utf8') };
   };
 
-  it('runs git with the environment OpenChamber builds, not the raw process env', async () => {
+  it('runs git with the environment Pichamber builds, not the raw process env', async () => {
     if (!canRunGit() || process.platform === 'win32') return;
     await withProcessEnv({
       GIT_TERMINAL_PROMPT: undefined,

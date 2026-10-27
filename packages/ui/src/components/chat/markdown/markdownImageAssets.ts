@@ -204,7 +204,7 @@ export const resolveMarkdownImageSource = async (
 };
 
 /**
- * VS Code has no OpenChamber server route for message-scoped temporary-file
+ * VS Code has no Pichamber server route for message-scoped temporary-file
  * grants. Preserve its existing workspace-only gallery path through the local
  * filesystem bridge, including the same size and signature validation.
  */

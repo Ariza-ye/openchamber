@@ -1,5 +1,5 @@
 /**
- * The settings registry: one table that names every OpenChamber setting, who
+ * The settings registry: one table that names every Pichamber setting, who
  * owns it (`scope`), how a value is parsed at the boundary, and where the UI
  * keeps its live copy.
  *
@@ -234,7 +234,8 @@ export const SETTINGS_REGISTRY = {
   // ── Workspace pointers and instance facts ──
   lastDirectory: field({ scope: 'instance', adopt: 'bootstrap-only', parse: parseNonEmptyString }),
   homeDirectory: field({ scope: 'instance', parse: parseNonEmptyString }),
-  opencodeBinary: field({ scope: 'instance', parse: parseTrimmedString }),
+  // Path to the `pi` executable; empty means "find `pi` on PATH".
+  piBinary: field({ scope: 'instance', parse: parseTrimmedString }),
   projects: field<ProjectEntry[]>({ scope: 'instance', parse: parseProjects }),
   activeProjectId: field({ scope: 'instance', adopt: 'bootstrap-only', parse: parseNonEmptyString }),
   securityScopedBookmarks: field({ scope: 'instance', surfaces: ['desktop'], parse: parseStringList }),
@@ -266,7 +267,7 @@ export const SETTINGS_REGISTRY = {
     })),
   }),
   // The mode the server writes onto each new top-level session. VS Code has no
-  // OpenChamber server to write it.
+  // Pichamber server to write it.
   permissionDefaultMode: field({
     scope: 'instance',
     surfaces: ['web', 'desktop', 'mobile'],
@@ -274,7 +275,7 @@ export const SETTINGS_REGISTRY = {
     ui: uiStore('permissionDefaultMode', (v) => useUIStore.getState().setPermissionDefaultMode(v)),
   }),
   // The server keeps the message search index only while this is on; VS Code
-  // has no OpenChamber server to keep one.
+  // has no Pichamber server to keep one.
   messageSearchEnabled: field({
     scope: 'instance',
     surfaces: ['web', 'desktop', 'mobile'],
@@ -300,7 +301,6 @@ export const SETTINGS_REGISTRY = {
   agentKnowledgeToolEnabled: field({ scope: 'instance', parse: parseBoolean, ui: uiStore('agentKnowledgeToolEnabled', (v) => useUIStore.getState().setAgentKnowledgeToolEnabled(v)) }),
   // The isolated-spaces switch. The server reads it once at start; a change takes effect at the
   // next start, which the settings row says. Never shown in VS Code (decision 16 of the design).
-  isolatedSpacesEnabled: field({ scope: 'instance', parse: parseBoolean, ui: uiStore('isolatedSpacesEnabled', (v) => useUIStore.getState().setIsolatedSpacesEnabled(v)) }),
   // The idle stop of isolated spaces (decision 11). Written and read through the spaces route,
   // which also tells the running spaces, so no store keeps a copy.
   isolatedSpacesIdleStop: field({
@@ -536,7 +536,7 @@ export const SETTINGS_REGISTRY = {
   sessionWorkEnabled: field({ scope: 'profile', parse: parseBoolean, ui: uiStore('sessionWorkEnabled', (v) => useUIStore.getState().setSessionWorkEnabled(v)) }),
   sessionReviewOfferEnabled: field({ scope: 'profile', surfaces: ['web', 'desktop', 'mobile'], parse: parseBoolean, ui: uiStore('sessionReviewOfferEnabled', (v) => useUIStore.getState().setSessionReviewOfferEnabled(v)) }),
   sessionGoalEnabled: field({ scope: 'profile', parse: parseBoolean, ui: uiStore('sessionGoalEnabled', (v) => useUIStore.getState().setSessionGoalEnabled(v)) }),
-  // Who checks goal progress. The goal loop runs on the OpenChamber server,
+  // Who checks goal progress. The goal loop runs on the Pichamber server,
   // which VS Code does not have.
   sessionGoalChecker: field({
     scope: 'profile',
@@ -570,7 +570,6 @@ export const SETTINGS_REGISTRY = {
     parse: parseNotificationTemplates,
     ui: uiStore('notificationTemplates', (v) => useUIStore.getState().setNotificationTemplates(v)),
   }),
-  showOpenCodeUpdateNotifications: field({ scope: 'profile', parse: parseBoolean, ui: uiStore('showOpenCodeUpdateNotifications', (v) => useUIStore.getState().setShowOpenCodeUpdateNotifications(v)) }),
   reportUsage: field({ scope: 'profile', parse: parseBoolean, ui: uiStore('reportUsage', (v) => useUIStore.getState().setReportUsage(v)) }),
 
   // ── Usage page (profile; the page reads and writes these itself) ──

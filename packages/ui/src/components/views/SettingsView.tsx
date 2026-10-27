@@ -43,6 +43,7 @@ import { GitPage } from '@/components/sections/git-identities/GitPage';
 import { IntegrationsPage } from '@/components/sections/integrations/IntegrationsPage';
 import { RoutingPage } from '@/components/sections/routing/RoutingPage';
 import { ExtensionsPage } from '@/components/sections/extensions/ExtensionsPage';
+import { PiSettingsPage, type PiSection } from '@/components/sections/pi/PiSettingsPage';
 import type { OpenChamberSection } from '@/components/sections/openchamber/types';
 import { OpenChamberPage } from '@/components/sections/openchamber/OpenChamberPage';
 import { AboutSettings } from '@/components/sections/openchamber/AboutSettings';
@@ -66,6 +67,21 @@ import {
   type SettingsPageMeta,
 } from '@/lib/settings/metadata';
 import { buildSettingsSearchResults, type SettingsSearchResult } from '@/lib/settings/search';
+
+/**
+ * The OpenCode-category slots pi answers from its own files.
+ *
+ * pi has one agent and no web-search provider setting, so `agents` and
+ * `web-search` are hidden rather than shown empty; the remaining pages read
+ * `~/.pi/agent` instead of OpenCode's config. The slot keeps its title.
+ */
+const PI_SECTION_BY_SLUG = new Map<SettingsPageSlug, PiSection>([
+  ['providers', 'providers'],
+  ['behavior', 'behavior'],
+  ['commands', 'commands'],
+  ['mcp', 'mcp'],
+  ['plugins', 'extensions'],
+]);
 
 // UI Kit: fixed split-page sidebar width
 const SETTINGS_SPLIT_SIDEBAR_WIDTH = 280;
@@ -105,7 +121,7 @@ interface SettingsViewProps {
 }
 
 const pageOrder: SettingsPageSlug[] = [
-  // 'general' group — OpenChamber
+  // 'general' group — Pichamber
   'general',
   'appearance',
   'chat',
@@ -140,6 +156,11 @@ const pageOrder: SettingsPageSlug[] = [
 ];
 
 const NAV_GROUP_ORDER = ['general', 'projects', 'opencode', 'content'] as const;
+
+/** The pi pages replace the OpenCode slots and have no item list. */
+const pageKind = (meta: SettingsPageMeta): 'single' | 'split' => (
+  PI_SECTION_BY_SLUG.has(meta.slug) ? 'single' : meta.kind
+);
 
 function buildRuntimeContext(isDesktop: boolean, isMobile: boolean, routingAvailable: boolean, enterpriseMode: boolean, jevBlockedByEnterprise: boolean): SettingsRuntimeContext {
   const isVSCode = isVSCodeRuntime();
@@ -306,11 +327,16 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
       setMobileStage('nav');
       return;
     }
-    setMobileStage(def.kind === 'split' ? 'page-sidebar' : 'page-content');
+    setMobileStage(pageKind(def) === 'split' ? 'page-sidebar' : 'page-content');
   }, [isMobile, setSettingsPage]);
 
   const activePageMeta = React.useMemo(() => {
-    return getSettingsPageMeta(settingsSlug);
+    const meta = getSettingsPageMeta(settingsSlug);
+    if (!meta) return meta;
+    if (PI_SECTION_BY_SLUG.has(meta.slug)) {
+      return { ...meta, kind: 'single' as const };
+    }
+    return meta;
   }, [settingsSlug]);
 
   // Nav is always open (collapsed state removed)
@@ -663,6 +689,8 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
     if (meta && !isPageAvailable(meta, runtimeCtx)) {
       return renderUnavailable();
     }
+    const piSection = PI_SECTION_BY_SLUG.get(slug);
+    if (piSection) return <PiSettingsPage section={piSection} />;
 
     switch (slug) {
       case 'projects':
@@ -744,7 +772,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
       return;
     }
     autoNavSlugRef.current = settingsSlug;
-    setMobileStage(def.kind === 'split' ? 'page-sidebar' : 'page-content');
+    setMobileStage(pageKind(def) === 'split' ? 'page-sidebar' : 'page-content');
   }, [isMobile, mobileStage, settingsSlug]);
 
   const showBackButton = isMobile && mobileStage !== 'nav';
@@ -753,7 +781,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
   // item instead of a round trip through the settings root.
   const backButtonTargetsPageSidebar = isMobile
     && mobileStage === 'page-content'
-    && activePageMeta?.kind === 'split';
+    && activePageMeta != null && pageKind(activePageMeta) === 'split';
   const mobileBackButtonLabel = backButtonTargetsPageSidebar
     ? t('settings.view.actions.back')
     : showBackButton
@@ -849,7 +877,8 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
     }
 
     const handlePopState = (event: PopStateEvent) => {
-      if (getSettingsPageMeta(settingsSlug)?.kind !== 'split') {
+      const meta = getSettingsPageMeta(settingsSlug);
+      if (!meta || pageKind(meta) !== 'split') {
         return;
       }
 
@@ -971,7 +1000,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
                       groupIndex === 0 ? 'pt-1' : 'pt-4 sm:pt-3',
                     )}
                   >
-                    {t(`settings.view.nav.group.${group}`)}
+                    {group === 'opencode'
+                      ? t('settings.view.nav.group.pi')
+                      : t(`settings.view.nav.group.${group}`)}
                   </div>
                   {pages.map((page) => {
                     // On the mobile nav STAGE nothing is "current" — the user is
@@ -1036,7 +1067,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
     }
 
     if (mobileStage === 'page-sidebar') {
-      if (activePageMeta.kind !== 'split') {
+      if (pageKind(activePageMeta) !== 'split') {
         // No sidebar available; fall back to direct content.
         const fallback = renderPageContent(settingsSlug);
         return (
@@ -1078,7 +1109,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
       </SettingsScrollbarTopClearanceContext.Provider>
     );
 
-    if (activePageMeta.kind === 'split') {
+    if (pageKind(activePageMeta) === 'split') {
       return (
         <div className="flex h-full min-h-0 overflow-hidden">
           <div className={cn('border-e', runtimeCtx.isVSCode ? 'bg-background' : 'bg-sidebar')} style={{ width: SETTINGS_SPLIT_SIDEBAR_WIDTH, minWidth: SETTINGS_SPLIT_SIDEBAR_WIDTH, borderColor: 'var(--interactive-border)' }}>

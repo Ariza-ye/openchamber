@@ -24,6 +24,7 @@ export const createGracefulShutdownRuntime = (dependencies) => {
     setMessageStreamRuntime,
     shouldSkipOpenCodeStop,
     getOpenCodePort,
+    closeAgentBackend = null,
     getOpenCodeProcess,
     setOpenCodeProcess,
     killProcessOnPort,
@@ -147,6 +148,16 @@ export const createGracefulShutdownRuntime = (dependencies) => {
       }
     } else {
       console.log('Skipping OpenCode shutdown (external server)');
+    }
+
+    // A backend Pichamber serves in its own process (pi) stops here: it has
+    // no child process or port to kill, only an in-process listener.
+    if (closeAgentBackend) {
+      try {
+        await closeAgentBackend();
+      } catch (error) {
+        console.warn('Error closing the agent backend:', error);
+      }
     }
 
     const server = getServer();

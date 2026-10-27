@@ -319,7 +319,7 @@ describe('managed agent tool runtime', () => {
     expect(controlParameters).not.toHaveProperty('timeout');
     expect(controlParameters.returnResult.type).toBe('boolean');
     expect(tool.openchamber.input.properties.parameters.properties.sessionId).toEqual({ type: 'string' });
-    expect(source).not.toContain('title: "OpenChamber"');
+    expect(source).not.toContain('title: "Pichamber"');
     // Nothing resolves from the generated directory, so the file must not import.
     expect(source).not.toMatch(/\bimport\b/);
     expect(source).not.toContain(preparedEnv.OPENCHAMBER_AGENT_TOOL_TOKEN);
@@ -401,7 +401,7 @@ describe('managed agent tool runtime', () => {
     expect(sent[0].input).toEqual({ action: 'browser.open', url: 'https://example.test', viewport: 'mobile' });
     expect(sent[1].input.url).toBe('https://example.test/nested');
     expect(sent[2].input).toEqual({ action: 'session.messages', sessionId: 'ses_1', limit: 3 });
-    // v2 tools get no directory; the session id is what OpenChamber resolves from.
+    // v2 tools get no directory; the session id is what Pichamber resolves from.
     expect(sent[2].sessionID).toBe('ses_1');
     expect(sent[2].contextDirectory).toBeUndefined();
   });
@@ -704,7 +704,7 @@ describe('managed agent tool runtime', () => {
   it('forwards cancellation to the shared control service', async () => {
     const executeAction = vi.fn(async (_action, _input, _directory, options) => {
       await new Promise((resolve, reject) => {
-        options.signal.addEventListener('abort', () => reject(Object.assign(new Error('OpenChamber action was cancelled'), { statusCode: 499 })), { once: true });
+        options.signal.addEventListener('abort', () => reject(Object.assign(new Error('Pichamber action was cancelled'), { statusCode: 499 })), { once: true });
       });
     });
     const { runtime } = await createRuntime({ executeAction });
@@ -716,7 +716,7 @@ describe('managed agent tool runtime', () => {
     await expect(pending).resolves.toEqual(expect.objectContaining({
       ok: false,
       action: 'projects.list',
-      error: { message: 'OpenChamber action was cancelled', kind: 'runtime' },
+      error: { message: 'Pichamber action was cancelled', kind: 'runtime' },
     }));
     expect(executeAction).toHaveBeenCalledWith('projects.list', { action: 'projects.list' }, undefined, { signal: controller.signal });
   });
@@ -726,7 +726,7 @@ describe('managed agent tool runtime', () => {
     // ends the action itself when the event stream reports the cancel.
     const executeAction = vi.fn(async (_action, _input, _directory, options) => {
       await new Promise((resolve, reject) => {
-        options.signal.addEventListener('abort', () => reject(Object.assign(new Error('OpenChamber action was cancelled'), { statusCode: 499 })), { once: true });
+        options.signal.addEventListener('abort', () => reject(Object.assign(new Error('Pichamber action was cancelled'), { statusCode: 499 })), { once: true });
       });
     });
     const { runtime } = await createRuntime({ executeAction });
@@ -750,7 +750,7 @@ describe('managed agent tool runtime', () => {
 
     expect(runtime.abortSession('ses_cancel')).toBe(1);
     const response = await pending;
-    expect(response.body).toEqual(expect.objectContaining({ ok: false, error: expect.objectContaining({ message: 'OpenChamber action was cancelled' }) }));
+    expect(response.body).toEqual(expect.objectContaining({ ok: false, error: expect.objectContaining({ message: 'Pichamber action was cancelled' }) }));
 
     // The other session's action is untouched until it is told otherwise.
     expect(runtime.abortSession('ses_other')).toBe(1);

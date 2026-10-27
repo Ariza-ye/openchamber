@@ -8,11 +8,10 @@ import { copyTextToClipboard } from '@/lib/clipboard';
 import { restartDesktopApp } from '@/lib/desktop';
 import { useI18n } from '@/lib/i18n';
 import { runtimeFetch } from '@/lib/runtime-fetch';
-import { useEnterprisePolicyStore } from '@/stores/useEnterprisePolicyStore';
 
-const INSTALL_COMMAND = 'curl -fsSL https://opencode.ai/v2/install | bash';
-const WINDOWS_INSTALL_COMMAND = 'npm install -g @opencode/cli';
-const DOCS_URL = 'https://opencode.ai/download';
+const INSTALL_COMMAND = 'npm install -g @earendil-works/pi-coding-agent';
+const WINDOWS_INSTALL_COMMAND = 'npm install -g @earendil-works/pi-coding-agent';
+const DOCS_URL = 'https://pi.dev';
 
 type OnboardingPlatform = 'macos' | 'linux' | 'windows' | 'unknown';
 
@@ -31,17 +30,9 @@ function InstallCommand({ windows, onCopy, copyTitle }: { windows: boolean; onCo
   return (
     <div className="flex items-center justify-center gap-3">
       <code className="flex-1 min-w-0 text-start overflow-x-auto whitespace-nowrap">
-        {windows ? (
-          <span style={{ color: 'var(--syntax-keyword)' }}>{WINDOWS_INSTALL_COMMAND}</span>
-        ) : (
-          <>
-            <span style={{ color: 'var(--syntax-keyword)' }}>curl</span>
-            <span className="text-muted-foreground"> -fsSL </span>
-            <span style={{ color: 'var(--syntax-string)' }}>https://opencode.ai/v2/install</span>
-            <span className="text-muted-foreground"> | </span>
-            <span style={{ color: 'var(--syntax-keyword)' }}>bash</span>
-          </>
-        )}
+        <span style={{ color: 'var(--syntax-keyword)' }}>
+          {windows ? WINDOWS_INSTALL_COMMAND : INSTALL_COMMAND}
+        </span>
       </code>
       <button
         onClick={onCopy}
@@ -70,9 +61,8 @@ export function LocalSetupScreen({
   const [isRetrying, setIsRetrying] = React.useState(false);
   const [isChecking, setIsChecking] = React.useState(false);
   const [checkError, setCheckError] = React.useState<string | null>(null);
-  const [opencodeBinary, setOpencodeBinary] = React.useState('');
+  const [piBinary, setPiBinary] = React.useState('');
   // The server ignores the user's path while the administrator pins one.
-  const pinnedBinary = useEnterprisePolicyStore((state) => state.opencodeBinary);
   const [platform, setPlatform] = React.useState<OnboardingPlatform>('unknown');
 
   React.useEffect(() => {
@@ -112,9 +102,9 @@ export function LocalSetupScreen({
       try {
         const data = await loadDesktopSettings();
         if (!data || cancelled) return;
-        const value = data.opencodeBinary ?? '';
+        const value = data.piBinary ?? '';
         if (value) {
-          setOpencodeBinary(value);
+          setPiBinary(value);
         }
       } catch {
         // ignore
@@ -157,7 +147,7 @@ export function LocalSetupScreen({
     try {
       const selected = await requestFileAccess();
       if (selected.success && selected.path && selected.path.trim().length > 0) {
-        setOpencodeBinary(selected.path.trim());
+        setPiBinary(selected.path.trim());
       }
     } catch {
       // ignore
@@ -167,7 +157,7 @@ export function LocalSetupScreen({
   const handleApplyPath = React.useCallback(async () => {
     setIsRetrying(true);
     try {
-      await updateDesktopSettings({ opencodeBinary: opencodeBinary.trim() });
+      await updateDesktopSettings({ piBinary: piBinary.trim() });
 
       // In desktop boot flow, restart the app so the native host can
       // re-evaluate the boot outcome with the updated binary path.
@@ -180,7 +170,7 @@ export function LocalSetupScreen({
     } finally {
       setTimeout(() => setIsRetrying(false), 1000);
     }
-  }, [isDesktopApp, opencodeBinary]);
+  }, [isDesktopApp, piBinary]);
 
   const handleCopy = React.useCallback(async () => {
     const result = await copyTextToClipboard(platform === 'windows' ? WINDOWS_INSTALL_COMMAND : INSTALL_COMMAND);
@@ -213,10 +203,10 @@ export function LocalSetupScreen({
   const docsUrl = DOCS_URL;
   const binaryPlaceholder =
     platform === 'windows'
-      ? 'C:\\Users\\you\\AppData\\Roaming\\npm\\opencode.cmd'
+      ? 'C:\\Users\\you\\AppData\\Roaming\\npm\\pi.cmd'
       : platform === 'linux'
-        ? '/home/you/.opencode/bin/opencode'
-        : '/Users/you/.opencode/bin/opencode';
+        ? '/usr/local/bin/pi'
+        : '/opt/homebrew/bin/pi';
 
   return (
     <div
@@ -303,34 +293,30 @@ export function LocalSetupScreen({
             <div className="text-sm text-muted-foreground">{t('onboarding.localSetup.field.alreadyInstalled')}</div>
             <div className="flex gap-2">
               <Input
-                value={pinnedBinary ?? opencodeBinary}
-                onChange={(e) => setOpencodeBinary(e.target.value)}
+                value={piBinary}
+                onChange={(e) => setPiBinary(e.target.value)}
                 placeholder={binaryPlaceholder}
-                disabled={isRetrying || pinnedBinary !== null}
+                disabled={isRetrying}
                 className="flex-1 font-mono text-xs"
               />
-              {pinnedBinary === null && (
-                <>
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    onClick={handleBrowse}
-                    disabled={isRetrying || !isDesktopApp}
-                  >
-                    {t('onboarding.localSetup.actions.browse')}
-                  </Button>
-                  <Button
-                    type="button"
-                    onClick={handleApplyPath}
-                    disabled={isRetrying}
-                  >
-                    {t('onboarding.localSetup.actions.apply')}
-                  </Button>
-                </>
-              )}
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={handleBrowse}
+                disabled={isRetrying || !isDesktopApp}
+              >
+                {t('onboarding.localSetup.actions.browse')}
+              </Button>
+              <Button
+                type="button"
+                onClick={handleApplyPath}
+                disabled={isRetrying}
+              >
+                {t('onboarding.localSetup.actions.apply')}
+              </Button>
             </div>
             <div className="text-xs text-muted-foreground/70">
-              {t(pinnedBinary === null ? 'onboarding.localSetup.helper.saveAndReload' : 'onboarding.localSetup.helper.pinnedByAdministrator')}
+              {t('onboarding.localSetup.helper.saveAndReload')}
             </div>
           </div>
         </div>

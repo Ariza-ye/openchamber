@@ -142,7 +142,7 @@ log.transports.console.level = isDev ? 'debug' : 'warn';
 
 // The in-process web server runs in this same Node process and uses plain
 // `console.log/warn/error`. Without piping console through electron-log,
-// that output never lands in ~/Library/Logs/OpenChamber/main.log and we
+// that output never lands in ~/Library/Logs/Pichamber/main.log and we
 // can't diagnose issues (e.g. OpenCode lifecycle, SSE disconnects) after
 // the fact. Route all console calls through electron-log so server-side
 // diagnostics are persisted.
@@ -395,7 +395,7 @@ const quitConfirmationMessage = () => {
   if (reasons.length === 0) {
     return 'Background processes (sidecar, SSH sessions) will be stopped.';
   }
-  return `OpenChamber detected ${reasons.join(', ')}. Quitting now will stop sidecar/background processes and may interrupt pending work.`;
+  return `Pichamber detected ${reasons.join(', ')}. Quitting now will stop sidecar/background processes and may interrupt pending work.`;
 };
 
 const shutdownBackgroundServices = () => {
@@ -558,8 +558,8 @@ const requestQuitWithConfirmation = async () => {
   try {
     const result = await dialog.showMessageBox({
       type: 'warning',
-      title: 'Quit OpenChamber?',
-      message: 'Quit OpenChamber?',
+      title: 'Quit Pichamber?',
+      message: 'Quit Pichamber?',
       detail: quitConfirmationMessage(),
       buttons: ['Quit', 'Cancel'],
       defaultId: 1,
@@ -674,7 +674,7 @@ const writeSettingsRoot = async (root) => writeJsonFile(settingsFilePath(), root
 
 // Stable per-install identifier for this desktop, persisted in settings. Used as
 // the client dedupe key on remote hosts so re-authenticating (e.g. after a login
-// session expires) reuses the same "OpenChamber Desktop" record instead of
+// session expires) reuses the same "Pichamber Desktop" record instead of
 // piling up a new one each time. Different desktops get different ids.
 // Display-only device metadata shown in a server's device list ("macOS",
 // app version). Never used for auth decisions.
@@ -1080,7 +1080,7 @@ const injectRuntimeConfigIntoHtml = (html) => {
 };
 
 /**
- * The browser panel's own session, kept separate from OpenChamber's.
+ * The browser panel's own session, kept separate from Pichamber's.
  *
  * Every page the user opens in the panel shares this partition, which is what
  * lets a dev-server login persist between sessions without touching the app's
@@ -1437,7 +1437,7 @@ const maybeShowNativeNotification = (rawInput) => {
 
   const title = typeof payload.title === 'string' && payload.title.trim()
     ? payload.title.trim()
-    : 'OpenChamber';
+    : 'Pichamber';
   const body = typeof payload.body === 'string' ? payload.body : '';
   const sessionId = typeof payload.sessionId === 'string' && payload.sessionId.trim()
     ? payload.sessionId.trim()
@@ -1892,7 +1892,7 @@ const loginRemoteAndIssueClientToken = async ({ url, password, trustDevice, requ
       password: candidatePassword,
       trustDevice: trustDevice === true,
       issueClientToken: true,
-      clientLabel: 'OpenChamber Desktop',
+      clientLabel: 'Pichamber Desktop',
       ...clientIdentity,
     }),
   });
@@ -1920,7 +1920,7 @@ const loginRemoteAndIssueClientToken = async ({ url, password, trustDevice, requ
       Cookie: cookie,
     },
     body: JSON.stringify({
-      label: 'OpenChamber Desktop',
+      label: 'Pichamber Desktop',
       ...clientIdentity,
     }),
   });
@@ -2078,7 +2078,7 @@ const confirmConnectDeepLink = async (payload) => {
   }
   const options = {
     type: 'warning',
-    title: 'Connect to OpenChamber server?',
+    title: 'Connect to Pichamber server?',
     message: `Connect to "${payload.label}"?`,
     detail:
       `This will add ${payload.serverUrl} as a remote instance and route this app's activity ` +
@@ -2137,7 +2137,7 @@ const dispatchDeepLink = (link) => {
   }
 
   if (link.type === 'session' && link.value) {
-    // A message link (`openchamber://session/<id>?message=<id>`) also names
+    // A message link (`pichamber://session/<id>?message=<id>`) also names
     // the message to show; the renderer validates both IDs.
     const messageId = readDeepLinkQueryParam(link.raw, 'message');
     emitToPrimaryWindow('openchamber:open-session', messageId
@@ -2412,7 +2412,7 @@ const showQuakeWindow = (browserWindow, heightFraction) => {
     })();
   }
   try {
-    // macOS: a hotkey pressed from another app leaves OpenChamber in the
+    // macOS: a hotkey pressed from another app leaves Pichamber in the
     // background, where show/focus alone do not bring it forward.
     if (process.platform === 'darwin') app.focus({ steal: true });
     if (browserWindow.isMinimized()) browserWindow.restore();
@@ -3180,7 +3180,7 @@ const createMiniChatWindow = async ({ mode, sessionId = '', directory = '', proj
   const desktopClientToken = effectiveRuntimeConfig.clientToken || '';
   const desktopRequestHeaders = effectiveRuntimeConfig.requestHeaders || {};
   const browserWindow = new BrowserWindow({
-    title: 'OpenChamber Mini Chat',
+    title: 'Pichamber Mini Chat',
     width: MINI_CHAT_WINDOW_WIDTH,
     height: MINI_CHAT_WINDOW_HEIGHT,
     minWidth: MINI_CHAT_MIN_WINDOW_WIDTH,
@@ -3423,7 +3423,7 @@ const resolveInitialUrl = async ({ onPlainLocalBoot = null } = {}) => {
   let remoteProbe = null;
 
   if (pendingProjectOpens.length > 0) {
-    if (!localUrl) throw new Error('Opening a local project requires the local OpenChamber server.');
+    if (!localUrl) throw new Error('Opening a local project requires the local Pichamber server.');
     return { initialUrl, localOrigin, localUiUrl, bootOutcome: { target: 'local', status: 'ok', localAvailable }, apiBaseUrl, clientToken, requestHeaders };
   }
 
@@ -4569,7 +4569,7 @@ const handleInvoke = async (browserWindow, command, args = {}) => {
     }
 
     // Dev-server tunnels: bind a loopback port here and pipe it to a dev server
-    // on the remote OpenChamber host, so the browser panel loads a real origin
+    // on the remote Pichamber host, so the browser panel loads a real origin
     // instead of a rewritten page. Deliberately absent from
     // COMMANDS_SAFE_FOR_REMOTE — a remote page must never open local listeners.
     // A space's dev server comes through the same tunnel, under the space's
@@ -4632,7 +4632,7 @@ const handleInvoke = async (browserWindow, command, args = {}) => {
     /**
      * Forces prefers-color-scheme for one previewed page.
      *
-     * nativeTheme.themeSource is app-wide and would drag OpenChamber's own
+     * nativeTheme.themeSource is app-wide and would drag Pichamber's own
      * appearance along with it, so this goes through the page's own emulation
      * instead. The debugger session has to stay attached: emulation is part of
      * that session and resets the moment it detaches.
@@ -4697,7 +4697,7 @@ const handleInvoke = async (browserWindow, command, args = {}) => {
      * Done here, in the panel's own session, rather than by the renderer: the
      * icon often sits behind the same login as the page, and letting the app's
      * own origin request it would both fail on those and quietly send traffic
-     * to third-party hosts from OpenChamber itself. The bytes come back as a
+     * to third-party hosts from Pichamber itself. The bytes come back as a
      * data URL so nothing else has to fetch anything.
      */
     case 'desktop_browser_fetch_favicon': {
@@ -4737,7 +4737,7 @@ const handleInvoke = async (browserWindow, command, args = {}) => {
     }
 
     // Scoped to the browser panel's own partition, so clearing it can never
-    // touch OpenChamber's session or any other window's storage.
+    // touch Pichamber's session or any other window's storage.
     case 'desktop_browser_clear_data': {
       // Exact names only: the panel's own partition, or a space's, whose shape
       // is checked whole. A prefix would also accept a partition that merely
@@ -4835,7 +4835,7 @@ const handleInvoke = async (browserWindow, command, args = {}) => {
       if (!underHome && !underTmp) {
         throw new Error('File is outside the allowed workspace');
       }
-      const DENIED_SEGMENTS = ['.ssh', '.aws', '.gnupg', '.gpg', '.config/gh', '.config/openchamber/credentials'];
+      const DENIED_SEGMENTS = ['.ssh', '.aws', '.gnupg', '.gpg', '.config/gh', '.config/pichamber/credentials'];
       const relFromHome = underHome ? filePath.slice(home.length + 1) : '';
       const relNormalized = relFromHome.split(path.sep).join('/');
       if (DENIED_SEGMENTS.some((segment) => relNormalized === segment || relNormalized.startsWith(`${segment}/`))) {
@@ -5142,7 +5142,7 @@ const handleInvoke = async (browserWindow, command, args = {}) => {
     // A page that another instance served cannot switch to Local in place. The
     // local server answers only this app's own origins, and the local token
     // stays with local pages. For such a page the main window loads the Local
-    // UI, the same way openchamber://host/local does. The app's own pages get
+    // UI, the same way pichamber://host/local does. The app's own pages get
     // false and switch in place.
     case 'desktop_switch_to_local': {
       if (!browserWindow || browserWindow.id !== state.mainWindow?.id) return false;
@@ -5327,7 +5327,7 @@ const handleInvoke = async (browserWindow, command, args = {}) => {
       if (applyUpdate && process.platform === 'darwin' && typeof app.isInApplicationsFolder === 'function') {
         try {
           if (!app.isInApplicationsFolder()) {
-            throw new Error('Desktop update requires OpenChamber.app to be installed in /Applications');
+            throw new Error('Desktop update requires Pichamber.app to be installed in /Applications');
           }
         } catch (error) {
           log.warn('[electron] desktop_restart blocked', error);
@@ -5458,7 +5458,7 @@ const handleInvoke = async (browserWindow, command, args = {}) => {
     case 'desktop_pending_project_opens':
       // Only the trusted main window receives directories and local credentials; reading keeps pending requests queued.
       if (!browserWindow || browserWindow.id !== state.mainWindow?.id || pendingProjectOpens.length === 0) return null;
-      if (!state.sidecarUrl) throw new Error('The local OpenChamber server is unavailable.');
+      if (!state.sidecarUrl) throw new Error('The local Pichamber server is unavailable.');
       return {
         apiBaseUrl: state.sidecarUrl,
         clientToken: readDesktopLocalClientToken(),
@@ -6302,7 +6302,7 @@ const handleProjectOpenLaunch = async (argv) => {
 app.on('second-instance', (_event, argv) => {
   void handleProjectOpenLaunch(argv).then((handled) => {
     if (!handled) handleSecondInstance(argv);
-  }).catch((error) => dialog.showErrorBox('OpenChamber', error.message));
+  }).catch((error) => dialog.showErrorBox('Pichamber', error.message));
 });
 
 app.on('open-url', (event, url) => {
@@ -6320,7 +6320,7 @@ const replayDeferredAppEvents = () => {
     else if (event.type === 'second-instance') {
       void handleProjectOpenLaunch(event.argv).then((handled) => {
         if (!handled) handleSecondInstance(event.argv);
-      }).catch((error) => dialog.showErrorBox('OpenChamber', error.message));
+      }).catch((error) => dialog.showErrorBox('Pichamber', error.message));
     }
   }
 };
@@ -6367,7 +6367,7 @@ app.whenReady().then(async () => {
   try {
     await enqueueProjectOpenArguments(pendingProjectOpens, process.argv);
   } catch (error) {
-    dialog.showErrorBox('OpenChamber', error.message);
+    dialog.showErrorBox('Pichamber', error.message);
   }
   if (app.isPackaged && (process.platform === 'darwin' || process.platform === 'linux')) {
     // Startup maintains only the private launcher; it does not register a public command or change PATH or shell configuration.

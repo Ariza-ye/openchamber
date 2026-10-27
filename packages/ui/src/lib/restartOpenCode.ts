@@ -16,7 +16,7 @@ export async function restartOpenCodeWithFeedback(t: TranslateFn): Promise<void>
     });
   } catch (error) {
     // SAFETY: reloadOpenCodeConfiguration tags the Error it raises with
-    // `requiresManualRestart` when OpenCode runs outside OpenChamber.
+    // `requiresManualRestart` when OpenCode runs outside Pichamber.
     if ((error as Error & { requiresManualRestart?: boolean })?.requiresManualRestart) {
       toast.warning(t('settings.openchamber.opencodeCli.restart.external'));
       return;

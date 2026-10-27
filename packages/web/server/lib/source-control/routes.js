@@ -17,7 +17,7 @@ import { getGitHubAuthAccounts, getGitHubAuthByAccountId } from '../github/auth.
 
 const defaultConfigRoot = () => process.env.OPENCHAMBER_DATA_DIR
   ? path.resolve(process.env.OPENCHAMBER_DATA_DIR)
-  : path.join(os.homedir(), '.config', 'openchamber');
+  : path.join(os.homedir(), '.config', 'pichamber');
 
 const resolveDirectoryQuery = (value) => {
   const directory = Array.isArray(value) ? value[0] : value;

@@ -34,7 +34,7 @@ const pager = (pages: SessionPage[], calls?: SessionListOptions[]): SessionPageL
 }
 
 describe('managed Chats runtime visibility', () => {
-  const chat = makeSession({ id: 'chat', directory: '/home/user/.config/openchamber/chats/2026-08-21/session-a' })
+  const chat = makeSession({ id: 'chat', directory: '/home/user/.config/pichamber/chats/2026-08-21/session-a' })
   const project = makeSession({ id: 'project', directory: '/workspace/project' })
 
   test('VS Code rejects managed Chats before they enter global state', () => {

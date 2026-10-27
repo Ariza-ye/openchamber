@@ -48,7 +48,7 @@ const normalizeFollowUpBehavior = (
 };
 
 /**
- * Who delivers the queue. Web, desktop, and mobile talk to an OpenChamber
+ * Who delivers the queue. Web, desktop, and mobile talk to an Pichamber
  * server that owns the queue and sends it whether or not any UI is open. VS
  * Code has no server of its own, so the extension UI keeps the local queue
  * and the foreground auto-send hook.

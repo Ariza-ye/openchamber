@@ -1,7 +1,7 @@
 /**
  * The places of isolated spaces in Settings (journey step 9, and decision 12): each
  * place with how many spaces run and stand stopped there, the disk its image, tools and spaces take,
- * the spaces whose container is gone, and "Clean up…", which removes what OpenChamber can make again.
+ * the spaces whose container is gone, and "Clean up…", which removes what Pichamber can make again.
  * The server decides what goes, see `places/docker-disk.js`; this screen only shows and asks.
  *
  * A place that cannot be reached says so and what to do, never a count of zero: the spaces this

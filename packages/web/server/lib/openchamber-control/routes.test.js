@@ -12,7 +12,7 @@ const createApp = (execute, answerPage = vi.fn()) => {
   return app;
 };
 
-describe('OpenChamber control route', () => {
+describe('Pichamber control route', () => {
   it('is a thin adapter over the control service', async () => {
     const execute = vi.fn(async () => ({ projects: [] }));
     const response = await request(createApp(execute))

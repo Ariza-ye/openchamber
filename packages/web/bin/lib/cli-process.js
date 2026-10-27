@@ -4,11 +4,11 @@ import { spawnSync } from 'child_process';
 import { getRunDir } from './cli-paths.js';
 
 async function getPidFilePath(port) {
-  return path.join(getRunDir(), `openchamber-${port}.pid`);
+  return path.join(getRunDir(), `pichamber-${port}.pid`);
 }
 
 async function getInstanceFilePath(port) {
-  return path.join(getRunDir(), `openchamber-${port}.json`);
+  return path.join(getRunDir(), `pichamber-${port}.json`);
 }
 
 function readPidFile(pidFilePath) {
@@ -127,15 +127,15 @@ function isOpenchamberCmdline(cmdline) {
   if (typeof cmdline !== 'string' || cmdline.length === 0) {
     return false;
   }
-  // Every install path contains the "openchamber" segment — the npm package
-  // (@openchamber/web) and the source checkout both do, for the foreground
-  // (bin/cli.js) and daemon (server/index.js) entrypoints alike. Matching the
-  // path segment (not a generic "cli.js") keeps a recycled stranger such as
-  // "npm-cli.js" or "agentmemory" from being mistaken for us.
+  // Every install path contains the "openchamber" segment: the npm package is
+  // still @openchamber/web and the source checkout is named openchamber. The
+  // pichamber bin and the legacy openchamber command both resolve into that
+  // path. Matching the path segment (not a generic "cli.js") keeps a recycled
+  // stranger such as "npm-cli.js" or "agentmemory" from being mistaken for us.
   return cmdline.toLowerCase().includes('openchamber');
 }
 
-// Liveness + identity — "is the OpenChamber instance recorded in a pid file
+// Liveness + identity — "is the Pichamber instance recorded in a pid file
 // still the process running under this PID". Use this (not isProcessRunning)
 // when validating a PID read from a pid file. After an ungraceful shutdown
 // removePidFile never runs, so the stale PID can be recycled to an unrelated

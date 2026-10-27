@@ -1,5 +1,5 @@
 /**
- * OpenChamber per-session metadata, held by OpenCode.
+ * Pichamber per-session metadata, held by OpenCode.
  *
  * Goal mode, session assist, obligatory context re-injection and pinned
  * notes/plans keep their per-session state in the session's `metadata`, under
@@ -84,7 +84,7 @@ export const createOpenCodeSessionMetadata = ({
 
 /**
  * @param {object} options
- * @param {string} options.dataDir OpenChamber data directory; holds the legacy file.
+ * @param {string} options.dataDir Pichamber data directory; holds the legacy file.
  * @param {{ read: Function, write: Function }} options.openCode See {@link createOpenCodeSessionMetadata}.
  * @param {typeof fsDefault.promises} [options.fsPromises]
  * @param {typeof pathDefault} [options.path]

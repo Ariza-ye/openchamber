@@ -675,7 +675,7 @@ describe("confirmed session removal", () => {
       .toEqual(["session-a", "session-b"])
   })
 
-  const chatDirectory = "/home/user/.config/openchamber/chats/2026-09-05/session-abc"
+  const chatDirectory = "/home/user/.config/pichamber/chats/2026-09-05/session-abc"
   const chatSession = (id: string, parentID?: string): Session => ({
     id,
     projectID: "project-chats",
@@ -930,7 +930,7 @@ describe("archiving a batch through the server", () => {
 
     const result = await archiveSessions(["session-a", "session-b"])
 
-    // Archive is OpenChamber's own route now, so a runtime that does not serve
+    // Archive is Pichamber's own route now, so a runtime that does not serve
     // it cannot archive at all — the sessions stay put rather than vanishing
     // locally on an unconfirmed write.
     expect(result.archivedIds).toEqual([])

@@ -67,13 +67,13 @@ describe('ElectronSshManager', () => {
       };
       executable(path.join(bin, 'bun'), 'printf "%s\\n" "$@" > "$HOME/install-args"');
       executable(path.join(bin, 'opencode'), 'printf "1.2.3\\n"');
-      executable(path.join(bin, 'openchamber'), `
+      executable(path.join(bin, 'pichamber'), `
 if [ "$1" = "--version" ]; then printf '1.2.3\\n'; exit 0; fi
 printf '%s' "$PATH" > "$HOME/launch-path"
 printf '%s' "$OPENCODE_BINARY" > "$HOME/launch-opencode"
 printf '4321\\n'`);
       // An earlier candidate with a different version must not win discovery.
-      executable(path.join(home, '.openchamber', 'npm-global', 'bin', 'openchamber'), 'printf "0.9.0\\n"');
+      executable(path.join(home, '.pichamber', 'npm-global', 'bin', 'pichamber'), 'printf "0.9.0\\n"');
       const tools = path.join(home, 'tools');
       executable(path.join(tools, 'npm'), 'exit 88');
       const env = { HOME: home, PATH: `${tools}:/usr/bin:/bin` };
@@ -93,7 +93,7 @@ printf '4321\\n'`);
       const result = await manager.ensureRemoteServer({
         id: 'ssh-paths', auth: {}, remoteOpenchamber: { mode: 'managed', installMethod: 'auto' },
       }, parsed, '/unused.sock');
-      expect(result.remoteBinPath).toBe(path.join(bin, 'openchamber'));
+      expect(result.remoteBinPath).toBe(path.join(bin, 'pichamber'));
       expect(result.remotePort).toBe(4321);
       expect(fs.readFileSync(path.join(home, 'launch-opencode'), 'utf8')).toBe(path.join(bin, 'opencode'));
       const launchPath = fs.readFileSync(path.join(home, 'launch-path'), 'utf8').split(':');
@@ -165,7 +165,7 @@ printf '4321\\n'`);
     });
     const parsed = { destination: 'user@example.test', args: [] };
     manager.sshAuth.set(parsed, {
-      askpassPath: 'C:\\OpenChamber\\askpass.cmd',
+      askpassPath: 'C:\\Pichamber\\askpass.cmd',
       sshPassword: 'secret-value',
       children: new Set(),
     });
@@ -184,7 +184,7 @@ printf '4321\\n'`);
       expect(call.args).toContain('ControlPath=none');
       expect(call.args).toContain('-N');
       expect(call.options.windowsHide).toBe(true);
-      expect(call.options.env.SSH_ASKPASS).toBe('C:\\OpenChamber\\askpass.cmd');
+      expect(call.options.env.SSH_ASKPASS).toBe('C:\\Pichamber\\askpass.cmd');
       expect(call.options.env.OPENCHAMBER_SSH_ASKPASS_VALUE).toBe('secret-value');
     }
     expect(calls[0].args).toContain('-L');
@@ -310,7 +310,7 @@ printf '4321\\n'`);
       };
     }
     manager.sshAuth.set(parsed, {
-      askpassPath: 'C:\\OpenChamber\\askpass.cmd',
+      askpassPath: 'C:\\Pichamber\\askpass.cmd',
       sshPassword: null,
       children: new Set(),
     });
@@ -392,7 +392,7 @@ printf '4321\\n'`);
     expect(manager.isForwardedApiUrl(forwarded)).toBe(false);
   });
 
-  test('stores a client token for forwarded OpenChamber hosts when UI password is configured', async () => {
+  test('stores a client token for forwarded Pichamber hosts when UI password is configured', async () => {
     let loginPayload = null;
     const server = http.createServer(async (req, res) => {
       if (req.method === 'POST' && req.url === '/auth/session') {
@@ -466,7 +466,7 @@ printf '4321\\n'`);
     // non-interactive SSH login shell sees after `npm install -g` with nvm.
     const nvmBin = path.join(home, '.nvm', 'versions', 'node', 'v24.18.0', 'bin');
     executable(path.join(nvmBin, 'opencode'), 'exit 0');
-    executable(path.join(home, '.openchamber', 'npm-global', 'bin', 'openchamber'), `
+    executable(path.join(home, '.pichamber', 'npm-global', 'bin', 'pichamber'), `
 if [ "$1" = "--version" ]; then printf '1.2.3\\n'; exit 0; fi
 printf '%s' "$OPENCODE_BINARY" > "$HOME/launch-opencode"
 printf '4321\\n'`);
@@ -490,7 +490,7 @@ printf '4321\\n'`);
     expect(fs.readFileSync(path.join(home, 'launch-opencode'), 'utf8')).toBe(path.join(nvmBin, 'opencode'));
   });
 
-  test('installs OpenChamber into a home-owned npm prefix instead of the root-owned global one', async () => {
+  test('installs Pichamber into a home-owned npm prefix instead of the root-owned global one', async () => {
     const commands = [];
     const manager = new ElectronSshManager({
       settingsFilePath: path.join(os.tmpdir(), 'unused-settings.json'),
@@ -506,31 +506,31 @@ printf '4321\\n'`);
     await manager.installOpenChamberManaged({ destination: 'user@example.test', args: [] }, '/tmp/control.sock', '1.2.3', 'auto');
 
     expect(commands).toHaveLength(1);
-    expect(commands[0]).toContain('--prefix "$HOME/.openchamber/npm-global"');
+    expect(commands[0]).toContain('--prefix "$HOME/.pichamber/npm-global"');
     expect(commands[0]).not.toMatch(/npm install -g @openchamber/);
   });
 
-  test('lists every remote OpenChamber binary with its reported version', async () => {
+  test('lists every remote Pichamber binary with its reported version', async () => {
     const manager = new ElectronSshManager({
       settingsFilePath: path.join(os.tmpdir(), 'unused-settings.json'),
       appVersion: '1.2.3',
       emit: () => undefined,
     });
     manager.runRemoteCommand = async () => [
-      '/home/pi/.openchamber/npm-global/bin/openchamber\t1.2.3',
-      '/usr/bin/openchamber\t0.9.0',
+      '/home/pi/.pichamber/npm-global/bin/pichamber\t1.2.3',
+      '/usr/bin/pichamber\t0.9.0',
       '',
     ].join('\n');
 
     const candidates = await manager.remoteOpenChamberCandidates({ destination: 'user@example.test', args: [] }, '/tmp/control.sock');
 
     expect(candidates).toEqual([
-      { binPath: '/home/pi/.openchamber/npm-global/bin/openchamber', version: '1.2.3' },
-      { binPath: '/usr/bin/openchamber', version: '0.9.0' },
+      { binPath: '/home/pi/.pichamber/npm-global/bin/pichamber', version: '1.2.3' },
+      { binPath: '/usr/bin/pichamber', version: '0.9.0' },
     ]);
   });
 
-  test('starts the resolved OpenChamber binary rather than whatever PATH exposes', async () => {
+  test('starts the resolved Pichamber binary rather than whatever PATH exposes', async () => {
     let started = '';
     const manager = new ElectronSshManager({
       settingsFilePath: path.join(os.tmpdir(), 'unused-settings.json'),
@@ -549,11 +549,11 @@ printf '4321\\n'`);
       '/tmp/control.sock',
       instance,
       4321,
-      '/home/pi/.openchamber/npm-global/bin/openchamber',
+      '/home/pi/.pichamber/npm-global/bin/pichamber',
     );
 
     expect(port).toBe(4321);
-    expect(started).toContain("'/home/pi/.openchamber/npm-global/bin/openchamber' serve");
+    expect(started).toContain("'/home/pi/.pichamber/npm-global/bin/pichamber' serve");
     expect(started).toContain("OPENCODE_BINARY='/home/pi/.opencode/bin/opencode'");
     expect(started).toContain('$HOME/.opencode/bin:');
   });
@@ -574,7 +574,7 @@ printf '4321\\n'`);
       '/tmp/control.sock',
       { id: 'ssh-1', auth: {}, remoteOpenchamber: { mode: 'managed' } },
       4321,
-      '/home/pi/.bun/bin/openchamber',
+      '/home/pi/.bun/bin/pichamber',
     )).rejects.toThrow(/opencode CLI is not installed/);
   });
   test('prefers a bun that only exists in the home directory over npm', async () => {
@@ -612,10 +612,10 @@ printf '4321\\n'`);
       { destination: 'user@example.test', args: [] },
       '/tmp/control.sock',
       41777,
-      '/home/pi/.bun/bin/openchamber',
+      '/home/pi/.bun/bin/pichamber',
     );
 
-    expect(scripts).toEqual(["'/home/pi/.bun/bin/openchamber' stop --port 41777"]);
+    expect(scripts).toEqual(["'/home/pi/.bun/bin/pichamber' stop --port 41777"]);
   });
   test('publishes the remote server to its network only with a UI password', async () => {
     const manager = new ElectronSshManager({
@@ -637,14 +637,14 @@ printf '4321\\n'`);
       remoteOpenchamber: { mode: 'managed', bindHost: '0.0.0.0' },
     };
 
-    await expect(manager.startRemoteServerManaged(parsed, '/tmp/control.sock', exposed, 4321, '/bin/openchamber'))
+    await expect(manager.startRemoteServerManaged(parsed, '/tmp/control.sock', exposed, 4321, '/bin/pichamber'))
       .rejects.toThrow(/requires a UI password/);
 
     const secured = {
       ...exposed,
       auth: { openchamberPassword: { enabled: true, value: 'remote-secret', store: 'settings' } },
     };
-    await manager.startRemoteServerManaged(parsed, '/tmp/control.sock', secured, 4321, '/bin/openchamber');
+    await manager.startRemoteServerManaged(parsed, '/tmp/control.sock', secured, 4321, '/bin/pichamber');
     expect(started).toContain('--hostname 0.0.0.0');
   });
 
@@ -664,7 +664,7 @@ printf '4321\\n'`);
         emit: () => undefined,
       });
       manager.resolveRemoteTool = async () => '/home/pi/.opencode/bin/opencode';
-      manager.remoteOpenChamberCandidates = async () => [{ binPath: '/home/pi/.bun/bin/openchamber', version: '1.2.3' }];
+      manager.remoteOpenChamberCandidates = async () => [{ binPath: '/home/pi/.bun/bin/pichamber', version: '1.2.3' }];
       manager.runRemoteCommand = async (_parsed, _controlPath, script) => {
         const probedPort = script.match(/127\.0\.0\.1:(\d+)\/api\/system\/info/);
         if (probedPort) {
@@ -712,7 +712,7 @@ printf '4321\\n'`);
       const second = await manager.ensureRemoteServer(managed(), parsed, '/unused.sock');
 
       expect(first.startedByUs).toBe(true);
-      expect(second).toEqual({ remotePort: first.remotePort, startedByUs: false, ownsRemoteServer: true, remoteBinPath: '/home/pi/.bun/bin/openchamber' });
+      expect(second).toEqual({ remotePort: first.remotePort, startedByUs: false, ownsRemoteServer: true, remoteBinPath: '/home/pi/.bun/bin/pichamber' });
       expect(host.started).toEqual([first.remotePort]);
       expect(host.servers).toHaveLength(1);
     });
@@ -871,7 +871,7 @@ printf '4321\\n'`);
       const result = await manager.ensureRemoteServer(managed(), parsed, '/unused.sock');
 
       expect(result.startedByUs).toBe(true);
-      expect(manager.logsForInstance('ssh-reuse', 50).join('\n')).toContain('Could not list OpenChamber servers');
+      expect(manager.logsForInstance('ssh-reuse', 50).join('\n')).toContain('Could not list Pichamber servers');
     });
   });
 });

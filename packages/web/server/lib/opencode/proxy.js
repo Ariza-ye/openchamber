@@ -302,10 +302,10 @@ export const registerOpenCodeProxy = (app, deps) => {
     getSseUpstreamStallTimeoutMs = () => SSE_UPSTREAM_STALL_TIMEOUT_MS,
     readWorktreeBootstrapStatus = getWorktreeBootstrapStatus,
     WORKTREE_READY_TIMEOUT_MS = 5 * 60 * 1000,
-    // OpenCode 2.x has no archive route, so archive state is OpenChamber's own
+    // OpenCode 2.x has no archive route, so archive state is Pichamber's own
     // and the proxy folds it onto the sessions it serves (`time.archived`).
     // Session metadata lives on OpenCode's record; the proxy lays over only
-    // the entries an older OpenChamber left in the legacy file until they are
+    // the entries an older Pichamber left in the legacy file until they are
     // migrated.
     getArchivedSessions = null,
     getStoredSessionMetadata = null,

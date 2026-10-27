@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
 /**
- * What a fork made through the OpenChamber sessions API (CLI, scheduled tasks)
- * keeps from its source session's OpenChamber metadata. Server twin of the UI's
+ * What a fork made through the Pichamber sessions API (CLI, scheduled tasks)
+ * keeps from its source session's Pichamber metadata. Server twin of the UI's
  * `packages/ui/src/lib/sessionForkInheritance.ts`: UI forks call OpenCode
  * directly and repair themselves; forks made here are repaired here.
  *

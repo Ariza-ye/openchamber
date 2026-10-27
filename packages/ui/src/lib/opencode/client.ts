@@ -6,9 +6,9 @@
  * does not: runtime-aware transport (`runtimeFetch`, read timeouts, directory
  * scoping through `x-opencode-directory`), error normalisation (v2 throws
  * tagged error bodies without an HTTP status), and projection of wire shapes
- * into the OpenChamber domain model (`./model`, `./projection`).
+ * into the Pichamber domain model (`./model`, `./projection`).
  *
- * OpenChamber-owned server routes (`/api/fs/*`, `/api/opencode/*`) also live
+ * Pichamber-owned server routes (`/api/fs/*`, `/api/opencode/*`) also live
  * here when they are part of the same directory/session workflows.
  */
 
@@ -922,7 +922,7 @@ class OpencodeService {
    * Offline, permission, and other transport failures stay `unknown` so callers
    * do not treat a temporary outage as proof the path was deleted.
    *
-   * The probe is OpenChamber's own `/api/fs/directory-stats`, which asks the
+   * The probe is Pichamber's own `/api/fs/directory-stats`, which asks the
    * server to stat the paths without listing their contents; probes admitted in
    * the same short window share one request. A runtime without that route
    * (VS Code) answers `unknown`.
@@ -977,7 +977,7 @@ class OpencodeService {
         id: params?.id,
         title: params?.title,
         agent: params?.agent,
-        // Auto is OpenChamber's sentinel, not a model OpenCode can start a
+        // Auto is Pichamber's sentinel, not a model OpenCode can start a
         // session on; the first send puts the session on Auto through the
         // model switch the server intercepts.
         model: !params?.model || isAutoModel(params.model.providerID, params.model.id) ? undefined : toModelRef(params.model),
@@ -1527,7 +1527,7 @@ class OpencodeService {
   }
 
   /**
-   * Cross-project busy/retry/idle map kept by the OpenChamber host from the
+   * Cross-project busy/retry/idle map kept by the Pichamber host from the
    * single upstream event stream. One request that creates no OpenCode
    * instance, unlike `/session/status?directory=`. `null` means the fetch
    * failed; callers must preserve their current state.
@@ -2007,12 +2007,12 @@ class OpencodeService {
   }
 
   /**
-   * Classifies the OpenCode health probe. "unreachable" means the OpenChamber
+   * Classifies the OpenCode health probe. "unreachable" means the Pichamber
    * server did not answer (network error or timeout); "unhealthy" means it
    * answered but OpenCode is not ready.
    */
   async probeHealth(options?: { waitMs?: number }): Promise<OpencodeHealthProbe> {
-    // `waitMs` asks the OpenChamber server to hold an unhealthy answer until
+    // `waitMs` asks the Pichamber server to hold an unhealthy answer until
     // OpenCode is ready or the wait runs out. Hosts that predate the wait
     // (and the VS Code bridge) ignore it and answer at once.
     const waitMs = Math.max(0, Math.floor(options?.waitMs ?? 0))
@@ -2048,7 +2048,7 @@ class OpencodeService {
   }
 
   // -------------------------------------------------------------------------
-  // File System Operations (OpenChamber routes)
+  // File System Operations (Pichamber routes)
   // -------------------------------------------------------------------------
 
   async createDirectory(

@@ -330,7 +330,7 @@ describe('reading what a session was told', () => {
     expect(runtime.readPins({})).toEqual({ notes: [], plans: [] });
   });
 
-  test('pins into OpenChamber\'s own store and invalidates the delivered signature', async () => {
+  test('pins into Pichamber\'s own store and invalidates the delivered signature', async () => {
     const store = createMetadataStub({
       ses_a: { openchamber: { project_context_pins: { notes: [], plans: [] }, knowledge_context_delivered: 'old' } },
     });

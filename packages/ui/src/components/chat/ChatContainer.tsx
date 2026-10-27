@@ -1267,7 +1267,7 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({
     // the chat (its composer, or nothing focused after clicking its text)
     // opens this bar. With several chat columns on screen, an unfocused
     // Cmd+F goes to the column the pointer last pressed in. Search is opt-in;
-    // while it is off the shortcut is left alone. VS Code has no OpenChamber
+    // while it is off the shortcut is left alone. VS Code has no Pichamber
     // server and so no index to search.
     const chatRootRef = React.useRef<HTMLDivElement>(null);
     const lastPressedInsideRef = React.useRef(false);

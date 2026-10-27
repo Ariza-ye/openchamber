@@ -679,11 +679,12 @@ const detailsExtension: TokenizerAndRendererExtension = {
 // autolink, which is linear, links bare URLs without the CJK boundary.
 export const LINKIFY_SOURCE_LIMIT = 5_000;
 
-// A pasted session or message link (`openchamber://session/<id>?message=<id>`)
-// becomes a link too; other `openchamber:` routes stay text.
+// A pasted session or message link (`pichamber://session/<id>?message=<id>`)
+// becomes a link too; other `pichamber:` routes stay text. Legacy
+// `openchamber:` links from OpenChamber chats keep working.
 const OPENCHAMBER_SESSION_LINK_TAIL = /^\/\/session\/[A-Za-z0-9_-]{1,128}(?:\?message=[A-Za-z0-9_-]{1,128})?/;
 const OPENCHAMBER_SESSION_LINK_SCHEMA = {
-  // Length of the link after `openchamber:` at `pos`, or 0 when it is not one.
+  // Length of the link after `pichamber:` or `openchamber:` at `pos`, or 0 when it is not one.
   validate: (text: string, pos: number): number => OPENCHAMBER_SESSION_LINK_TAIL.exec(text.slice(pos))?.[0].length ?? 0,
 };
 
@@ -696,7 +697,7 @@ const OPENCHAMBER_SESSION_LINK_SCHEMA = {
 const LINK_MARKER = /[:/@]/;
 
 const boundedLinkify = (): MarkedExtension => ({
-  extensions: (markedLinkifyIt({ fuzzyLink: false, schemas: { 'openchamber:': OPENCHAMBER_SESSION_LINK_SCHEMA } }).extensions ?? []).map((extension) => {
+  extensions: (markedLinkifyIt({ fuzzyLink: false, schemas: { 'pichamber:': OPENCHAMBER_SESSION_LINK_SCHEMA, 'openchamber:': OPENCHAMBER_SESSION_LINK_SCHEMA } }).extensions ?? []).map((extension) => {
     if (!('tokenizer' in extension)) return extension;
     const { start, tokenizer } = extension;
     return {
@@ -943,7 +944,7 @@ const installAnchorHooks = (purifier: DOMPurifyInstance): void => {
     // DOMPurify's default URI policy strips custom application schemes
     // (obsidian://, vscode://, ...). Keep them for anchors; dangerous schemes
     // stay excluded via isAppLinkUrl and clicks go through confirmation.
-    // OpenChamber's own scheme is kept only for session links, which the chat
+    // Pichamber's own scheme is kept only for session links, which the chat
     // opens in place; pairing and other privileged routes stay stripped. VS
     // Code keeps them as text: its sessions live on its own OpenCode.
     const keepSessionLink = isSessionDeepLink(data.attrValue) && !isVSCodeRuntime();

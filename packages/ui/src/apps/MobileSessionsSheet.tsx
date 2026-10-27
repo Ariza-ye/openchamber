@@ -1036,7 +1036,7 @@ export const MobileSessionsSheet: React.FC<MobileSessionsSheetProps> = ({ open, 
     [childrenBySessionId],
   );
 
-  // Managed Chats (sessions under ~/.config/openchamber/chats) are not owned
+  // Managed Chats (sessions under ~/.config/pichamber/chats) are not owned
   // by any registered project; they get their own section above the project
   // tree, the same split the desktop sidebar makes. Temporary /btw forks are
   // dropped here as well.

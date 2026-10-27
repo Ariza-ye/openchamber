@@ -10,7 +10,7 @@
  *
  * Everything outside this module works with the predicates and accessors here,
  * so the next rename is one file. Names that are not in this list (MCP servers,
- * OpenChamber's own plugin tools) still flow through the generic renderers;
+ * Pichamber's own plugin tools) still flow through the generic renderers;
  * every helper answers "no"/"unknown" for them instead of throwing.
  *
  * A call's `input` and `metadata` are free-form JSON the model and the tool
@@ -137,7 +137,7 @@ const inputSchema = z
     url: optionalText,
     code: optionalText,
     questions: z.array(z.unknown()).optional().catch(undefined),
-    // OpenChamber's own tools: one `action` plus its `parameters`.
+    // Pichamber's own tools: one `action` plus its `parameters`.
     action: optionalText,
     parameters: z
       .object({
@@ -332,7 +332,7 @@ export type RenderedPageAsk =
   | { kind: "unanswered" }
 
 /**
- * The page an `openchamber_render` call showed: present once OpenChamber
+ * The page an `openchamber_render` call showed: present once Pichamber
  * accepted the call, so a refused or unfinished call keeps its tool row. A
  * page that waits for the user's answer shows while its call runs, since the
  * call runs until the user answers, and after a call that failed while waiting.
@@ -406,11 +406,11 @@ const MAX_TEXT_LENGTH = 120
 
 const OPENCHAMBER_RENDER_TOOL = "openchamber_render"
 
-/** The control, browser, memory, knowledge, notify and render tools OpenChamber gives every session. */
+/** The control, browser, memory, knowledge, notify and render tools Pichamber gives every session. */
 const OPENCHAMBER_TOOLS = new Set(["openchamber", "openchamber_web", "openchamber_memory", "openchamber_knowledge", "openchamber_notify", OPENCHAMBER_RENDER_TOOL])
 
 /**
- * The action an OpenChamber tool call ran and the one detail that tells calls
+ * The action an Pichamber tool call ran and the one detail that tells calls
  * apart: what was linked, created, saved, opened or asked. Notifications have
  * no action, so their title stands alone.
  */

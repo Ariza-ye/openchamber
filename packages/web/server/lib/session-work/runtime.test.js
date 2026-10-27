@@ -51,7 +51,7 @@ const makeRuntime = ({ metadata = {}, answers = {}, askError = null, settings = 
     jev,
     readMetadata: async (id) => records.get(id) ?? {},
     updateMetadata,
-    chatRoots: ['/home/me/.config/openchamber/chats'],
+    chatRoots: ['/home/me/.config/pichamber/chats'],
     lineage,
     now: () => time++,
   });
@@ -168,7 +168,7 @@ describe('session work runtime: a message was sent', () => {
       { session: { metadata: { openchamber: { kind: 'review', originalSessionID: 'ses_0' } } } },
       { session: { metadata: { openchamber: { kind: 'btw', originalSessionID: 'ses_0' } } } },
       { session: { metadata: { openchamber: { kind: 'scheduled' } } } },
-      { session: { location: { directory: '/home/me/.config/openchamber/chats/2026-09-27/hello' } } },
+      { session: { location: { directory: '/home/me/.config/pichamber/chats/2026-09-27/hello' } } },
     ]) {
       stubOpenCode({ session: setup.session });
       const { runtime, updateMetadata } = makeRuntime(setup.runtime);

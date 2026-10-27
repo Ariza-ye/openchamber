@@ -173,7 +173,6 @@ describe('terminal keepalive root coverage', () => {
   const __dirname = dirname(fileURLToPath(import.meta.url));
   const rootSources: Array<[string, string]> = [
     ['MainLayout', join(__dirname, '..', 'components', 'layout', 'MainLayout.tsx')],
-    ['VSCodeLayout', join(__dirname, '..', 'components', 'layout', 'VSCodeLayout.tsx')],
     ['MobileApp shell', join(__dirname, '..', 'apps', 'MobileApp.tsx')],
   ];
 

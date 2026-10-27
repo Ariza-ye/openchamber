@@ -31,7 +31,7 @@
     "homeDirectory": {
       "scope": "instance"
     },
-    "opencodeBinary": {
+    "piBinary": {
       "scope": "instance"
     },
     "projects": {
@@ -175,9 +175,6 @@
       "scope": "instance"
     },
     "agentKnowledgeToolEnabled": {
-      "scope": "instance"
-    },
-    "isolatedSpacesEnabled": {
       "scope": "instance"
     },
     "isolatedSpacesIdleStop": {
@@ -664,9 +661,6 @@
       "scope": "profile"
     },
     "notificationTemplates": {
-      "scope": "profile"
-    },
-    "showOpenCodeUpdateNotifications": {
       "scope": "profile"
     },
     "reportUsage": {

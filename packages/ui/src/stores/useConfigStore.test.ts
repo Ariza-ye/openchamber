@@ -210,7 +210,7 @@ mock.module('@/lib/persistence', () => ({
   updateDesktopSettings: mock(async () => ({ ok: true })),
   reportSettingsSaveState: () => undefined,
   // The store reads the shared document through this; an empty document
-  // keeps every OpenChamber default unset, like the settings route used to.
+  // keeps every Pichamber default unset, like the settings route used to.
   loadDesktopSettings: mock(async () => {
     settingsLoadCalls += 1;
     return loadSettingsImpl ? loadSettingsImpl() : persistedOpenChamberSettings;
@@ -1467,7 +1467,7 @@ describe('useConfigStore provider persistence', () => {
     expect(getConfigCalls).toBe(0);
   });
 
-  test('refreshes cached OpenChamber defaults after the default model changes', async () => {
+  test('refreshes cached Pichamber defaults after the default model changes', async () => {
     liveAgents = [testAgent('build')];
     liveProviderId = 'first';
     persistedOpenChamberSettings = { defaultModel: 'first/first-model' };
@@ -2874,7 +2874,7 @@ describe('useConfigStore provider persistence', () => {
     expect(useConfigStore.getState().currentAgentName).toBe('custom-agent');
   });
 
-  // VS Code gives every OpenChamber webview one origin, so each config-store
+  // VS Code gives every Pichamber webview one origin, so each config-store
   // write reaches every webview in every window as a StorageEvent carrying the
   // old and the new value. Persisting the catalogs made each write ~27 MB.
   test('persisted config keeps selections but no provider or agent catalogs', () => {

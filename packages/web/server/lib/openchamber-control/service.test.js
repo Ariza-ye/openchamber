@@ -54,7 +54,7 @@ const createService = (overrides = {}) => {
   return { service, client, sessionService, scheduledTaskService };
 };
 
-describe('OpenChamber control service', () => {
+describe('Pichamber control service', () => {
   it('creates a target task with inherited selection and accepts retargeting on update', async () => {
     const { service, scheduledTaskService } = createService();
     scheduledTaskService.upsert.mockImplementation(async (_project, task) => ({ task }));
@@ -357,7 +357,7 @@ describe('OpenChamber control service', () => {
     expect(client.session.active).toHaveBeenCalledTimes(2);
   });
 
-  it('filters sessions archived in OpenChamber state and adds global statuses', async () => {
+  it('filters sessions archived in Pichamber state and adds global statuses', async () => {
     const { service, client } = createService({
       // Async like the real store (`openchamber-sessions/archive-store.js`).
       archiveStore: { archivedAt: async (id) => (id === 'ses_archived' ? 100 : null) },
@@ -564,7 +564,7 @@ describe('OpenChamber control service', () => {
 
   it('rejects actions outside the fixed contract', async () => {
     const { service } = createService();
-    await expect(service.execute('session.delete')).rejects.toThrow('Unsupported OpenChamber action');
+    await expect(service.execute('session.delete')).rejects.toThrow('Unsupported Pichamber action');
   });
 });
 

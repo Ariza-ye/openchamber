@@ -158,8 +158,6 @@ export const OpenChamberLogo: React.FC<OpenChamberLogoProps> = ({
     return isDark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.4)';
   }, [themeContext, supportsColorMix, strokeColor, isDark, variant]);
 
-  const logoFillColor = strokeColor;
-
 
 
   // Isometric cube geometry (mathematically correct)
@@ -256,31 +254,14 @@ export const OpenChamberLogo: React.FC<OpenChamberLogoProps> = ({
         strokeLinejoin="round"
       />
       
-      {/* OpenCode logo on top face */}
+      {/* pi mark on the top face */}
       <g
         opacity={1}
         className={isAnimated ? 'oc-logo-glow' : undefined}
-        style={isAnimated ? ({ '--oc-glow-color': strokeColor } as React.CSSProperties) : undefined}
+        style={isAnimated ? ({ '--oc-glow-color': '#EDB449' } as React.CSSProperties) : undefined}
       >
-        {/*
-          Isometric transform for top face:
-          OpenCode logo (32x40 viewBox) centered and projected to isometric plane
-        */}
-        <g transform={`${isoMatrix} scale(0.75)`}>
-          {/* OpenCode logo - outer frame with inner square */}
-          {/* Outer frame (centered at origin, original: 0,0 to 32,40) */}
-          <path
-            fillRule="evenodd"
-            clipRule="evenodd"
-            d="M-16 -20 L16 -20 L16 20 L-16 20 Z M-8 -12 L-8 12 L8 12 L8 -12 Z"
-            fill={logoFillColor}
-          />
-          {/* Inner square */}
-          <path
-            d="M-8 -4 L8 -4 L8 12 L-8 12 Z"
-            fill={logoFillColor}
-            fillOpacity="0.4"
-          />
+        <g transform={`${isoMatrix} scale(0.95)`}>
+          <path d="M-18 -17 H18 V18 H9 V-8 H-9 V18 H-18 Z" fill="#EDB449" />
         </g>
       </g>
     </svg>

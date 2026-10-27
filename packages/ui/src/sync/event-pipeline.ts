@@ -1,7 +1,7 @@
 /**
  * Event Pipeline — transport connection, translation, coalescing, and batched flush.
  *
- * Wire events (OpenCode v2 `/api/event`, or the OpenChamber server's WebSocket
+ * Wire events (OpenCode v2 `/api/event`, or the Pichamber server's WebSocket
  * bridge of that stream) are translated into `SyncEvent`s here and coalesced
  * per directory before the reducer sees them. This module must not make
  * state-dependent decisions about event validity: deciding whether a delta is
@@ -100,7 +100,7 @@ export type EventPipeline = {
   reconnect: (reason?: string) => void
 }
 
-// Frames the OpenChamber server sends on `/api/global/event/ws`. `payload` is
+// Frames the Pichamber server sends on `/api/global/event/ws`. `payload` is
 // the wire event as OpenCode published it; the server adds replay metadata.
 const wsFrameSchema = z.object({
   type: z.enum(["ready", "event", "error", "backpressure"]),
@@ -111,7 +111,7 @@ const wsFrameSchema = z.object({
   message: z.string().optional(),
 })
 
-// OpenChamber's own session-status bridge rides the same stream. It predates
+// Pichamber's own session-status bridge rides the same stream. It predates
 // OpenCode's `session.status` and carries the status in `properties`.
 const openchamberStatusSchema = z.object({
   type: z.literal("openchamber:session-status"),
@@ -123,7 +123,7 @@ const openchamberStatusSchema = z.object({
   }),
 })
 
-// OpenChamber owns archive state; its server announces changes on the stream.
+// Pichamber owns archive state; its server announces changes on the stream.
 const openchamberArchivedSchema = z.object({
   type: z.literal("openchamber:session-archived"),
   properties: z.object({ sessionID: z.string().min(1), archivedAt: z.number().nullable() }),
@@ -227,7 +227,7 @@ const wireEventSchema = z.object({
 })
 
 // Only the discriminator is read before dispatch: a streamed reply delivers
-// one payload per delta, and trying every OpenChamber schema in turn cost
+// one payload per delta, and trying every Pichamber schema in turn cost
 // eleven zod parses per delta, nine of them certain to fail.
 const payloadTypeSchema = z.object({ type: z.string() })
 
@@ -343,7 +343,7 @@ export function classifyStreamPayload(payload: unknown, frameDirectory: string |
   }
   const bridged = translateOpenchamberEvent(type, payload)
   if (bridged) return { kind: "events", events: [{ directory: frameDirectory ?? GLOBAL_EVENT_DIRECTORY, event: bridged }] }
-  // An OpenChamber type this client does not know may still be a wire event
+  // An Pichamber type this client does not know may still be a wire event
   // shape; the wire translator ignores types it does not handle.
   return { kind: "events", events: translateWirePayload(payload, frameDirectory) }
 }
@@ -547,7 +547,7 @@ export function createEventPipeline(input: EventPipelineInput): EventPipeline {
    * Wait between reconnect attempts. Resolves early when:
    *   - the browser fires `online` (network came back — probe immediately),
    *   - the tab becomes visible (user came back — probe immediately),
-   *   - an expired OpenChamber session becomes usable (the user logged in),
+   *   - an expired Pichamber session becomes usable (the user logged in),
    *   - the pipeline is being torn down (cleanup aborts).
    * Otherwise resolves after `ms` like a plain timer.
    */
@@ -938,7 +938,7 @@ export function createEventPipeline(input: EventPipelineInput): EventPipeline {
 
   void (async () => {
     while (!abort.signal.aborted) {
-      // An expired OpenChamber session refuses every attempt; wait for the
+      // An expired Pichamber session refuses every attempt; wait for the
       // user to log in rather than retrying into 401s.
       await waitForAuthSession(abort.signal)
       if (abort.signal.aborted) return

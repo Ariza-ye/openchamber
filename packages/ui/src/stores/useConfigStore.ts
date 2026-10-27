@@ -65,7 +65,7 @@ interface OpenChamberDefaults {
     sttLanguage?: string;
 }
 
-// Directory activation re-reads the OpenChamber defaults, which are global,
+// Directory activation re-reads the Pichamber defaults, which are global,
 // not per directory: one request serves the switches that land inside this
 // window, and concurrent activations share the in-flight one.
 const OPENCHAMBER_DEFAULTS_FRESH_MS = 15_000;
@@ -1335,7 +1335,7 @@ type SelectionField = typeof SELECTION_FIELDS[number];
  * Whether writing `next` would leave both the top-level selection and the
  * active directory's snapshot as they are. The persist middleware writes the
  * whole store after every `set()`, even one whose updater returns the same
- * state, and VS Code delivers each `config-store` write to every OpenChamber
+ * state, and VS Code delivers each `config-store` write to every Pichamber
  * webview in every window. So a setter makes this check before it calls
  * `set()`. A missing snapshot is a change: the write would create it.
  */
@@ -1437,7 +1437,7 @@ interface ConfigStore {
     projectConfigErrors: Record<string, ProjectConfigError>;
     isInitialized: boolean;
     modelsMetadata: Map<string, ModelMetadata>;
-    // OpenChamber settings-based defaults (take precedence over agent preferences)
+    // Pichamber settings-based defaults (take precedence over agent preferences)
     settingsDefaultModel: string | undefined; // format: "provider/model"
     settingsDefaultsLoaded: boolean;
     settingsDefaultVariant: string | undefined;
@@ -2801,7 +2801,7 @@ export const useConfigStore = create<ConfigStore>()(
 
                     for (let attempt = 0; attempt < 3; attempt++) {
                         try {
-                            // Fetch agents and OpenChamber settings in parallel. OpenCode config
+                            // Fetch agents and Pichamber settings in parallel. OpenCode config
                             // comes from sync state if it is already available; it must not block
                             // the agent refresh path.
                             const configDirectoryPath = fromDirectoryKey(directoryKey);
@@ -4114,7 +4114,7 @@ export const useConfigStore = create<ConfigStore>()(
                             const debug = streamDebugEnabled();
                             if (debug) console.log("Starting app initialization...");
 
-                            // OpenChamber preferences do not depend on OpenCode health
+                            // Pichamber preferences do not depend on OpenCode health
                             // or project discovery. Publish a known choice immediately.
                             void get().loadSessionDefaults();
                             const isConnected = await get().checkConnection();
@@ -4323,7 +4323,7 @@ export const useConfigStore = create<ConfigStore>()(
                     return hydrateActiveDirectorySnapshot(merged);
                 },
                 // Selections only. The provider and agent catalogs are not
-                // persisted: VS Code gives every OpenChamber webview one origin,
+                // persisted: VS Code gives every Pichamber webview one origin,
                 // so each write reaches every webview in every window as a
                 // StorageEvent carrying the old and the new value, and with the
                 // catalogs a write was tens of megabytes. On a cold start the

@@ -76,7 +76,7 @@ describe('Linear auth routes', () => {
               email: 'ada@example.com',
               avatarUrl: 'https://example.com/a.png',
             },
-            organization: { id: 'org-1', name: 'OpenChamber', urlKey: 'openchamber' },
+            organization: { id: 'org-1', name: 'Pichamber', urlKey: 'openchamber' },
           },
         });
       }
@@ -89,7 +89,7 @@ describe('Linear auth routes', () => {
       .expect(200);
 
     expect(callback.text).toContain('Authorization Complete');
-    expect(callback.text).toContain('openchamber://focus/linear-auth');
+    expect(callback.text).toContain('pichamber://focus/linear-auth');
 
     const status = await request(app).get('/api/linear/auth/status').expect(200);
     expect(status.body.connected).toBe(true);
@@ -100,11 +100,11 @@ describe('Linear auth routes', () => {
       email: 'ada@example.com',
       avatarUrl: 'https://example.com/a.png',
     });
-    expect(status.body.organization).toEqual({ id: 'org-1', name: 'OpenChamber', urlKey: 'openchamber' });
+    expect(status.body.organization).toEqual({ id: 'org-1', name: 'Pichamber', urlKey: 'openchamber' });
     expect(status.body.scope).toBe('read,write,comments:create');
     expect(status.body.workspaces).toEqual([{
       id: 'org-1',
-      name: 'OpenChamber',
+      name: 'Pichamber',
       urlKey: 'openchamber',
       current: true,
       user: {
@@ -133,7 +133,7 @@ describe('Linear auth routes', () => {
       .expect(400);
     expect(tokenFetch).not.toHaveBeenCalled();
     expect(response.text).toContain('Authorization Failed');
-    expect(response.text).not.toContain('openchamber://');
+    expect(response.text).not.toContain('pichamber://');
   });
 
   it('omits the desktop deep link for flows started outside the desktop shell', async () => {
@@ -162,7 +162,7 @@ describe('Linear auth routes', () => {
       .get('/linear/oauth/callback')
       .query({ state, code: 'auth-code' })
       .expect(200);
-    expect(response.text).not.toContain('openchamber://');
+    expect(response.text).not.toContain('pichamber://');
   });
 
   it('disconnects and revokes the refresh token', async () => {

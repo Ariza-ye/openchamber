@@ -32,7 +32,7 @@ test('posts to the host update route with the saved token and headers', async ()
 for (const [name, reply, expected] of [
   ['refused token', response(401), { status: 'auth' }],
   ['forbidden token', response(403), { status: 'auth' }],
-  ['service manager refusal', response(409, { error: 'Run openchamber update on the server.' }), { status: 'failed', error: 'Run openchamber update on the server.' }],
+  ['service manager refusal', response(409, { error: 'Run pichamber update on the server.' }), { status: 'failed', error: 'Run pichamber update on the server.' }],
   ['no update available', response(400, { error: 'No update available' }), { status: 'failed', error: 'No update available' }],
   ['unexpected success body', response(200, { ok: true }), { status: 'failed', error: null }],
   ['web page instead of JSON', { status: 200, ok: true, json: async () => { throw new SyntaxError('Unexpected token <'); } }, { status: 'failed', error: null }],

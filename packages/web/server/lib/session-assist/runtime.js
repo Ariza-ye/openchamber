@@ -12,7 +12,7 @@ import { buildAssistPrompt, buildAssistSystemPrompt } from './prompt.js';
 const OPENCHAMBER_SETTINGS_FILE = path.join(
   process.env.OPENCHAMBER_DATA_DIR
     ? path.resolve(process.env.OPENCHAMBER_DATA_DIR)
-    : path.join(os.homedir(), '.config', 'openchamber'),
+    : path.join(os.homedir(), '.config', 'pichamber'),
   'settings.json',
 );
 
@@ -81,7 +81,7 @@ const extractUserMessage = (payload) => {
 };
 
 /**
- * The recap and the suggestion live in OpenChamber's own session metadata
+ * The recap and the suggestion live in Pichamber's own session metadata
  * store: OpenCode 2.x accepts session metadata only when a session is created.
  * `persistSessionAssist(sessionID, directory, assist)` writes it; without that
  * seam the runtime stays inert rather than generating text it cannot save.
@@ -93,7 +93,7 @@ export const createSessionAssistRuntime = ({
   getTargets = getSessionAssistTargets,
   quietMs = IDLE_QUIET_MS,
   persistSessionAssist = null,
-  // Archive state is OpenChamber's own in v2 (no OpenCode route sets it), so
+  // Archive state is Pichamber's own in v2 (no OpenCode route sets it), so
   // the runtime asks rather than reading `time.archived` off the record.
   isSessionArchived = async () => false,
   // Asked once when a turn ends, before the quiet window is armed: which of

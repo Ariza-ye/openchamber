@@ -184,7 +184,7 @@ const buildPinnedBlock = ({ notes, plans }) => {
  * and its rules read as orders; weaker models answered it ("No task yet, so
  * nothing to link") and dropped the real task (#4877).
  */
-export const KNOWLEDGE_HEADER = 'Standing context for this session, added by OpenChamber.'
+export const KNOWLEDGE_HEADER = 'Standing context for this session, added by Pichamber.'
   + ' It is background, not a request: act on the user\'s messages, and carry on'
   + ' with any task already in progress.';
 
@@ -217,7 +217,7 @@ export const createSessionKnowledgeRuntime = (dependencies) => {
     isWorktreeMoveWithoutAsking = null,
     // Whether this session's agent has the `openchamber_render` tool.
     isPageRenderingAvailable = async () => false,
-    // Pins and the delivered-signature cursor live in OpenChamber's own session
+    // Pins and the delivered-signature cursor live in Pichamber's own session
     // metadata store: OpenCode 2.x accepts session metadata only at create time.
     readSessionMetadata = null,
     persistSessionMetadata = null,
@@ -415,7 +415,7 @@ export const createSessionKnowledgeRuntime = (dependencies) => {
    * agent had context it never received.
    *
    * Merged onto a fresh read, because the session's metadata holds other
-   * OpenChamber state — pinned messages among it — and a blind write would
+   * Pichamber state — pinned messages among it — and a blind write would
    * drop whatever changed in between.
    */
   const recordDelivered = async (sessionId, directory, signature) => {

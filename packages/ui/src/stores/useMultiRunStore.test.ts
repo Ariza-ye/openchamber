@@ -38,7 +38,7 @@ const childState = {
 };
 const recordSchema = z.record(z.string(), z.json());
 
-/** The RFC 7386 merge the OpenChamber metadata route performs server-side. */
+/** The RFC 7386 merge the Pichamber metadata route performs server-side. */
 const mergePatch = (current: Metadata, patch: Metadata): Metadata => {
   const base: Metadata = { ...current };
   for (const [key, value] of Object.entries(patch)) {

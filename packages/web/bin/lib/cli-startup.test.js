@@ -40,13 +40,13 @@ describe('macOS startup service', () => {
     const home = fs.mkdtempSync(path.join(os.tmpdir(), 'openchamber-startup-'));
     const platform = Object.getOwnPropertyDescriptor(process, 'platform');
     const previousDataDir = process.env.OPENCHAMBER_DATA_DIR;
-    const plistPath = path.join(home, 'Library', 'LaunchAgents', 'dev.openchamber.web.plist');
+    const plistPath = path.join(home, 'Library', 'LaunchAgents', 'dev.pichamber.web.plist');
     const writeFileSync = fs.writeFileSync;
     const stopBeforeLaunchctl = new Error('Stop before activating launchd');
 
     try {
       Object.defineProperty(process, 'platform', { configurable: true, value: 'darwin' });
-      process.env.OPENCHAMBER_DATA_DIR = path.join(home, '.config', 'openchamber');
+      process.env.OPENCHAMBER_DATA_DIR = path.join(home, '.config', 'pichamber');
       vi.spyOn(os, 'homedir').mockReturnValue(home);
       vi.spyOn(fs, 'writeFileSync').mockImplementation((file, ...args) => {
         writeFileSync(file, ...args);
@@ -67,10 +67,10 @@ describe('macOS startup service', () => {
     }
   });
 
-  it('leaves what OpenChamber put into the enabling shell out of the service environment', () => {
+  it('leaves what Pichamber put into the enabling shell out of the service environment', () => {
     const home = fs.mkdtempSync(path.join(os.tmpdir(), 'openchamber-startup-'));
     const platform = Object.getOwnPropertyDescriptor(process, 'platform');
-    const plistPath = path.join(home, 'Library', 'LaunchAgents', 'dev.openchamber.web.plist');
+    const plistPath = path.join(home, 'Library', 'LaunchAgents', 'dev.pichamber.web.plist');
     const writeFileSync = fs.writeFileSync;
     const stopBeforeLaunchctl = new Error('Stop before activating launchd');
     // The shell of a desktop app's terminal, or an agent's: the user's own
@@ -84,7 +84,7 @@ describe('macOS startup service', () => {
     const theirs = {
       OPENCODE_HOST: 'http://opencode.lan:4096',
       MY_PROVIDER_TOKEN: 'token',
-      OPENCHAMBER_DATA_DIR: path.join(home, '.config', 'openchamber'),
+      OPENCHAMBER_DATA_DIR: path.join(home, '.config', 'pichamber'),
     };
     const touched = [...Object.keys(ours), ...Object.keys(theirs), INJECTED_ENV_KEY];
     const previous = Object.fromEntries(touched.map((key) => [key, process.env[key]]));

@@ -7,9 +7,9 @@ import { z } from 'zod';
 import { desktopLauncherPath, PROJECT_OPEN_ARG } from './desktop-launch.mjs';
 
 const execFileAsync = promisify(execFile);
-const LAUNCHER_MARKER = '# OpenChamber desktop launcher';
-const PATH_MARKER = '# OpenChamber desktop command';
-const COMMAND_NAME = 'chamber';
+const LAUNCHER_MARKER = '# Pichamber desktop launcher';
+const PATH_MARKER = '# Pichamber desktop command';
+const COMMAND_NAME = 'pichamber';
 const registrationSchema = z.object({
   version: z.union([z.literal(1), z.literal(2)]),
   linkPath: z.string().refine((value) => path.isAbsolute(value) && path.basename(value) === COMMAND_NAME),
@@ -40,7 +40,7 @@ export const buildDesktopLauncher = ({ platform, executablePath }) => {
     `  set -- "${PROJECT_OPEN_ARG}$directory"`,
     'fi',
     'unset ELECTRON_RUN_AS_NODE NODE_OPTIONS',
-    platform === 'linux' ? `test -x ${quoteShell(target)} || { printf "OpenChamber Desktop was moved or removed. Launch it again to repair the command.\\n" >&2; exit 1; }` : '',
+    platform === 'linux' ? `test -x ${quoteShell(target)} || { printf "Pichamber Desktop was moved or removed. Launch it again to repair the command.\\n" >&2; exit 1; }` : '',
     launch, '',
   ].join('\n');
 };
@@ -98,7 +98,7 @@ const addUserBinToShellPath = async ({ env, homeDir }) => {
     profiles = [path.join(homeDir, '.bashrc'), loginProfile];
   } else if (shell === 'sh' || shell === 'dash' || shell === 'ksh') profiles = [path.join(homeDir, '.profile')];
   else if (shell === 'fish') {
-    const profile = path.join(env.XDG_CONFIG_HOME || path.join(homeDir, '.config'), 'fish', 'conf.d', 'openchamber-path.fish');
+    const profile = path.join(env.XDG_CONFIG_HOME || path.join(homeDir, '.config'), 'fish', 'conf.d', 'pichamber-path.fish');
     await fsp.mkdir(path.dirname(profile), { recursive: true });
     try {
       await fsp.writeFile(profile, `${PATH_MARKER}\nfish_add_path --append "$HOME/.local/bin"\n`, { flag: 'wx', mode: 0o600 });
@@ -121,37 +121,22 @@ export const prepareDesktopLauncher = async ({ platform, dataDir, executablePath
   await writeManagedLauncher(desktopLauncherPath(dataDir), buildDesktopLauncher({ platform, executablePath }));
 };
 
-/** Store the chamber link separately from the legacy openchamber registration record. */
-const registrationPath = (dataDir) => path.join(dataDir, 'desktop', 'chamber-command.json');
+/** Store the pichamber link beside the private launcher record. */
+const registrationPath = (dataDir) => path.join(dataDir, 'desktop', 'pichamber-command.json');
 
-/** Use the legacy record only to identify chamber links created by early test builds. */
-const legacyRegistrationPath = (dataDir) => path.join(dataDir, 'desktop', 'command.json');
-
-/** Validate the current record strictly; include a legacy record only when it belongs to chamber. */
+/** Validate the current record strictly. */
 const readRegistration = async (dataDir) => {
   const filePath = registrationPath(dataDir);
-  if (await statIfPresent(filePath)) {
-    return { ...registrationSchema.parse(JSON.parse(await fsp.readFile(filePath, 'utf8'))), recordPath: filePath };
-  }
-  const oldPath = legacyRegistrationPath(dataDir);
-  if (!await statIfPresent(oldPath)) return null;
-  let oldRecord;
-  try { oldRecord = JSON.parse(await fsp.readFile(oldPath, 'utf8')); }
-  catch (error) {
-    if (error instanceof SyntaxError) return null;
-    throw error;
-  }
-  const parsed = registrationSchema.safeParse(oldRecord);
-  return parsed.success ? { ...parsed.data, recordPath: oldPath } : null;
+  if (!await statIfPresent(filePath)) return null;
+  return { ...registrationSchema.parse(JSON.parse(await fsp.readFile(filePath, 'utf8'))), recordPath: filePath };
 };
 
-/** Recognize only chamber links, including the private launcher used by early test builds. */
+/** Recognize only pichamber links that point at this app's private launcher. */
 const isManagedCommandLink = async (candidate, dataDir) => {
   const info = await statIfPresent(candidate);
   if (path.basename(candidate) !== COMMAND_NAME || !info?.isSymbolicLink()) return false;
   const target = path.resolve(path.dirname(candidate), await fsp.readlink(candidate));
-  return target === desktopLauncherPath(dataDir)
-    || target === path.join(dataDir, 'desktop', 'openchamber');
+  return target === desktopLauncherPath(dataDir);
 };
 
 /** Inspect command status using only PATH, the user bin, and paths named in registration records. */

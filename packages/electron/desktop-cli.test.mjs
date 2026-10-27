@@ -16,7 +16,7 @@ const fixture = async (t) => {
     env: { PATH: bin, HOME: root, SHELL: '/bin/sh' },
     homeDir: root,
     dataDir: path.join(root, 'data'),
-    executablePath: '/opt/OpenChamber/openchamber',
+    executablePath: '/opt/Pichamber/openchamber',
     bin,
   };
 };
@@ -25,24 +25,24 @@ test('registers an exclusive link in the user bin already on PATH without changi
   const options = await fixture(t);
   const result = await registerDesktopCommand(options);
   assert.equal(result.state, 'installed');
-  assert.equal(result.path, path.join(options.bin, 'chamber'));
-  assert.equal(await fsp.readlink(result.path), path.join(options.dataDir, 'desktop', 'chamber'));
+  assert.equal(result.path, path.join(options.bin, 'pichamber'));
+  assert.equal(await fsp.readlink(result.path), path.join(options.dataDir, 'desktop', 'pichamber'));
   await assert.rejects(fsp.stat(path.join(options.homeDir, '.profile')), { code: 'ENOENT' });
 });
 
 test('ignores writable application directories when choosing the public command location', async (t) => {
   const options = await fixture(t);
-  const privateBin = path.join(options.homeDir, 'OpenChamber.app', 'Contents', 'Resources', 'opencode-cli');
+  const privateBin = path.join(options.homeDir, 'Pichamber.app', 'Contents', 'Resources', 'opencode-cli');
   await fsp.mkdir(privateBin, { recursive: true });
   options.env.PATH = `${privateBin}${path.delimiter}${options.bin}`;
   const installed = await registerDesktopCommand(options);
-  assert.equal(installed.path, path.join(options.bin, 'chamber'));
-  await assert.rejects(fsp.lstat(path.join(privateBin, 'chamber')), { code: 'ENOENT' });
+  assert.equal(installed.path, path.join(options.bin, 'pichamber'));
+  await assert.rejects(fsp.lstat(path.join(privateBin, 'pichamber')), { code: 'ENOENT' });
 });
 
 test('leaves a legacy desktop openchamber command and its record unchanged', async (t) => {
   const options = await fixture(t);
-  const privateBin = path.join(options.homeDir, 'OpenChamber.app', 'Contents', 'Resources', 'opencode-cli');
+  const privateBin = path.join(options.homeDir, 'Pichamber.app', 'Contents', 'Resources', 'opencode-cli');
   await fsp.mkdir(privateBin, { recursive: true });
   const oldLink = path.join(privateBin, 'openchamber');
   await fsp.mkdir(path.join(options.dataDir, 'desktop'), { recursive: true });
@@ -55,12 +55,12 @@ test('leaves a legacy desktop openchamber command and its record unchanged', asy
   const oldRecordPath = path.join(options.dataDir, 'desktop', 'command.json');
   await fsp.writeFile(oldRecordPath, oldRecord);
   assert.deepEqual(await getDesktopCommandStatus(options), { state: 'missing' });
-  assert.equal((await registerDesktopCommand(options)).path, path.join(options.bin, 'chamber'));
+  assert.equal((await registerDesktopCommand(options)).path, path.join(options.bin, 'pichamber'));
   await unregisterDesktopCommand(options);
   assert.equal(await fsp.readlink(oldLink), oldLauncherPath);
   assert.equal(await fsp.readFile(oldRecordPath, 'utf8'), oldRecord);
   assert.equal(await fsp.readFile(oldLauncherPath, 'utf8'), 'old desktop launcher');
-  await assert.rejects(fsp.lstat(path.join(options.dataDir, 'desktop', 'chamber-command.json')), { code: 'ENOENT' });
+  await assert.rejects(fsp.lstat(path.join(options.dataDir, 'desktop', 'pichamber-command.json')), { code: 'ENOENT' });
 });
 
 test('does not mistake a previous PATH entry for shell configuration after PATH changes', async (t) => {
@@ -72,25 +72,25 @@ test('does not mistake a previous PATH entry for shell configuration after PATH 
 
 test('preserves an existing CLI when registration is requested', async (t) => {
   const options = await fixture(t);
-  const command = path.join(options.bin, 'chamber');
+  const command = path.join(options.bin, 'pichamber');
   await fsp.writeFile(command, 'user command', { mode: 0o755 });
   assert.equal((await registerDesktopCommand(options)).state, 'external');
   assert.equal(await fsp.readFile(command, 'utf8'), 'user command');
-  await assert.rejects(fsp.stat(path.join(options.dataDir, 'desktop', 'chamber-command.json')), { code: 'ENOENT' });
+  await assert.rejects(fsp.stat(path.join(options.dataDir, 'desktop', 'pichamber-command.json')), { code: 'ENOENT' });
 });
 
-test('registers chamber alongside an existing openchamber CLI without changing it', async (t) => {
+test('registers pichamber alongside an existing openchamber CLI without changing it', async (t) => {
   const options = await fixture(t);
   const existing = path.join(options.bin, 'openchamber');
   await fsp.writeFile(existing, 'user CLI', { mode: 0o755 });
   const installed = await registerDesktopCommand(options);
-  assert.equal(installed.path, path.join(options.bin, 'chamber'));
+  assert.equal(installed.path, path.join(options.bin, 'pichamber'));
   assert.equal(await fsp.readFile(existing, 'utf8'), 'user CLI');
   await unregisterDesktopCommand(options);
   assert.equal(await fsp.readFile(existing, 'utf8'), 'user CLI');
 });
 
-test('preserves a user replacement of the legacy command while registering chamber', async (t) => {
+test('preserves a user replacement of the legacy command while registering pichamber', async (t) => {
   const options = await fixture(t);
   await prepareDesktopLauncher(options);
   const existing = path.join(options.bin, 'openchamber');
@@ -98,7 +98,7 @@ test('preserves a user replacement of the legacy command while registering chamb
   await fsp.writeFile(path.join(options.dataDir, 'desktop', 'command.json'), JSON.stringify({
     version: 2, linkPath: existing, pathConfigured: false,
   }));
-  assert.equal((await registerDesktopCommand(options)).path, path.join(options.bin, 'chamber'));
+  assert.equal((await registerDesktopCommand(options)).path, path.join(options.bin, 'pichamber'));
   assert.equal(await fsp.readFile(existing, 'utf8'), 'replacement');
   await unregisterDesktopCommand(options);
   assert.equal(await fsp.readFile(existing, 'utf8'), 'replacement');
@@ -110,31 +110,14 @@ test('ignores an owned legacy openchamber link without a registration record', a
   const oldLink = path.join(options.bin, 'openchamber');
   await fsp.symlink(path.join(options.dataDir, 'desktop', 'openchamber'), oldLink);
   assert.equal((await getDesktopCommandStatus(options)).state, 'missing');
-  assert.equal((await registerDesktopCommand(options)).path, path.join(options.bin, 'chamber'));
+  assert.equal((await registerDesktopCommand(options)).path, path.join(options.bin, 'pichamber'));
   await unregisterDesktopCommand(options);
   assert.equal(await fsp.readlink(oldLink), path.join(options.dataDir, 'desktop', 'openchamber'));
 });
 
-test('uninstalls an early chamber link recorded at the old path without touching openchamber', async (t) => {
-  const options = await fixture(t);
-  const oldLauncher = path.join(options.dataDir, 'desktop', 'openchamber');
-  await fsp.mkdir(path.dirname(oldLauncher), { recursive: true });
-  const chamberLink = path.join(options.bin, 'chamber');
-  const openchamberLink = path.join(options.bin, 'openchamber');
-  await fsp.symlink(oldLauncher, chamberLink);
-  await fsp.symlink(oldLauncher, openchamberLink);
-  const oldRecordPath = path.join(options.dataDir, 'desktop', 'command.json');
-  await fsp.writeFile(oldRecordPath, JSON.stringify({ version: 2, linkPath: chamberLink, pathConfigured: false }));
-  assert.equal((await getDesktopCommandStatus(options)).path, chamberLink);
-  assert.equal((await unregisterDesktopCommand(options)).state, 'missing');
-  await assert.rejects(fsp.lstat(chamberLink), { code: 'ENOENT' });
-  await assert.rejects(fsp.lstat(oldRecordPath), { code: 'ENOENT' });
-  assert.equal(await fsp.readlink(openchamberLink), oldLauncher);
-});
-
 test('never replaces a dangling command link', async (t) => {
   const options = await fixture(t);
-  const command = path.join(options.bin, 'chamber');
+  const command = path.join(options.bin, 'pichamber');
   await fsp.symlink('/missing/user-command', command);
   assert.equal((await registerDesktopCommand(options)).state, 'external');
   assert.equal(await fsp.readlink(command), '/missing/user-command');
@@ -144,11 +127,11 @@ test('refreshes its own launcher after an AppImage moves, keeping the public lin
   const options = await fixture(t);
   const first = await registerDesktopCommand(options);
   const target = await fsp.readlink(first.path);
-  const moved = { ...options, executablePath: '/home/user/Apps/New OpenChamber.AppImage' };
+  const moved = { ...options, executablePath: '/home/user/Apps/New Pichamber.AppImage' };
   await prepareDesktopLauncher(moved);
   assert.equal((await getDesktopCommandStatus(moved)).state, 'installed');
   assert.equal(await fsp.readlink(first.path), target);
-  assert.match(await fsp.readFile(target, 'utf8'), /New OpenChamber\.AppImage/);
+  assert.match(await fsp.readFile(target, 'utf8'), /New Pichamber\.AppImage/);
 });
 
 test('adds the user bin to shell PATH only once when it is absent', async (t) => {
@@ -157,19 +140,19 @@ test('adds the user bin to shell PATH only once when it is absent', async (t) =>
   const profile = path.join(options.homeDir, '.profile');
   await fsp.writeFile(profile, 'export USER_SETTING=kept\n');
   const first = await registerDesktopCommand(options);
-  assert.equal(first.path, path.join(options.homeDir, '.local', 'bin', 'chamber'));
+  assert.equal(first.path, path.join(options.homeDir, '.local', 'bin', 'pichamber'));
   assert.equal(first.state, 'installed');
   await registerDesktopCommand(options);
   const contents = await fsp.readFile(profile, 'utf8');
   assert.ok(contents.startsWith('export USER_SETTING=kept\n'));
-  assert.equal(contents.split('# OpenChamber desktop command').length, 2);
+  assert.equal(contents.split('# Pichamber desktop command').length, 2);
   assert.ok(contents.includes('export PATH="$PATH:$HOME/.local/bin"'));
 });
 
 test('quotes application paths and sends normalized directories as a single native argument', () => {
-  const script = buildDesktopLauncher({ platform: 'darwin', executablePath: "/Applications/Ariza's Apps/OpenChamber.app/Contents/MacOS/OpenChamber" });
-  assert.ok(script.includes('Usage: chamber [directory]'));
-  assert.ok(script.includes("'/Applications/Ariza'\"'\"'s Apps/OpenChamber.app'"));
+  const script = buildDesktopLauncher({ platform: 'darwin', executablePath: "/Applications/Ariza's Apps/Pichamber.app/Contents/MacOS/Pichamber" });
+  assert.ok(script.includes('Usage: pichamber [directory]'));
+  assert.ok(script.includes("'/Applications/Ariza'\"'\"'s Apps/Pichamber.app'"));
   assert.ok(script.includes('set -- "--openchamber-project=$directory"'));
   assert.ok(script.includes('unset ELECTRON_RUN_AS_NODE NODE_OPTIONS'));
 });
@@ -178,7 +161,7 @@ test('preparing a launcher or reading settings never registers a public command'
   const options = await fixture(t);
   await prepareDesktopLauncher(options);
   assert.equal((await getDesktopCommandStatus(options)).state, 'missing');
-  await assert.rejects(fsp.lstat(path.join(options.bin, 'chamber')), { code: 'ENOENT' });
+  await assert.rejects(fsp.lstat(path.join(options.bin, 'pichamber')), { code: 'ENOENT' });
   await assert.rejects(fsp.lstat(path.join(options.dataDir, 'desktop', 'openchamber')), { code: 'ENOENT' });
   await assert.rejects(fsp.stat(path.join(options.homeDir, '.profile')), { code: 'ENOENT' });
 });
@@ -214,8 +197,8 @@ test('serializes register and uninstall requests from different windows', async 
 test('reports a corrupt registration record without claiming the command is missing', async (t) => {
   const options = await fixture(t);
   await prepareDesktopLauncher(options);
-  await fsp.writeFile(path.join(options.dataDir, 'desktop', 'chamber-command.json'), '{broken');
+  await fsp.writeFile(path.join(options.dataDir, 'desktop', 'pichamber-command.json'), '{broken');
   await assert.rejects(getDesktopCommandStatus(options));
   await assert.rejects(registerDesktopCommand(options));
-  await assert.rejects(fsp.lstat(path.join(options.bin, 'chamber')), { code: 'ENOENT' });
+  await assert.rejects(fsp.lstat(path.join(options.bin, 'pichamber')), { code: 'ENOENT' });
 });

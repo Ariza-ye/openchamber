@@ -291,7 +291,7 @@ describe('scheduled-task service run', () => {
 });
 
 describe('scheduled-task service chats scope', () => {
-  const chatsScope = createChatsScope('/home/user/.config/openchamber/chats');
+  const chatsScope = createChatsScope('/home/user/.config/pichamber/chats');
 
   it('keys the chats id the UI sends by the chats root storage id', async () => {
     const { service, scheduledTasksRuntime } = createService({

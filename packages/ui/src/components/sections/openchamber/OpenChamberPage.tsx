@@ -11,7 +11,7 @@ import { GitSettings } from './GitSettings';
 import { NotificationSettings } from './NotificationSettings';
 import { VoiceSettings } from './VoiceSettings';
 import { TunnelSettings } from './TunnelSettings';
-import { OpenCodeCliSettings } from './OpenCodeCliSettings';
+import { PiBinarySettings } from './PiBinarySettings';
 import { DesktopCliSettings } from './DesktopCliSettings';
 import { EnvironmentVariablesSettings } from './EnvironmentVariablesSettings';
 import { IsolatedSpacesSettings } from './IsolatedSpacesSettings';
@@ -41,7 +41,7 @@ interface OpenChamberPageProps {
     section?: OpenChamberSection;
 }
 
-/** Compose Settings by runtime, placing native command management below OpenCode CLI. */
+/** Compose Settings by runtime, placing native command management below the pi binary. */
 export const OpenChamberPage: React.FC<OpenChamberPageProps> = ({ section }) => {
     const { t } = useI18n();
     const { isMobile } = useDeviceInfo();
@@ -58,7 +58,6 @@ export const OpenChamberPage: React.FC<OpenChamberPageProps> = ({ section }) => 
                 <DefaultsSettings key={runtimeEndpointEpoch} />
                 <SessionWorkSettings />
                 {showDesktopNetworkSettings && <DesktopNetworkSettings />}
-                {!isVSCode && <OpenCodeCliSettings />}
                 {canManageDesktopCli() && <DesktopCliSettings key={runtimeEndpointEpoch} />}
                 {!isVSCode && <EnvironmentVariablesSettings key={runtimeEndpointEpoch} />}
                 {!isVSCode && <OpenChamberToolsSettings />}
@@ -144,7 +143,7 @@ const ShortcutsSectionContent: React.FC = () => {
 };
 
 // General section: app-level settings — startup/tray/network, access password,
-// passkeys, OpenCode CLI binary, message stream transport, privacy.
+// passkeys, pi binary, message stream transport, privacy.
 /** Keep runtime availability and display order explicit for each General setting. */
 const GeneralSectionContent: React.FC = () => {
     const isVSCode = isVSCodeRuntime();
@@ -158,7 +157,7 @@ const GeneralSectionContent: React.FC = () => {
             {showDesktopNetworkSettings && <DesktopNetworkSettings />}
             {showPasskeySettings && <PasskeySettings />}
             <AppLinkSecuritySettings />
-            {!isVSCode && <OpenCodeCliSettings />}
+            {!isVSCode && <PiBinarySettings />}
             {canManageDesktopCli() && <DesktopCliSettings key={runtimeEndpointEpoch} />}
             {/* Remounts on a runtime switch: the names come from that server. */}
             {!isVSCode && <EnvironmentVariablesSettings key={runtimeEndpointEpoch} />}

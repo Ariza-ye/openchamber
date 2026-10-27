@@ -22,28 +22,25 @@ const writeIcon = (root, relativePath) => {
 };
 
 const createPayload = () => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'openchamber-payload-test-'));
-  fs.writeFileSync(path.join(root, 'openchamber.desktop'), [
-    '[Desktop Entry]', 'Name=OpenChamber', 'Exec=AppRun --no-sandbox %U', 'Icon=openchamber', 'StartupWMClass=openchamber', '',
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'pichamber-payload-test-'));
+  fs.writeFileSync(path.join(root, 'pichamber.desktop'), [
+    '[Desktop Entry]', 'Name=Pichamber', 'Exec=AppRun --no-sandbox %U', 'Icon=pichamber', 'StartupWMClass=pichamber', '',
   ].join('\n'));
-  writeElf(path.join(root, 'openchamber'), 'x64');
-  writeElf(path.join(root, 'resources/opencode-cli/opencode'), 'x64');
+  writeElf(path.join(root, 'pichamber'), 'x64');
   for (const name of ['pty.node', 'sherpa-onnx.node']) {
     writeElf(path.join(root, 'resources/app.asar.unpacked/node_modules', name), 'x64');
   }
-  writeIcon(root, 'usr/share/icons/hicolor/512x512/apps/openchamber.png');
+  writeIcon(root, 'usr/share/icons/hicolor/512x512/apps/pichamber.png');
   return root;
 };
 
 const verify = (root) => verifyExtractedPayload({
   root,
   targetArchitecture: 'x64',
-  expectedOpenCodeVersion: '1.17.18',
-  runCliVersion: () => '1.17.18',
 });
 
 test('reads supported ELF architectures', () => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'openchamber-elf-test-'));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'pichamber-elf-test-'));
   try {
     writeElf(path.join(root, 'x64'), 'x64');
     writeElf(path.join(root, 'arm64'), 'arm64');
@@ -65,8 +62,6 @@ test('verifies identity, version, and native payload architecture', () => {
     const result = verifyExtractedPayload({
       root,
       targetArchitecture: 'x64',
-      expectedOpenCodeVersion: '1.17.18',
-      runCliVersion: () => '1.17.18',
     });
     assert.equal(result.nativeModuleCount, 2);
   } finally {
@@ -81,29 +76,19 @@ test('fails on a missing native module', () => {
     assert.throws(() => verifyExtractedPayload({
       root,
       targetArchitecture: 'x64',
-      expectedOpenCodeVersion: '1.17.18',
-      runCliVersion: () => '1.17.18',
     }), /Missing packaged native module: pty\.node/);
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }
 });
 
-test('fails on wrong CLI version or native architecture', () => {
+test('fails on wrong native architecture', () => {
   const root = createPayload();
   try {
-    assert.throws(() => verifyExtractedPayload({
-      root,
-      targetArchitecture: 'x64',
-      expectedOpenCodeVersion: '1.17.18',
-      runCliVersion: () => '1.17.17',
-    }), /OpenCode CLI version mismatch/);
     writeElf(path.join(root, 'resources/app.asar.unpacked/node_modules/pty.node'), 'arm64');
     assert.throws(() => verifyExtractedPayload({
       root,
       targetArchitecture: 'x64',
-      expectedOpenCodeVersion: '1.17.18',
-      runCliVersion: () => '1.17.18',
     }), /Native module architecture mismatch/);
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
@@ -114,17 +99,17 @@ test('accepts a scalable theme icon', () => {
   const root = createPayload();
   try {
     fs.rmSync(path.join(root, 'usr/share/icons/hicolor/512x512'), { recursive: true });
-    writeIcon(root, 'usr/share/icons/hicolor/scalable/apps/openchamber.svg');
+    writeIcon(root, 'usr/share/icons/hicolor/scalable/apps/pichamber.svg');
     assert.equal(verify(root).nativeModuleCount, 2);
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }
 });
 
-test('fails when the theme cannot resolve Icon=openchamber', () => {
+test('fails when the theme cannot resolve Icon=pichamber', () => {
   for (const relativePath of [
-    'usr/share/icons/hicolor/scalable/openchamber.svg',
-    'usr/share/icons/hicolor/1024x1024/apps/openchamber.png',
+    'usr/share/icons/hicolor/scalable/pichamber.svg',
+    'usr/share/icons/hicolor/1024x1024/apps/pichamber.png',
   ]) {
     const root = createPayload();
     try {
@@ -141,7 +126,7 @@ test('fails when .DirIcon is dangling', () => {
   const root = createPayload();
   try {
     fs.rmSync(path.join(root, '.DirIcon'));
-    fs.symlinkSync('usr/share/icons/hicolor/scalable/openchamber.svg', path.join(root, '.DirIcon'));
+    fs.symlinkSync('usr/share/icons/hicolor/scalable/pichamber.svg', path.join(root, '.DirIcon'));
     assert.throws(() => verify(root), /\.DirIcon does not resolve/);
   } finally {
     fs.rmSync(root, { recursive: true, force: true });

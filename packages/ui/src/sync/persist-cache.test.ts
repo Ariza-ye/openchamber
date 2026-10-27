@@ -100,7 +100,7 @@ afterEach(() => {
 
 describe("persisted directory sessions", () => {
   test("keeps one runtime-scoped startup snapshot for managed chats", async () => {
-    const chat = session(1, 2, "Chat", "/home/user/.config/openchamber/chats/2026-08-21/session-a")
+    const chat = session(1, 2, "Chat", "/home/user/.config/pichamber/chats/2026-08-21/session-a")
     persistManagedChatSessions([session(2, 3), chat])
     await waitForPersistence()
 
@@ -339,7 +339,7 @@ describe("persisted global session snapshot", () => {
   })
 
   test("leaves out archived sessions and managed chats", async () => {
-    const chat = fullSession(1, 5, "/home/user/.config/openchamber/chats/2026-08-21/session-a")
+    const chat = fullSession(1, 5, "/home/user/.config/pichamber/chats/2026-08-21/session-a")
     const archived = { ...fullSession(2, 6), time: { created: 1, updated: 6, archived: 7 } }
     persistGlobalSessionSnapshot([chat, archived, fullSession(3, 7, "/repo-worktree")])
     await waitForPersistence()

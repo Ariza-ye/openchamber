@@ -251,12 +251,10 @@ export const createSettingsHelpers = (dependencies) => {
       }
     }
 
-    // Absolute path to the opencode CLI binary (optional override).
-    // Accept empty-string to clear (we persist an empty string sentinel so the running
-    // process can reliably drop a previously applied OPENCODE_BINARY override).
-    if (typeof candidate.opencodeBinary === 'string') {
-      const normalized = normalizeDirectoryPath(candidate.opencodeBinary).trim();
-      result.opencodeBinary = normalized;
+    // Path to the `pi` CLI (optional override); empty means "find `pi` on PATH".
+    const piBinary = z.string().safeParse(candidate.piBinary);
+    if (piBinary.success) {
+      result.piBinary = normalizeDirectoryPath(piBinary.data).trim();
     }
     if (typeof candidate.workStatusPanelEnabled === 'boolean') {
       result.workStatusPanelEnabled = candidate.workStatusPanelEnabled;
@@ -718,9 +716,6 @@ export const createSettingsHelpers = (dependencies) => {
     if (candidate.enterToSendConfigured === true || candidate.enterToSendConfigured === false) {
       result.enterToSendConfigured = candidate.enterToSendConfigured;
     }
-    if (typeof candidate.showOpenCodeUpdateNotifications === 'boolean') {
-      result.showOpenCodeUpdateNotifications = candidate.showOpenCodeUpdateNotifications;
-    }
     if (typeof candidate.agentWebToolEnabled === 'boolean') {
       result.agentWebToolEnabled = candidate.agentWebToolEnabled;
     }
@@ -747,9 +742,6 @@ export const createSettingsHelpers = (dependencies) => {
     }
     if (candidate.agentWorktreeMoveWithoutAsking === true || candidate.agentWorktreeMoveWithoutAsking === false) {
       result.agentWorktreeMoveWithoutAsking = candidate.agentWorktreeMoveWithoutAsking;
-    }
-    if (typeof candidate.isolatedSpacesEnabled === 'boolean') {
-      result.isolatedSpacesEnabled = candidate.isolatedSpacesEnabled;
     }
     if (idleStopSchema.safeParse(candidate.isolatedSpacesIdleStop).success) {
       result.isolatedSpacesIdleStop = { ...candidate.isolatedSpacesIdleStop };
@@ -1162,7 +1154,7 @@ export const createSettingsHelpers = (dependencies) => {
       // Tells the client whether agent memory exists in this build at all, so
       // its settings row and panel tab can be absent rather than merely off.
       agentMemoryFeatureAvailable: isAgentMemoryFeatureAvailable(),
-      // Jev routing needs the OpenChamber server, so it is present here and
+      // Jev routing needs the Pichamber server, so it is present here and
       // absent wherever this payload does not come from one (VS Code).
       routingFeatureAvailable: true,
       ...(pwaAppName ? { pwaAppName } : {}),

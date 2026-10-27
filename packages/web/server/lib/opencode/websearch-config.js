@@ -13,7 +13,7 @@ import { findWebSearchProjectOverride, writeWarmingEnabled, writeWebSearchSelect
 
 /**
  * Writes the `websearch` choice into the config OpenCode reads last among the
- * files OpenChamber owns a write to: `OPENCODE_CONFIG` when the user set one,
+ * files Pichamber owns a write to: `OPENCODE_CONFIG` when the user set one,
  * else the user's global `opencode.json`. OpenCode watches both, so the choice
  * applies without a restart. `selection` comes from `parseWebSearchSelection`.
  * The file is left untouched when the choice is already there.

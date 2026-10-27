@@ -5,7 +5,6 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { normalizeTargetArchitecture } from './target-architecture.mjs';
-import { parseOpenCodeCliVersion, readPinnedOpenCodeCliVersion } from './opencode-cli-version.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const electronRoot = path.resolve(__dirname, '..');
@@ -65,7 +64,7 @@ const collectFiles = (root, predicate) => {
   return matches;
 };
 
-// Launchers resolve `Icon=openchamber` through the hicolor theme, which only
+// Launchers resolve `Icon=pichamber` through the hicolor theme, which only
 // reads `<size>/apps/` directories it declares: `scalable` and square sizes up
 // to 512. A file one level up, or at 1024x1024, is never found (#4766, #2934).
 const isHicolorAppsDirectory = (sizeName) => {
@@ -78,11 +77,11 @@ const assertThemeIcon = (root) => {
   const hicolorRoot = path.join(root, 'usr', 'share', 'icons', 'hicolor');
   const sizeNames = fs.existsSync(hicolorRoot) ? fs.readdirSync(hicolorRoot) : [];
   const themeIcon = sizeNames.filter(isHicolorAppsDirectory).some((sizeName) => (
-    ['openchamber.png', 'openchamber.svg'].some((fileName) => (
+    ['pichamber.png', 'pichamber.svg'].some((fileName) => (
       fs.existsSync(path.join(hicolorRoot, sizeName, 'apps', fileName))
     ))
   ));
-  if (!themeIcon) throw new Error('Missing theme icon: no openchamber icon under usr/share/icons/hicolor/<size>/apps');
+  if (!themeIcon) throw new Error('Missing theme icon: no pichamber icon under usr/share/icons/hicolor/<size>/apps');
   if (!fs.existsSync(path.join(root, '.DirIcon'))) throw new Error('Missing AppImage icon: .DirIcon does not resolve');
 };
 
@@ -99,26 +98,17 @@ const defaultCliVersion = (binaryPath) => {
 export const verifyExtractedPayload = ({
   root,
   targetArchitecture,
-  expectedOpenCodeVersion,
-  runCliVersion = defaultCliVersion,
 }) => {
-  const desktopPath = path.join(root, 'openchamber.desktop');
+  const desktopPath = path.join(root, 'pichamber.desktop');
   if (!fs.existsSync(desktopPath)) throw new Error(`Missing desktop entry: ${desktopPath}`);
   const desktop = fs.readFileSync(desktopPath, 'utf8');
-  for (const entry of ['Name=OpenChamber', 'Icon=openchamber', 'StartupWMClass=openchamber']) {
+  for (const entry of ['Name=Pichamber', 'Icon=pichamber', 'StartupWMClass=pichamber']) {
     if (!desktop.split(/\r?\n/).includes(entry)) throw new Error(`Desktop identity mismatch: missing ${entry}`);
   }
   if (!/^Exec=AppRun(?:\s|$)/m.test(desktop)) throw new Error('Desktop identity mismatch: expected AppImage AppRun entrypoint');
   assertThemeIcon(root);
 
-  assertElfArchitecture(path.join(root, 'openchamber'), targetArchitecture, 'Electron executable');
-  const cliPath = path.join(root, 'resources', 'opencode-cli', 'opencode');
-  assertElfArchitecture(cliPath, targetArchitecture, 'OpenCode CLI');
-  const actualVersion = runCliVersion(cliPath);
-  if (actualVersion !== expectedOpenCodeVersion) {
-    throw new Error(`OpenCode CLI version mismatch: expected ${expectedOpenCodeVersion}, got ${actualVersion || '(empty)'}`);
-  }
-
+  assertElfArchitecture(path.join(root, 'pichamber'), targetArchitecture, 'Electron executable');
   const unpackedModules = path.join(root, 'resources', 'app.asar.unpacked', 'node_modules');
   if (!fs.existsSync(unpackedModules)) throw new Error(`Missing unpacked native modules: ${unpackedModules}`);
   const nativeModules = collectFiles(unpackedModules, (name, fullPath) => {
@@ -133,12 +123,12 @@ export const verifyExtractedPayload = ({
     }
   }
   for (const modulePath of nativeModules) assertElfArchitecture(modulePath, targetArchitecture, 'Native module');
-  return { nativeModuleCount: nativeModules.length, openCodeVersion: actualVersion };
+  return { nativeModuleCount: nativeModules.length };
 };
 
 const findAppImage = (version, architecture) => {
   const suffix = linuxAppImageArchSuffix(architecture);
-  const expected = path.join(electronRoot, 'dist', `OpenChamber-${version}-linux-${suffix}.AppImage`);
+  const expected = path.join(electronRoot, 'dist', `Pichamber-${version}-linux-${suffix}.AppImage`);
   if (!fs.existsSync(expected)) throw new Error(`Linux AppImage not found: ${expected}`);
   return expected;
 };
@@ -168,10 +158,9 @@ const main = () => {
     const result = verifyExtractedPayload({
       root: extractAppImage(appImagePath, temporaryDirectory),
       targetArchitecture: target,
-      expectedOpenCodeVersion: readPinnedOpenCodeCliVersion(),
     });
     console.log(`[electron] verified Linux ${target} AppImage: ${appImagePath}`);
-    console.log(`[electron] verified OpenCode CLI ${result.openCodeVersion} and ${result.nativeModuleCount} native modules`);
+    console.log(`[electron] verified ${result.nativeModuleCount} native modules`);
   } finally {
     fs.rmSync(temporaryDirectory, { recursive: true, force: true });
   }

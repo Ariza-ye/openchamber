@@ -39,6 +39,6 @@ export const shouldAllowBrowserPanelCertificateError = ({ url, error }) => {
  * Electron user agent (sign-in pages in particular).
  */
 export const plainChromeUserAgent = (userAgent) => String(userAgent || '')
-  .replace(/\s(?:Electron|OpenChamber)\/\S+/gi, '')
+  .replace(/\s(?:Electron|Pichamber)\/\S+/gi, '')
   .replace(/\s{2,}/g, ' ')
   .trim();

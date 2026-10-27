@@ -27,7 +27,6 @@ const DAEMON_READY_TIMEOUT_MS = 30000;
 function createServeCommand({
   serverPath,
   bunBin,
-  checkOpenCodeCLI,
   getPreferredServerRuntime,
   setForegroundServerActive,
   setForegroundShutdown,
@@ -68,40 +67,39 @@ async function serveCommand(options) {
     const targetPort = await resolveAvailablePort(options.port, explicitPort, emitNotice);
 
     if (targetPort !== 0 && !options.suppressUnsafePortWarning) {
-      assertSafeBrowserPort(targetPort, { context: 'OpenChamber serve' });
+      assertSafeBrowserPort(targetPort, { context: 'Pichamber serve' });
     }
 
     if (targetPort !== 0) {
       const existingInstance = await discoverOpenChamberInstanceOnPort(targetPort, { host: effectiveHost });
       if (existingInstance?.runtime === 'desktop') {
         throw new Error(
-          `Port ${targetPort} is used by OpenChamber Desktop app. Choose another port or stop the desktop app.`
+          `Port ${targetPort} is used by Pichamber Desktop app. Choose another port or stop the desktop app.`
         );
       }
       if (existingInstance) {
         const pidSuffix = Number.isFinite(existingInstance.pid) ? ` (PID: ${existingInstance.pid})` : '';
         if (existingInstance.source === 'probe') {
-          throw new Error(`OpenChamber is already running on port ${targetPort}. Use \`openchamber status\` or \`openchamber stop --port ${targetPort}\`.`);
+          throw new Error(`Pichamber is already running on port ${targetPort}. Use \`pichamber status\` or \`pichamber stop --port ${targetPort}\`.`);
         }
-        throw new Error(`OpenChamber is already running on port ${targetPort}${pidSuffix}`);
+        throw new Error(`Pichamber is already running on port ${targetPort}${pidSuffix}`);
       }
 
       if (explicitPort && !(await isPortAvailable(targetPort, effectiveHost))) {
         const systemInfo = await fetchSystemInfoFromPort(targetPort, globalThis.fetch, effectiveHost);
         if (isDesktopRuntimeForPort(systemInfo, targetPort)) {
           throw new Error(
-            `Port ${targetPort} is used by OpenChamber Desktop app. Choose another port or stop the desktop app.`
+            `Port ${targetPort} is used by Pichamber Desktop app. Choose another port or stop the desktop app.`
           );
         }
         const systemInfoRuntimeMatchesPort = systemInfo?.runtime !== 'desktop' || isDesktopRuntimeForPort(systemInfo, targetPort);
         if (systemInfo?.runtime && systemInfoRuntimeMatchesPort) {
-          throw new Error(`OpenChamber is already running on port ${targetPort}. Use \`openchamber status\` or \`openchamber stop --port ${targetPort}\`.`);
+          throw new Error(`Pichamber is already running on port ${targetPort}. Use \`pichamber status\` or \`pichamber stop --port ${targetPort}\`.`);
         }
         throw new Error(`Port ${targetPort} is already in use by another process.`);
       }
     }
 
-    const opencodeBinary = await checkOpenCodeCLI(emitNotice);
     const preferredRuntime = getPreferredServerRuntime();
     const runtimeBin = preferredRuntime === 'bun' ? bunBin : process.execPath;
 
@@ -156,11 +154,6 @@ async function serveCommand(options) {
       }
 
       // Propagate resolved values into env before importing the server module.
-      // The binary path is left unmarked: a startup service enabled from this
-      // server's terminal wants the same OpenCode.
-      if (opencodeBinary) {
-        process.env.OPENCODE_BINARY = opencodeBinary;
-      }
       assignInjectedEnv(process.env, {
         OPENCHAMBER_UI_PASSWORD: effectiveUiPassword || undefined,
         OPENCHAMBER_HOST: effectiveHost,
@@ -193,7 +186,7 @@ async function serveCommand(options) {
       }
 
       if (!isQuietMode(options)) {
-        console.log(`Starting OpenChamber on port ${targetPort === 0 ? 'auto' : targetPort} (foreground)`);
+        console.log(`Starting Pichamber on port ${targetPort === 0 ? 'auto' : targetPort} (foreground)`);
       }
 
       const { startWebUiServer } = await import(pathToFileURL(serverPath).href);
@@ -284,19 +277,18 @@ async function serveCommand(options) {
       windowsHide: true,
       stdio: ['ignore', logFd, logFd, 'ipc'],
       // Same marking as the foreground path above: the server's own settings
-      // are recorded as OpenChamber's, the binary path is not.
-      env: assignInjectedEnv({ ...process.env, OPENCODE_BINARY: opencodeBinary }, {
+      // are recorded as Pichamber's.
+      env: assignInjectedEnv({ ...process.env }, {
         OPENCHAMBER_PORT: String(targetPort),
         OPENCHAMBER_RUNTIME: 'web',
         OPENCHAMBER_HOST: effectiveHost,
         OPENCHAMBER_UI_PASSWORD: effectiveUiPassword || undefined,
         OPENCHAMBER_API_ONLY: options.apiOnly === true ? 'true' : undefined,
-        OPENCHAMBER_SKIP_OPENCODE_START: process.env.OPENCODE_SKIP_START || undefined,
       }),
     });
 
     child.unref();
-    serveSpin?.start(`Starting OpenChamber on port ${targetPort === 0 ? 'auto' : targetPort}...`);
+    serveSpin?.start(`Starting Pichamber on port ${targetPort === 0 ? 'auto' : targetPort}...`);
 
     let resolvedPort;
     try {
@@ -305,12 +297,12 @@ async function serveCommand(options) {
         const timeout = setTimeout(() => {
           if (settled) return;
           settled = true;
-          reject(new Error(`OpenChamber daemon did not report ready within ${DAEMON_READY_TIMEOUT_MS / 1000}s`));
+          reject(new Error(`Pichamber daemon did not report ready within ${DAEMON_READY_TIMEOUT_MS / 1000}s`));
         }, DAEMON_READY_TIMEOUT_MS);
 
         child.on('message', (msg) => {
           if (settled) return;
-          if (msg && msg.type === 'openchamber:ready' && typeof msg.port === 'number') {
+          if (msg && msg.type === 'pichamber:ready' && typeof msg.port === 'number') {
             settled = true;
             clearTimeout(timeout);
             resolve(msg.port);
@@ -328,7 +320,7 @@ async function serveCommand(options) {
           if (settled) return;
           settled = true;
           clearTimeout(timeout);
-          reject(new Error(`OpenChamber daemon exited before reporting ready${signal ? ` (${signal})` : ` (code ${code ?? 'unknown'})`}`));
+          reject(new Error(`Pichamber daemon exited before reporting ready${signal ? ` (${signal})` : ` (code ${code ?? 'unknown'})`}`));
         });
       });
     } catch (error) {
@@ -357,7 +349,7 @@ async function serveCommand(options) {
     }
 
     if (!isProcessRunning(child.pid)) {
-      serveSpin?.error('Failed to start OpenChamber');
+      serveSpin?.error('Failed to start Pichamber');
       throw new Error('Failed to start server in daemon mode');
     }
 
@@ -376,7 +368,7 @@ async function serveCommand(options) {
       port: resolvedPort,
       pid: child.pid,
       url: buildLocalUrl(resolvedPort, '/'),
-      logs: `openchamber logs -p ${resolvedPort}`,
+      logs: `pichamber logs -p ${resolvedPort}`,
       launchMode: 'daemon',
     };
 
@@ -394,7 +386,7 @@ async function serveCommand(options) {
         return resolvedPort;
       }
       // A generated password is essential result data for scripts: include it
-      // in the same compact `pass:` token form `openchamber status --quiet`
+      // in the same compact `pass:` token form `pichamber status --quiet`
       // already emits. Configured passwords are never echoed.
       process.stdout.write(
         autoGeneratedUiPassword
@@ -407,7 +399,7 @@ async function serveCommand(options) {
     serveSpin?.clear();
 
     if (!options.suppressStartupSummary && showOutput) {
-      clackIntro('OpenChamber Started');
+      clackIntro('Pichamber Started');
       logStatus('success', `port ${serveResult.port} (PID: ${serveResult.pid})`);
       if (autoGeneratedUiPassword) {
         logStatus('success', 'UI password', effectiveUiPassword);

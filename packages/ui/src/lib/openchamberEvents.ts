@@ -278,7 +278,7 @@ const connectRelay = (canControlBrowser: boolean) => {
       }
       if (!response.ok || !response.body) {
         await response.body?.cancel();
-        throw new Error(`OpenChamber events returned ${response.status}`);
+        throw new Error(`Pichamber events returned ${response.status}`);
       }
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
@@ -614,7 +614,7 @@ const cleanupRuntimeChangeSubscription = () => {
 };
 
 export const subscribeOpenchamberEvents = (listener: Listener): (() => void) => {
-  // VS Code runs OpenCode through its bridge, not the OpenChamber server that
+  // VS Code runs OpenCode through its bridge, not the Pichamber server that
   // owns this stream. Opening it here retries against vscode-webview:// forever.
   if (isVSCodeRuntime()) return () => undefined;
 

@@ -30,11 +30,11 @@ export const setUnavailableRetryDelaysForTest = (delays = UNAVAILABLE_RETRY_DELA
 const OPENCHAMBER_SETTINGS_FILE = path.join(
   process.env.OPENCHAMBER_DATA_DIR
     ? path.resolve(process.env.OPENCHAMBER_DATA_DIR)
-    : path.join(os.homedir(), '.config', 'openchamber'),
+    : path.join(os.homedir(), '.config', 'pichamber'),
   'settings.json',
 );
 
-// OpenChamber's own settings: when the user unchecks "use default small model"
+// Pichamber's own settings: when the user unchecks "use default small model"
 // their explicit override outranks the model OpenCode would pick.
 const readSmallModelSettingsOverride = () => {
   const settings = readMergedSettingsSync({ fs, path, settingsFilePath: OPENCHAMBER_SETTINGS_FILE });
@@ -160,7 +160,7 @@ const pickSmallModel = (models, accept) => {
  * Which model this call runs on, in order:
  *
  * 1. An explicit request model.
- * 2. OpenChamber's settings override (Settings → Sessions → Small Model).
+ * 2. Pichamber's settings override (Settings → Sessions → Small Model).
  * 3. The small model configured for OpenCode itself: the `title` agent's
  *    model (`agents.title.model`, or v1 `small_model`) — `config`.
  * 4. The small model of the caller's provider — the session's, or the one

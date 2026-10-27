@@ -68,7 +68,7 @@ const stubFetch = (): void => {
     if (url.pathname === '/api/fs/home') {
       return Response.json(url.origin === REMOTE
         ? { home: REMOTE_HOME, chatsRoot: REMOTE_CHATS }
-        : { home: LOCAL_HOME, chatsRoot: `${LOCAL_HOME}/.config/openchamber/chats` });
+        : { home: LOCAL_HOME, chatsRoot: `${LOCAL_HOME}/.config/pichamber/chats` });
     }
     return new Response(null, { status: 404 });
   };

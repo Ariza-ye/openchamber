@@ -38,6 +38,7 @@ import { registerPluginRoutes } from './plugin-routes.js';
 import { getNpmInfo, clearCache as clearNpmCache } from './npm-registry.js';
 import { parseNpmSpec, parsePathSpec, isExactSemver } from './plugin-spec.js';
 import { registerOpenCodeRoutes } from './routes.js';
+import { registerPiRoutes } from '../pi-backend/routes.js';
 import { getProviderSources, removeProviderConfig, upsertProviderConfig } from './providers.js';
 import { getAgentSources, getAgentConfig, getAgentPermissions, createAgent, updateAgent, deleteAgent, listDisabledAgents } from './agents.js';
 import { getCommandSources, getCommandConfig, createCommand, updateCommand, deleteCommand } from './commands.js';
@@ -263,6 +264,11 @@ export const createFeatureRoutesRuntime = (dependencies) => {
       openchamberVersion,
     } = routeDependencies;
 
+    registerPiRoutes(app, {
+      readSettingsFromDiskMigrated,
+      buildAugmentedPath,
+    });
+
     registerSettingsUtilityRoutes(app, {
       readCustomThemesFromDisk,
       saveImportedTheme,
@@ -408,7 +414,7 @@ export const createFeatureRoutesRuntime = (dependencies) => {
         origin, refreshToken, clientId: await resolveGitLabClientId(origin, readSettingsFromDisk),
       }),
     });
-    // A GitHub account is either one OpenChamber stores or the gh CLI login
+    // A GitHub account is either one Pichamber stores or the gh CLI login
     // the user switched to; reads already accept both, so Git transport
     // (fork PR worktrees, clones) must too.
     const resolveSourceControlAccount = async ({ provider, instance, accountId, credentialRevision }) => {
@@ -441,7 +447,7 @@ export const createFeatureRoutesRuntime = (dependencies) => {
       fsImpl: fsPromises,
     });
     // What a repository's own `.git/config` names for pushing and pulling
-    // follows its grants: OpenChamber's credential helper for an account, the
+    // follows its grants: Pichamber's credential helper for an account, the
     // SSH wrapper with the key for a managed key, nothing for System Git.
     const syncRepositoryTransport = async (directory, read) => {
       if (typeof directory !== 'string' || !directory.trim() || !gitRepositoryCredentialRuntime) return;

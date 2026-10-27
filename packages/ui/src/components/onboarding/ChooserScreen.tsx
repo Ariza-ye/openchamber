@@ -12,11 +12,10 @@ import { RemoteConnectionForm } from './RemoteConnectionForm';
 import { desktopHostsGet, desktopHostsSet } from '@/lib/desktopHosts';
 import { useI18n } from '@/lib/i18n';
 import { runtimeFetch } from '@/lib/runtime-fetch';
-import { useEnterprisePolicyStore } from '@/stores/useEnterprisePolicyStore';
 
-const INSTALL_COMMAND = 'curl -fsSL https://opencode.ai/v2/install | bash';
-const WINDOWS_INSTALL_COMMAND = 'npm install -g @opencode/cli';
-const DOCS_URL = 'https://opencode.ai/download';
+const INSTALL_COMMAND = 'npm install -g @earendil-works/pi-coding-agent';
+const WINDOWS_INSTALL_COMMAND = 'npm install -g @earendil-works/pi-coding-agent';
+const DOCS_URL = 'https://pi.dev';
 const POLL_INTERVAL_MS = 2500;
 
 type OnboardingPlatform = 'macos' | 'linux' | 'windows' | 'unknown';
@@ -31,17 +30,9 @@ function InstallCommand({ windows, onCopy, copyTitle }: { windows: boolean; onCo
   return (
     <div className="flex items-center justify-between gap-3 w-full">
       <code className="flex-1 min-w-0 text-start overflow-x-auto whitespace-nowrap">
-        {windows ? (
-          <span style={{ color: 'var(--syntax-keyword)' }}>{WINDOWS_INSTALL_COMMAND}</span>
-        ) : (
-          <>
-            <span style={{ color: 'var(--syntax-keyword)' }}>curl</span>
-            <span className="text-muted-foreground"> -fsSL </span>
-            <span style={{ color: 'var(--syntax-string)' }}>https://opencode.ai/v2/install</span>
-            <span className="text-muted-foreground"> | </span>
-            <span style={{ color: 'var(--syntax-keyword)' }}>bash</span>
-          </>
-        )}
+        <span style={{ color: 'var(--syntax-keyword)' }}>
+          {windows ? WINDOWS_INSTALL_COMMAND : INSTALL_COMMAND}
+        </span>
       </code>
       <button
         onClick={onCopy}
@@ -61,9 +52,8 @@ export function ChooserScreen({ onCliAvailable, localAvailable = true }: Chooser
   const [isDesktopApp, setIsDesktopApp] = React.useState(false);
   const [isApplyingPath, setIsApplyingPath] = React.useState(false);
   const [isManualChecking, setIsManualChecking] = React.useState(false);
-  const [opencodeBinary, setOpencodeBinary] = React.useState('');
+  const [piBinary, setPiBinary] = React.useState('');
   // The server ignores the user's path while the administrator pins one.
-  const pinnedBinary = useEnterprisePolicyStore((state) => state.opencodeBinary);
   const [platform, setPlatform] = React.useState<OnboardingPlatform>('unknown');
   const [activeTab, setActiveTab] = React.useState<'local' | 'remote'>(() => localAvailable ? 'local' : 'remote');
   const [advancedOpen, setAdvancedOpen] = React.useState(false);
@@ -92,8 +82,8 @@ export function ChooserScreen({ onCliAvailable, localAvailable = true }: Chooser
       try {
         const data = await loadDesktopSettings();
         if (!data || cancelled) return;
-        const value = data.opencodeBinary ?? '';
-        if (value) setOpencodeBinary(value);
+        const value = data.piBinary ?? '';
+        if (value) setPiBinary(value);
       } catch {
         // ignore
       }
@@ -143,7 +133,7 @@ export function ChooserScreen({ onCliAvailable, localAvailable = true }: Chooser
   }, [isDesktopApp, onCliAvailable, persistFirstChoice]);
 
   // Background polling: while the local tab is visible, periodically check
-  // whether the OpenCode CLI is reachable. As soon as it is, transition
+  // whether the pi CLI is reachable. As soon as it is, transition
   // automatically — the user doesn't have to click anything.
   React.useEffect(() => {
     if (!localAvailable || activeTab !== 'local') return;
@@ -193,7 +183,7 @@ export function ChooserScreen({ onCliAvailable, localAvailable = true }: Chooser
     try {
       const selected = await requestFileAccess();
       if (selected.success && selected.path && selected.path.trim().length > 0) {
-        setOpencodeBinary(selected.path.trim());
+        setPiBinary(selected.path.trim());
       }
     } catch {
       // ignore
@@ -203,7 +193,7 @@ export function ChooserScreen({ onCliAvailable, localAvailable = true }: Chooser
   const handleApplyPath = React.useCallback(async () => {
     setIsApplyingPath(true);
     try {
-      await updateDesktopSettings({ opencodeBinary: opencodeBinary.trim() });
+      await updateDesktopSettings({ piBinary: piBinary.trim() });
       if (isDesktopApp) {
         await persistFirstChoice('local');
         await restartDesktopApp();
@@ -213,7 +203,7 @@ export function ChooserScreen({ onCliAvailable, localAvailable = true }: Chooser
     } finally {
       setTimeout(() => setIsApplyingPath(false), 1000);
     }
-  }, [isDesktopApp, opencodeBinary, persistFirstChoice]);
+  }, [isDesktopApp, piBinary, persistFirstChoice]);
 
   const handleCopy = React.useCallback(async () => {
     const result = await copyTextToClipboard(platform === 'windows' ? WINDOWS_INSTALL_COMMAND : INSTALL_COMMAND);
@@ -228,10 +218,10 @@ export function ChooserScreen({ onCliAvailable, localAvailable = true }: Chooser
   const docsUrl = DOCS_URL;
   const binaryPlaceholder =
     platform === 'windows'
-      ? 'C:\\Users\\you\\AppData\\Roaming\\npm\\opencode.cmd'
+      ? 'C:\\Users\\you\\AppData\\Roaming\\npm\\pi.cmd'
       : platform === 'linux'
-        ? '/home/you/.opencode/bin/opencode'
-        : '/Users/you/.opencode/bin/opencode';
+        ? '/usr/local/bin/pi'
+        : '/opt/homebrew/bin/pi';
 
   const showLocal = localAvailable && (!isDesktopApp || activeTab === 'local');
 
@@ -357,25 +347,21 @@ export function ChooserScreen({ onCliAvailable, localAvailable = true }: Chooser
                 <div className="space-y-2 pb-4">
                   <div className="flex gap-2">
                     <Input
-                      value={pinnedBinary ?? opencodeBinary}
-                      onChange={(e) => setOpencodeBinary(e.target.value)}
+                      value={piBinary}
+                      onChange={(e) => setPiBinary(e.target.value)}
                       placeholder={binaryPlaceholder}
-                      disabled={isApplyingPath || pinnedBinary !== null}
+                      disabled={isApplyingPath}
                       className="flex-1 font-mono text-xs"
                     />
-                    {pinnedBinary === null && (
-                      <>
-                        <Button type="button" variant="secondary" size="sm" onClick={handleBrowse} disabled={isApplyingPath || !isDesktopApp}>
-                          {t('onboarding.localSetup.actions.browse')}
-                        </Button>
-                        <Button type="button" size="sm" onClick={handleApplyPath} disabled={isApplyingPath || !opencodeBinary.trim()}>
-                          {t('onboarding.localSetup.actions.apply')}
-                        </Button>
-                      </>
-                    )}
+                    <Button type="button" variant="secondary" size="sm" onClick={handleBrowse} disabled={isApplyingPath || !isDesktopApp}>
+                      {t('onboarding.localSetup.actions.browse')}
+                    </Button>
+                    <Button type="button" size="sm" onClick={handleApplyPath} disabled={isApplyingPath || !piBinary.trim()}>
+                      {t('onboarding.localSetup.actions.apply')}
+                    </Button>
                   </div>
                   <p className="text-xs text-muted-foreground/70">
-                    {t(pinnedBinary === null ? 'onboarding.localSetup.helper.saveAndReload' : 'onboarding.localSetup.helper.pinnedByAdministrator')}
+                    {t('onboarding.localSetup.helper.saveAndReload')}
                   </p>
                 </div>
               </details>

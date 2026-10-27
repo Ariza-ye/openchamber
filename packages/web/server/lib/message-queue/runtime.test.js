@@ -57,7 +57,7 @@ const createOpenCode = () => {
     }
     if (method === 'POST' && state.htmlNext?.test(pathname)) {
       state.htmlNext = null;
-      return new Response('<!doctype html><title>OpenChamber</title>', { status: 200, headers: { 'content-type': 'text/html' } });
+      return new Response('<!doctype html><title>Pichamber</title>', { status: 200, headers: { 'content-type': 'text/html' } });
     }
     // Real shape: `{ data }` without a `location`, unlike directory-scoped routes.
     if (pathname === '/api/session/active') return Response.json({ data: state.active });

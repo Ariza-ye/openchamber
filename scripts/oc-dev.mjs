@@ -57,10 +57,7 @@ Actions:
   start-mobile-dev                 Start mobile app with dev server live reload
   mobile-tools                     Mobile build/sync/deploy helper menu
   start-electron-app               Start Electron app in dev mode
-  prepare-opencode-cli             Download/cache bundled OpenCode CLI for Electron
   build-electron-app               Build Electron app artifacts
-  start-vscode-extension           Build + launch VS Code extension host
-  install-vscode-extension-local   Build, package, and install local VSIX
   create-release                   Validate and bump release version
 
 Options:
@@ -72,7 +69,6 @@ Options:
   --mobile-mode <ios-sim-local|ios-sim-lan|android-local|android-lan>
   --mobile-task <task>
   --adb-address <host:port>        Wireless ADB address for android-connect
-  --vsix-cleanup <delete|keep>
   --version <semver>
   --opencode-config-dir <path>     OpenCode config directory for the started Electron app
                                    (OPENCODE_CONFIG_DIR); lets a v2 checkout run beside a v1
@@ -125,9 +121,6 @@ function parseArgs(argv) {
         break;
       case '--adb-address':
         options.adbAddress = readValue();
-        break;
-      case '--vsix-cleanup':
-        options.vsixCleanup = readValue();
         break;
       case '--version':
         options.version = readValue();
@@ -193,7 +186,7 @@ function step(label, fn) {
 // The release notes source plus the files generated from it; all go into the release commit.
 // CHANGELOG.md is legacy (older installs read it for update notes); it is
 // refreshed only while it exists.
-const RELEASE_CHANGELOG_FILES = ['changelog', 'packages/vscode/CHANGELOG.md', ...(existsSync(path.join(repoRoot, 'CHANGELOG.md')) ? ['CHANGELOG.md'] : [])];
+const RELEASE_CHANGELOG_FILES = ['changelog', ...(existsSync(path.join(repoRoot, 'CHANGELOG.md')) ? ['CHANGELOG.md'] : [])];
 
 function printReleaseNextSteps(version) {
   log.success(`Release v${version} prepared locally`);
@@ -218,11 +211,7 @@ function normalizeAction(action = '') {
     'mobile-menu': 'mobile-tools',
     'remote-deploy-web': 'remote-deploy-web',
     'electron-dev': 'start-electron-app',
-    'opencode-cli': 'prepare-opencode-cli',
-    'electron-opencode-cli': 'prepare-opencode-cli',
     'electron-build': 'build-electron-app',
-    'vscode-dev': 'start-vscode-extension',
-    'vscode-install-local': 'install-vscode-extension-local',
     release: 'create-release',
   };
   return aliases[normalized] || normalized;
@@ -638,55 +627,15 @@ async function chooseOpencodeConfigDir(options, config) {
 
 async function startElectronApp(options, config) {
   const env = devAppEnv(await chooseOpencodeConfigDir(options, config));
-  prepareOpenCodeCli();
   run('bun', ['run', 'electron:dev'], { env });
 }
 
-function prepareOpenCodeCli() {
-  step('Preparing bundled OpenCode CLI', () => run('bun', ['--filter', '@openchamber/electron', 'prepare:opencode-cli']));
-}
-
 function buildElectronApp() {
-  prepareOpenCodeCli();
   run('bun', ['run', 'electron:build'], { env: { CSC_IDENTITY_AUTO_DISCOVERY: 'false' } });
   const distDir = path.join(repoRoot, 'packages/electron/dist');
   if (!existsSync(distDir) || !isMac) return;
   const artifact = latestFileByExtensions(distDir, ['.dmg', '-mac.zip']);
   if (artifact) run('open', [artifact]);
-}
-
-function startVsCodeExtension() {
-  const vscodeDir = path.join(repoRoot, 'packages/vscode');
-  removeFilesByPrefixSuffix(vscodeDir, 'openchamber-', '.vsix');
-  step('Building VS Code extension', () => run('bun', ['run', 'vscode:build']));
-  runCode(['--extensionDevelopmentPath', vscodeDir]);
-}
-
-async function installVsCodeExtensionLocal(options) {
-  let cleanup = options.vsixCleanup;
-  if (!cleanup && isTty) {
-    cleanup = await chooseValue('', [
-      { value: 'delete', label: 'Delete VSIX after install' },
-      { value: 'keep', label: 'Keep VSIX after install' },
-    ], 'Select VSIX cleanup mode');
-  }
-  cleanup ||= 'delete';
-  if (!['delete', 'keep'].includes(cleanup)) throw new Error('Invalid --vsix-cleanup. Use delete or keep.');
-
-  const vscodeDir = path.join(repoRoot, 'packages/vscode');
-  step('Building VS Code extension', () => run('bun', ['run', '--cwd', 'packages/vscode', 'build']));
-  step('Removing found VSIX package(s) before install flow', () => removeFilesByPrefixSuffix(vscodeDir, 'openchamber-', '.vsix'));
-  step('Packaging VSIX', () => run('bun', ['x', 'vsce', 'package', '--no-dependencies'], { cwd: vscodeDir }));
-  step('Installing VSIX locally', () => {
-    runCode(['--uninstall-extension', 'fedaykindev.openchamber'], { label: 'uninstall old extension', allowFail: true });
-    // Found here rather than by a shell glob, which cmd.exe does not expand.
-    const vsix = readdirSync(vscodeDir).find((name) => name.startsWith('openchamber-') && name.endsWith('.vsix'));
-    if (!vsix) throw new Error('vsce package did not produce an openchamber-*.vsix');
-    runCode(['--install-extension', path.join(vscodeDir, vsix)], { label: 'install VSIX' });
-  });
-  if (cleanup === 'delete') {
-    step('Removing local VSIX package(s) after install', () => removeFilesByPrefixSuffix(vscodeDir, 'openchamber-', '.vsix'));
-  }
 }
 
 async function createRelease(options) {
@@ -719,10 +668,7 @@ async function chooseAction(config) {
     { value: 'start-mobile-dev', label: 'Start mobile dev' },
     { value: 'mobile-tools', label: 'Mobile tools' },
     { value: 'start-electron-app', label: 'Start Electron app' },
-    { value: 'prepare-opencode-cli', label: 'Prepare bundled OpenCode CLI' },
     { value: 'build-electron-app', label: 'Build Electron app' },
-    { value: 'start-vscode-extension', label: 'Start VS Code extension' },
-    { value: 'install-vscode-extension-local', label: 'Install VS Code extension locally' },
   ];
 
   if (config.features?.releaseTools) {
@@ -766,17 +712,8 @@ async function main() {
     case 'start-electron-app':
       await startElectronApp(options, config);
       break;
-    case 'prepare-opencode-cli':
-      prepareOpenCodeCli();
-      break;
     case 'build-electron-app':
       buildElectronApp();
-      break;
-    case 'start-vscode-extension':
-      startVsCodeExtension();
-      break;
-    case 'install-vscode-extension-local':
-      await installVsCodeExtensionLocal(options);
       break;
     case 'create-release':
       options.config = config;

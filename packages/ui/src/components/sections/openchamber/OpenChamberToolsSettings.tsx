@@ -56,13 +56,13 @@ const ToolRow: React.FC<ToolRowProps> = ({ icon, title, summary, info, ariaLabel
 );
 
 /**
- * Which OpenChamber capabilities agents are given.
+ * Which Pichamber capabilities agents are given.
  *
  * Each entry is one tool the managed OpenCode child is handed, so the choices
  * belong together and not under the CLI's own configuration — the binary path
  * is about which OpenCode runs, these are about what it can do.
  *
- * A toggle only writes the setting: the server keeps OpenChamber's plugin
+ * A toggle only writes the setting: the server keeps Pichamber's plugin
  * injection in a watched file, so OpenCode picks the change up on its own and
  * the tool list is live without a restart.
  *

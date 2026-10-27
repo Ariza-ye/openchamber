@@ -52,7 +52,7 @@ describe('spaces-api', () => {
   test('parses a failed creation in the list, whose step is "failed", with the rest of the list', async () => {
     // The host lists a creation that failed, here or in a host that quit before the code arrived,
     // with `step: 'failed'`. A list this version could not read would freeze every group's status.
-    const failed = { ...entry, id: 'b2c3d4e5f6a7', state: 'failed', step: 'failed', failure: { code: 'space_code_never_arrived', message: 'OpenChamber closed before the code arrived.' } };
+    const failed = { ...entry, id: 'b2c3d4e5f6a7', state: 'failed', step: 'failed', failure: { code: 'space_code_never_arrived', message: 'Pichamber closed before the code arrived.' } };
     answer(200, JSON.stringify({ spaces: [entry, failed] }));
     expect((await listSpaces()).map((space) => [space.id, space.state, space.step, space.failure?.code ?? null])).toEqual([[ID, 'preparing', 'checking_place', null], ['b2c3d4e5f6a7', 'failed', 'failed', 'space_code_never_arrived']]);
   });

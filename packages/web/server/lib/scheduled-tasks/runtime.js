@@ -257,7 +257,7 @@ export const createScheduledTasksRuntime = (deps) => {
     emitTaskRunEvent,
     setSessionAutoAccept,
     sessionKnowledgeRuntime = null,
-    // The goal record lives in OpenChamber's metadata store (OpenCode 2.x takes
+    // The goal record lives in Pichamber's metadata store (OpenCode 2.x takes
     // session metadata only at create time); without it goal mode cannot run.
     persistSessionGoal = null,
     // Chats scope (see chats-scope.js): scheduled like a project, but each run

@@ -26,13 +26,25 @@ function createUpdateCommand({ importFromFilePath, packageManagerPath, serveComm
       executeUpdate,
       detectPackageManager,
       getCurrentVersion,
+      SELF_UPDATE_ENABLED,
     } = await importFromFilePath(packageManagerPath);
 
     const runningInstances = await discoverRunningInstances();
     const currentVersion = getCurrentVersion();
 
     if (showOutput) {
-      clackIntro('OpenChamber Update');
+      clackIntro('Pichamber Update');
+    }
+
+    if (SELF_UPDATE_ENABLED === false) {
+      if (isJsonMode(options)) {
+        printJson({ currentVersion, latestVersion: currentVersion, updated: false });
+      } else if (showOutput) {
+        clackOutro('this build has no update feed');
+      } else if (isQuietMode(options)) {
+        process.stdout.write(`no-update-feed ${currentVersion}\n`);
+      }
+      return;
     }
 
     if (showOutput && !updateSpin) {

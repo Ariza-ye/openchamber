@@ -1,11 +1,11 @@
 {
   "metadata": {
     "id": "openchamber-dark",
-    "name": "OpenChamber",
+    "name": "Pichamber",
     "variant": "dark",
-    "description": "The OpenChamber signature - Vitesse syntax over OpenCode-deep neutrals with Flexoki accents, harmonized in OKLCH (dark variant)",
+    "description": "The Pichamber signature - Vitesse syntax over OpenCode-deep neutrals with Flexoki accents, harmonized in OKLCH (dark variant)",
     "version": "1.0.0",
-    "author": "OpenChamber",
+    "author": "Pichamber",
     "tags": [
       "dark",
       "brand",

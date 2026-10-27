@@ -250,7 +250,7 @@ export const AuxiliaryBindingSettings: React.FC<SourceControlBindingSettingsProp
    * A submodule on the repository's own host is the ordinary case, and the
    * repository already answered who it acts as there, so that identity is
    * offered and only has to be confirmed. An endpoint on another host is a
-   * question OpenChamber cannot answer — no identity on file speaks for it —
+   * question Pichamber cannot answer — no identity on file speaks for it —
    * so nothing is proposed and the person names one.
    */
   const proposedIdentity = React.useMemo(() => {

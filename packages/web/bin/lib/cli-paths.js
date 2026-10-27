@@ -10,7 +10,7 @@ function getDataDir() {
   if (typeof process.env.OPENCHAMBER_DATA_DIR === 'string' && process.env.OPENCHAMBER_DATA_DIR.trim().length > 0) {
     return path.resolve(process.env.OPENCHAMBER_DATA_DIR.trim());
   }
-  return path.join(os.homedir(), '.config', 'openchamber');
+  return path.join(os.homedir(), '.config', 'pichamber');
 }
 
 function getLogsDir() {
@@ -51,7 +51,7 @@ function ensureLogsDir() {
 }
 
 function getLogFilePath(port) {
-  return path.join(getLogsDir(), `openchamber-${port}.log`);
+  return path.join(getLogsDir(), `pichamber-${port}.log`);
 }
 
 function getTunnelProfilesFilePath() {

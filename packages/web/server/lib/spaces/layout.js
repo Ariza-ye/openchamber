@@ -137,7 +137,7 @@ export const IMAGE_ONLY_PATH = `PATH=${IMAGE_PATH};`;
  */
 export const SPACE_ENVIRONMENT = Object.freeze({
   HOME: SPACE_HOME,
-  // The tools come last. The image has no `openchamber` and no `opencode`, so both are still found,
+  // The tools come last. The image has no `pichamber` and no `opencode`, so both are still found,
   // and a transitive npm package that ships a bin named `node` or `sh` never shadows the image's.
   PATH: `${IMAGE_PATH}:${TOOLS_BIN_PATH}`,
   // The corridor, in both spellings. curl 7.88.1 in this image ignores an uppercase HTTP_PROXY on
@@ -171,7 +171,7 @@ const SERVER_SCRIPT = [
   `while [ ! -s ${SPACE_TOKEN_PATH} ]; do ${IMAGE_SLEEP} 0.2; done;`,
   `OPENCHAMBER_UI_PASSWORD="$(${IMAGE_CAT} ${SPACE_TOKEN_PATH})";`,
   'export OPENCHAMBER_UI_PASSWORD;',
-  `exec openchamber serve --foreground --api-only --host ${SPACE_SERVER_HOST} --port ${SPACE_SERVER_PORT}`,
+  `exec pichamber serve --foreground --api-only --host ${SPACE_SERVER_HOST} --port ${SPACE_SERVER_PORT}`,
 ].join(' ');
 
 /** The command of a space container. A fixed script, nothing in it varies per space. */

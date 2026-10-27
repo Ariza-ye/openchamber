@@ -34,7 +34,7 @@ const buildContextPrompt = (entries) => {
 /**
  * Re-injects the messages the user pinned as obligatory after a compaction.
  *
- * Both the pinned list and the cursor live in OpenChamber's own session
+ * Both the pinned list and the cursor live in Pichamber's own session
  * metadata store — v2 accepts session metadata only at create time.
  * `readSessionMetadata` reads it and `persistContextCursor` records how far we
  * got; without both seams the runtime stays inert.
@@ -74,7 +74,7 @@ export const createContextObligatoryRuntime = ({
   const tick = async (sessionId, directory) => {
     const session = await openCodeFetch(`/api/session/${encodeURIComponent(sessionId)}`, { directory });
     if (session?.parentID) return;
-    // Pins and the cursor are OpenChamber's, not OpenCode's.
+    // Pins and the cursor are Pichamber's, not OpenCode's.
     const stored = { metadata: await readSessionMetadata(sessionId) };
     const state = readContextState(stored);
 

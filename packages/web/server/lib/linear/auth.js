@@ -15,7 +15,7 @@ function resolveDataDir() {
   if (fromEnv) {
     return path.resolve(fromEnv);
   }
-  return path.join(os.homedir(), '.config', 'openchamber');
+  return path.join(os.homedir(), '.config', 'pichamber');
 }
 
 function storageFile() {

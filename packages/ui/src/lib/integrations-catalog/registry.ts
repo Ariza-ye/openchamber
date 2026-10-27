@@ -1,6 +1,6 @@
 /**
  * The curated external-services catalog: one bundled, typed list of services
- * worth connecting to OpenChamber. Adding or removing entries and changing
+ * worth connecting to Pichamber. Adding or removing entries and changing
  * their URLs is a reviewed change; a URL change reaches users with the next
  * release. What belongs here and how to vet a candidate before adding it:
  * DOCUMENTATION.md next to this file.
@@ -95,7 +95,7 @@ export type CatalogSkillComponent = {
   termsUrl?: string;
 };
 
-/** An OpenChamber extension installed from its Git repository. */
+/** An Pichamber extension installed from its Git repository. */
 type CatalogExtensionComponent = {
   kind: 'extension';
   /** The extension's `panel.id`, which is its id once installed. */
@@ -2456,7 +2456,7 @@ export const CATALOG_ENTRIES: readonly CatalogEntry[] = [
   {
     id: 'opencode-claude',
     name: 'Claude Code',
-    publisher: 'OpenChamber',
+    publisher: 'Pichamber',
     verified: true,
     descriptionKey: 'integrationsCatalog.entry.opencode-claude.description',
     detailsKey: 'integrationsCatalog.entry.opencode-claude.details',
@@ -2467,11 +2467,11 @@ export const CATALOG_ENTRIES: readonly CatalogEntry[] = [
     components: [{ kind: 'plugin', spec: '@openchamber/opencode-claude@^1', license: 'MIT' }],
   },
 
-  // --- OpenChamber extensions (installed from Git like Settings → Integrations) ---
+  // --- Pichamber extensions (installed from Git like Settings → Integrations) ---
   {
     id: 'excalidraw',
     name: 'Excalidraw',
-    publisher: 'OpenChamber',
+    publisher: 'Pichamber',
     verified: true,
     descriptionKey: 'integrationsCatalog.entry.excalidraw.description',
     detailsKey: 'integrationsCatalog.entry.excalidraw.details',
@@ -2484,7 +2484,7 @@ export const CATALOG_ENTRIES: readonly CatalogEntry[] = [
   {
     id: 'resource-monitor',
     name: 'Resource Monitor',
-    publisher: 'OpenChamber',
+    publisher: 'Pichamber',
     verified: true,
     descriptionKey: 'integrationsCatalog.entry.resource-monitor.description',
     detailsKey: 'integrationsCatalog.entry.resource-monitor.details',

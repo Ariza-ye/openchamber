@@ -202,7 +202,7 @@ async function checkForWebUpdates(runtime: ClientRuntime, currentVersion?: strin
 const updateCheckFailure = z.object({ error: z.string().trim().min(1) });
 
 /**
- * Checks the OpenChamber server the native app is connected to, not the app
+ * Checks the Pichamber server the native app is connected to, not the app
  * itself. The shared store's `mobile` check is about the app build (store or
  * APK updates); this asks the server about its own version, exactly like a
  * browser on that server would, so the result can be installed through the

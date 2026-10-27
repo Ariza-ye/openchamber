@@ -232,7 +232,7 @@ export const createOpenChamberControlService = (dependencies) => {
     // Delivers a dispatched session's result back to the session that asked
     // (`returnResult`); absent means the server cannot offer it.
     dispatchResults = null,
-    // Archive lives in OpenChamber's own store now — v2 has no route that sets
+    // Archive lives in Pichamber's own store now — v2 has no route that sets
     // Session.time.archived — so an unwired store simply means nothing is archived.
     archiveStore = null,
     createClient = OpenCode.make,
@@ -242,11 +242,11 @@ export const createOpenChamberControlService = (dependencies) => {
 
   const wait = (duration, signal) => {
     if (!signal) return sleep(duration);
-    if (signal.aborted) return Promise.reject(new OpenChamberControlError('OpenChamber action was cancelled', 499));
+    if (signal.aborted) return Promise.reject(new OpenChamberControlError('Pichamber action was cancelled', 499));
     return new Promise((resolve, reject) => {
       const onAbort = () => {
         signal.removeEventListener('abort', onAbort);
-        reject(new OpenChamberControlError('OpenChamber action was cancelled', 499));
+        reject(new OpenChamberControlError('Pichamber action was cancelled', 499));
       };
       signal.addEventListener('abort', onAbort, { once: true });
       sleep(duration).then(() => {
@@ -382,7 +382,7 @@ export const createOpenChamberControlService = (dependencies) => {
     const deadline = now() + timeoutMs;
     let observedActivity = false;
     while (true) {
-      if (signal?.aborted) throw new OpenChamberControlError('OpenChamber action was cancelled', 499);
+      if (signal?.aborted) throw new OpenChamberControlError('Pichamber action was cancelled', 499);
       const status = await sessionStatus(client, sessionID);
       if (status.type === 'busy') {
         observedActivity = true;
@@ -717,7 +717,7 @@ export const createOpenChamberControlService = (dependencies) => {
   const execute = async (action, input = {}, contextDirectory, options = {}) => {
     try {
       if (!CONTROL_ACTIONS.has(action)) {
-        throw new OpenChamberControlError(`Unsupported OpenChamber action: ${action || 'missing'}`, 400);
+        throw new OpenChamberControlError(`Unsupported Pichamber action: ${action || 'missing'}`, 400);
       }
       if (OPENCHAMBER_KNOWLEDGE_ACTIONS.includes(action)) {
         return await knowledgeActions.execute(action, input, contextDirectory, options.contextSessionId);
@@ -871,7 +871,7 @@ export const createOpenChamberControlService = (dependencies) => {
             if (directory) listInput.directory = directory;
             if (cursor) listInput.cursor = cursor;
             const response = await client.session.list(listInput);
-            // Archive is OpenChamber state; overlay it so callers keep reading
+            // Archive is Pichamber state; overlay it so callers keep reading
             // it off the session the way OpenCode used to report it.
             const page = await Promise.all((Array.isArray(response?.data) ? response.data : []).map(async (session) => {
               const archived = await archivedAt(session?.id);
@@ -922,9 +922,9 @@ export const createOpenChamberControlService = (dependencies) => {
           return { sessionId: sessionID, directory, role, sessionStatus: currentStatus, messages: await sessionMessages(client, sessionID, role, limit) };
         }
       }
-      throw new OpenChamberControlError(`Unsupported OpenChamber action: ${action || 'missing'}`, 400);
+      throw new OpenChamberControlError(`Unsupported Pichamber action: ${action || 'missing'}`, 400);
     } catch (error) {
-      throw asControlError(error, `Failed to execute ${action || 'OpenChamber action'}`);
+      throw asControlError(error, `Failed to execute ${action || 'Pichamber action'}`);
     }
   };
 

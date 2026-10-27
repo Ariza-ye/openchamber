@@ -75,20 +75,6 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Get bundled OpenCode CLI version
-        id: opencode_cli_version
-        run: |
-          VERSION=$(node -p "require('./packages/electron/package.json').opencodeCli.version")
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-
-      - name: Cache bundled OpenCode CLI artifact
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
-        with:
-          path: packages/electron/.cache/opencode-cli
-          key: opencode-cli-${{ runner.os }}-${{ matrix.arch }}-${{ steps.opencode_cli_version.outputs.version }}
-          restore-keys: |
-            opencode-cli-${{ runner.os }}-${{ matrix.arch }}-
-
       - name: Install Apple Certificate
         env:
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
@@ -120,15 +106,12 @@ jobs:
           ELECTRON_BUILDER_ARCH: ${{ matrix.arch }}
         run: |
           bun run build:web-assets
-          bun run prepare:opencode-cli
-          bun run verify:opencode-cli
           bun run bundle:main
           # npmRebuild=false in package.json, so electron-builder won't
           # recompile native deps on its own. Rebuild against the target
           # Electron ABI before packaging, matching the release workflow.
           bun run rebuild:native
           bunx electron-builder --mac --${{ matrix.arch }} --publish=never
-          bun run verify:opencode-cli:packaged
 
       - name: Verify signature + entitlements + notarization
         run: |
@@ -219,31 +202,9 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Get bundled OpenCode CLI version
-        id: opencode_cli_version
-        shell: bash
-        run: |
-          VERSION=$(node -p "require('./packages/electron/package.json').opencodeCli.version")
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-
-      - name: Cache bundled OpenCode CLI artifact
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
-        with:
-          path: packages/electron/.cache/opencode-cli
-          key: opencode-cli-${{ runner.os }}-${{ matrix.arch }}-${{ steps.opencode_cli_version.outputs.version }}
-          restore-keys: |
-            opencode-cli-${{ runner.os }}-${{ matrix.arch }}-
-
       - name: Build web assets
         working-directory: packages/electron
         run: bun run build:web-assets
-
-      - name: Prepare bundled OpenCode CLI
-        working-directory: packages/electron
-        shell: bash
-        run: |
-          bun run prepare:opencode-cli
-          bun run verify:opencode-cli
 
       - name: Bundle main process
         working-directory: packages/electron
@@ -265,7 +226,6 @@ jobs:
         shell: bash
         run: |
           node ./scripts/package.mjs --win --${{ matrix.arch }} --publish=never
-          bun run verify:opencode-cli:packaged
 
       - name: Upload Windows installable artifacts
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -334,16 +294,7 @@ jobs:
         id: versions
         shell: bash
         run: |
-          echo "opencode_cli=$(node -p "require('./packages/electron/package.json').opencodeCli.version")" >> "$GITHUB_OUTPUT"
           echo "app=$(node -p "require('./packages/electron/package.json').version")" >> "$GITHUB_OUTPUT"
-
-      - name: Cache bundled OpenCode CLI artifact
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
-        with:
-          path: packages/electron/.cache/opencode-cli
-          key: opencode-cli-${{ runner.os }}-${{ matrix.arch }}-${{ steps.versions.outputs.opencode_cli }}
-          restore-keys: |
-            opencode-cli-${{ runner.os }}-${{ matrix.arch }}-
 
       - name: Run focused Electron release tests
         working-directory: packages/electron
@@ -358,12 +309,9 @@ jobs:
         run: |
           set -euo pipefail
           bun run build:web-assets
-          bun run prepare:opencode-cli
-          bun run verify:opencode-cli
           bun run bundle:main
           bun run rebuild:native
           node ./scripts/package.mjs --linux --${{ matrix.arch }} --publish=never
-          bun run verify:opencode-cli:packaged
           bun run verify:linux-appimage
 
       - name: Validate Linux update manifest
@@ -377,18 +325,18 @@ jobs:
         run: |
           set -euo pipefail
           node ./scripts/verify-update-manifest.mjs "dist/${MANIFEST}" "$VERSION" \
-            "dist/OpenChamber-${VERSION}-linux-${ARTIFACT_ARCH}.AppImage" \
-            "dist/OpenChamber-${VERSION}-linux-${DEB_ARCH}.deb" \
-            "dist/OpenChamber-${VERSION}-linux-${RPM_ARCH}.rpm"
+            "dist/Pichamber-${VERSION}-linux-${ARTIFACT_ARCH}.AppImage" \
+            "dist/Pichamber-${VERSION}-linux-${DEB_ARCH}.deb" \
+            "dist/Pichamber-${VERSION}-linux-${RPM_ARCH}.rpm"
 
       - name: Upload Linux installable artifacts
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: desktop-release-smoke-linux-${{ matrix.arch }}
           path: |
-            packages/electron/dist/OpenChamber-${{ steps.versions.outputs.app }}-linux-${{ matrix.artifact_arch }}.AppImage
-            packages/electron/dist/OpenChamber-${{ steps.versions.outputs.app }}-linux-${{ matrix.deb_arch }}.deb
-            packages/electron/dist/OpenChamber-${{ steps.versions.outputs.app }}-linux-${{ matrix.rpm_arch }}.rpm
+            packages/electron/dist/Pichamber-${{ steps.versions.outputs.app }}-linux-${{ matrix.artifact_arch }}.AppImage
+            packages/electron/dist/Pichamber-${{ steps.versions.outputs.app }}-linux-${{ matrix.deb_arch }}.deb
+            packages/electron/dist/Pichamber-${{ steps.versions.outputs.app }}-linux-${{ matrix.rpm_arch }}.rpm
             packages/electron/dist/${{ matrix.manifest }}
           if-no-files-found: error
           retention-days: ${{ fromJSON(inputs.retention_days) }}

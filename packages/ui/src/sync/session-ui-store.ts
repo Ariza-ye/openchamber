@@ -2216,7 +2216,7 @@ export const useSessionUIStore = create<SessionUIState>()((set, get) => ({
         sourceDirectory,
       )
       if (!project?.path) {
-        throw new Error("Project is not registered in OpenChamber")
+        throw new Error("Project is not registered in Pichamber")
       }
 
       const [branchNameModule, configModule, trustModule, createModule] = await Promise.all([

@@ -1,6 +1,6 @@
 // Managed OpenCode process registry + orphan reaper.
 //
-// OpenChamber spawns the OpenCode server as an EXTERNAL child binary (on Unix
+// Pichamber spawns the OpenCode server as an EXTERNAL child binary (on Unix
 // with `detached: true`, so it leads its own process group). That binary can
 // therefore outlive its parent if the parent is hard-killed/crashes/`Ctrl+C`ed
 // before graceful teardown runs — leaving an orphaned `opencode serve` that
@@ -56,7 +56,7 @@ const defaultExecFileAsync = promisify(execFile);
 const resolveRegistryDir = () => {
   const override = process.env.OPENCHAMBER_MANAGED_PROCESS_REGISTRY;
   if (override && override.trim()) return override.trim();
-  return path.join(os.homedir(), '.config', 'openchamber', 'managed-opencode');
+  return path.join(os.homedir(), '.config', 'pichamber', 'managed-opencode');
 };
 
 const entryFilePath = (pid) => path.join(resolveRegistryDir(), `${pid}.json`);

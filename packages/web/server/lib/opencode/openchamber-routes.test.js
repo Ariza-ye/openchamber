@@ -13,6 +13,7 @@ vi.mock('../package-manager.js', () => ({
   getUpdateCommand: vi.fn(),
   detectPackageManagerDetails: vi.fn(),
   isUnmanagedInstall: vi.fn(),
+  SELF_UPDATE_ENABLED: true,
 }));
 
 const childProcess = await import('child_process');
@@ -31,7 +32,7 @@ const createApp = ({
   const dependencies = {
     fs: {
       existsSync: vi.fn((targetPath) => {
-        if (typeof targetPath === 'string' && targetPath.endsWith('dev.openchamber.web.plist')) {
+        if (typeof targetPath === 'string' && targetPath.endsWith('dev.pichamber.web.plist')) {
           return plistExists;
         }
         return false;
@@ -93,7 +94,7 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-describe('OpenChamber desktop host update route', () => {
+describe('Pichamber desktop host update route', () => {
   it('reports a restart rejection until the user retries installation', async () => {
     const desktopUpdater = {
       check: vi.fn(async () => ({ available: true, currentVersion: '1.17.0', version: '1.17.1' })),
@@ -210,7 +211,7 @@ describe('OpenChamber desktop host update route', () => {
 
     await request(app).post('/api/openchamber/update-install').expect(409, {
       code: 'DESKTOP_UPDATE_LOCAL_ONLY',
-      error: 'Update OpenChamber on the computer it runs on.',
+      error: 'Update Pichamber on the computer it runs on.',
     });
     await new Promise((resolve) => setImmediate(resolve));
 
@@ -236,7 +237,7 @@ describe('OpenChamber desktop host update route', () => {
   });
 });
 
-describe('OpenChamber foreground update route', () => {
+describe('Pichamber foreground update route', () => {
   it('marks an available update as blocked when the foreground server has no service manager', async () => {
     const { app } = createApp();
 
@@ -258,7 +259,7 @@ describe('OpenChamber foreground update route', () => {
   it('leaves the update installable for a macOS launchd foreground server', async () => {
     const launchd = createApp({
       platform: 'darwin',
-      environment: { XPC_SERVICE_NAME: 'dev.openchamber.web' },
+      environment: { XPC_SERVICE_NAME: 'dev.pichamber.web' },
       storedOptions: { launchMode: 'foreground' },
       plistExists: true,
     });
@@ -272,7 +273,7 @@ describe('OpenChamber foreground update route', () => {
     await request(app)
       .post('/api/openchamber/update-install')
       .expect(409, {
-        error: 'Foreground servers must be updated by their service manager. Set OPENCHAMBER_SYSTEMD_UNIT when running under systemd, or run openchamber update and restart the service.',
+        error: 'Foreground servers must be updated by their service manager. Set OPENCHAMBER_SYSTEMD_UNIT when running under systemd, or run pichamber update and restart the service.',
       });
 
     expect(childProcess.spawnSync).not.toHaveBeenCalled();
@@ -289,7 +290,7 @@ describe('OpenChamber foreground update route', () => {
     await request(app)
       .post('/api/openchamber/update-install')
       .expect(409, {
-        error: 'Foreground servers must be updated by their service manager. Set OPENCHAMBER_SYSTEMD_UNIT when running under systemd, or run openchamber update and restart the service.',
+        error: 'Foreground servers must be updated by their service manager. Set OPENCHAMBER_SYSTEMD_UNIT when running under systemd, or run pichamber update and restart the service.',
       });
 
     expect(childProcess.spawnSync).not.toHaveBeenCalled();
@@ -310,18 +311,18 @@ describe('OpenChamber foreground update route', () => {
       .post('/api/openchamber/update-install')
       .expect(200, {
         success: true,
-        message: 'Update queued; OpenChamber will restart after installation completes',
+        message: 'Update queued; Pichamber will restart after installation completes',
         version: '1.17.1',
         packageManager: 'npm',
         autoRestart: true,
         restartManager: 'systemd',
-        jobId: 'openchamber-update-1700000000000',
-        logPath: 'journalctl --user-unit openchamber-update-1700000000000.service',
+        jobId: 'pichamber-update-1700000000000',
+        logPath: 'journalctl --user-unit pichamber-update-1700000000000.service',
       });
 
     expect(childProcess.spawnSync).toHaveBeenCalledWith('systemd-run', [
       '--user',
-      '--unit=openchamber-update-1700000000000',
+      '--unit=pichamber-update-1700000000000',
       '--collect',
       '--service-type=exec',
       '--setenv=PATH=/home/syu/.npm-global/bin:/usr/bin:/bin',
@@ -345,7 +346,7 @@ describe('OpenChamber foreground update route', () => {
     await request(app)
       .post('/api/openchamber/update-install')
       .expect(409, {
-        error: 'Foreground servers must be updated by their service manager. Set OPENCHAMBER_SYSTEMD_UNIT when running under systemd, or run openchamber update and restart the service.',
+        error: 'Foreground servers must be updated by their service manager. Set OPENCHAMBER_SYSTEMD_UNIT when running under systemd, or run pichamber update and restart the service.',
       });
 
     expect(childProcess.spawnSync).not.toHaveBeenCalled();
@@ -369,7 +370,7 @@ describe('OpenChamber foreground update route', () => {
   it('allows foreground update on macOS when launchd plist exists and invokes launchd restart command', async () => {
     const { app } = createApp({
       platform: 'darwin',
-      environment: { XPC_SERVICE_NAME: 'dev.openchamber.web' },
+      environment: { XPC_SERVICE_NAME: 'dev.pichamber.web' },
       storedOptions: { launchMode: 'foreground' },
       plistExists: true,
     });
@@ -393,7 +394,7 @@ describe('OpenChamber foreground update route', () => {
       [
         '-c',
         expect.stringContaining(
-          "launchctl kickstart -k gui/$(id -u)/dev.openchamber.web || launchctl bootstrap gui/$(id -u) '/home/test/Library/LaunchAgents/dev.openchamber.web.plist'"
+          "launchctl kickstart -k gui/$(id -u)/dev.pichamber.web || launchctl bootstrap gui/$(id -u) '/home/test/Library/LaunchAgents/dev.pichamber.web.plist'"
         ),
       ],
       expect.objectContaining({
@@ -428,7 +429,7 @@ describe('OpenChamber foreground update route', () => {
       [
         '-c',
         expect.stringContaining(
-          "('/usr/bin/node' '/opt/openchamber/bin/cli.js' serve --port 7897) || (openchamber serve --port 7897)"
+          "('/usr/bin/node' '/opt/openchamber/bin/cli.js' serve --port 7897) || (pichamber serve --port 7897)"
         ),
       ],
       expect.objectContaining({
@@ -463,7 +464,7 @@ describe('OpenChamber foreground update route', () => {
       [
         '-c',
         expect.stringContaining(
-          "('/usr/bin/node' '/opt/openchamber/bin/cli.js' serve --port 7897) || (openchamber serve --port 7897)"
+          "('/usr/bin/node' '/opt/openchamber/bin/cli.js' serve --port 7897) || (pichamber serve --port 7897)"
         ),
       ],
       expect.objectContaining({
@@ -473,7 +474,7 @@ describe('OpenChamber foreground update route', () => {
   });
 });
 
-describe('OpenChamber update route for a copy no package manager installed', () => {
+describe('Pichamber update route for a copy no package manager installed', () => {
   beforeEach(() => {
     packageManager.isUnmanagedInstall.mockReturnValue(true);
   });
@@ -505,7 +506,7 @@ describe('OpenChamber update route for a copy no package manager installed', () 
   });
 });
 
-describe('OpenChamber web update route on Windows', () => {
+describe('Pichamber web update route on Windows', () => {
   it('runs the install-and-restart script from a batch file instead of a cmd.exe /c argument', async () => {
     const { app, dependencies } = createApp({
       platform: 'win32',
@@ -527,7 +528,7 @@ describe('OpenChamber web update route on Windows', () => {
     // Every preamble line is an echo; none is left to run as a command.
     expect(lines.filter((line) => line.startsWith('currentVersion=') || line.startsWith('restartCommand='))).toEqual([]);
     expect(lines).toContain('echo packageManager=npm');
-    expect(lines).toContain('echo restartCommand=^("C:\\Program Files\\nodejs\\node.exe" "/opt/openchamber/bin/cli.js" serve --port 7897^) ^|^| ^(openchamber serve --port 7897^)');
+    expect(lines).toContain('echo restartCommand=^("C:\\Program Files\\nodejs\\node.exe" "/opt/openchamber/bin/cli.js" serve --port 7897^) ^|^| ^(pichamber serve --port 7897^)');
     // The UI password is never part of the script or its log.
     expect(script).not.toContain('pa%');
     // A .cmd shim (npm, pnpm, yarn) must be `call`ed or the script ends there.
@@ -536,7 +537,7 @@ describe('OpenChamber web update route on Windows', () => {
     expect(lines.some((line) => line.startsWith('timeout '))).toBe(false);
     expect(lines).toContain('if %ERRORLEVEL% EQU 0 (');
     expect(lines.at(-2)).toBe('del "%~f0"');
-    expect(lines).toContain('  ("C:\\Program Files\\nodejs\\node.exe" "/opt/openchamber/bin/cli.js" serve --port 7897) || (openchamber serve --port 7897)');
+    expect(lines).toContain('  ("C:\\Program Files\\nodejs\\node.exe" "/opt/openchamber/bin/cli.js" serve --port 7897) || (pichamber serve --port 7897)');
 
     // The restarted server reads the password from its environment.
     expect(childProcess.spawn).toHaveBeenCalledWith(

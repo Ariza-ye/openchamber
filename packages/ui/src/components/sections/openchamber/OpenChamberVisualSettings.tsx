@@ -137,7 +137,7 @@ const MERMAID_RENDERING_OPTIONS: Option<'svg' | 'ascii'>[] = [
     },
 ];
 
-const DEFAULT_PWA_INSTALL_NAME = 'OpenChamber - AI Coding Assistant';
+const DEFAULT_PWA_INSTALL_NAME = 'Pichamber - AI Coding Assistant';
 const PWA_ORIENTATION_OPTIONS: Option<'system' | 'portrait' | 'landscape'>[] = [
     {
         id: 'system',
@@ -1885,7 +1885,7 @@ export const OpenChamberVisualSettings: React.FC<OpenChamberVisualSettingsProps>
                                                 />
                                             </>
                                         )}
-                                        {/* Jev runs on the OpenChamber server, which VS Code does not have. */}
+                                        {/* Jev runs on the Pichamber server, which VS Code does not have. */}
                                         {shouldShow('sessionAssist') && !isVSCode && (
                                             <div>
                                                 <SettingsCheckboxRow

@@ -659,7 +659,7 @@ export const createOpenChamberSessionService = (dependencies) => {
         modelID: model.modelID,
         onWarning: (message, error) => console.warn(`[OpenChamberSessions] ${message}:`, error?.message || error),
         // v2 has no session-metadata route, so the goal record goes to
-        // OpenChamber's own store — the same one the proxy overlays back.
+        // Pichamber's own store — the same one the proxy overlays back.
         persistSessionGoal: async (goalSessionID, goalDirectory, goal) => {
           await writeMetadata(goalSessionID, { openchamber: { goal } }, goalDirectory);
         },
@@ -755,7 +755,7 @@ export const createOpenChamberSessionService = (dependencies) => {
   };
 
   /**
-   * Merge-patch a session's OpenChamber metadata on its OpenCode record: the
+   * Merge-patch a session's Pichamber metadata on its OpenCode record: the
    * per-session state of goal mode, session assist, obligatory context and
    * pinned notes. The broadcast carries the full merged object, because a
    * client that missed an earlier patch must not have to reconstruct it.
@@ -797,7 +797,7 @@ export const createOpenChamberSessionService = (dependencies) => {
    * Archive a batch of sessions in one request.
    *
    * OpenCode 2.x has no route that sets `time.archived`, so the state is
-   * OpenChamber's own: a JSON file beside the OpenCode instance, folded back
+   * Pichamber's own: a JSON file beside the OpenCode instance, folded back
    * onto the session records the proxy serves. Batching matters for the same
    * reason it did before — the UI archives every session linked to a worktree
    * before removing it, and doing that one request at a time is what made

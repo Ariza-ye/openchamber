@@ -142,7 +142,7 @@ async function resolveTargetInstance({
 
   if (options.all && requireAll) {
     if (running.length === 0) {
-      throw new Error('No running OpenChamber instance found. Start one with `openchamber serve`.');
+      throw new Error('No running Pichamber instance found. Start one with `pichamber serve`.');
     }
     return running;
   }
@@ -155,11 +155,11 @@ async function resolveTargetInstance({
         if (!attachability.attachable) {
           if (attachability.reason === 'desktop') {
             throw new Error(
-              `Port ${options.port} is used by OpenChamber Desktop app. Tunnel attach requires a CLI instance from \`openchamber serve\`.`
+              `Port ${options.port} is used by Pichamber Desktop app. Tunnel attach requires a CLI instance from \`pichamber serve\`.`
             );
           }
           throw new Error(
-            `Port ${options.port} is not an attachable OpenChamber tunnel instance. Ensure it is healthy and running OpenChamber CLI runtime.`
+            `Port ${options.port} is not an attachable Pichamber tunnel instance. Ensure it is healthy and running Pichamber CLI runtime.`
           );
         }
       }
@@ -170,7 +170,7 @@ async function resolveTargetInstance({
       const systemInfo = await fetchSystemInfoFromPort(options.port, globalThis.fetch, options.host);
       if (isDesktopRuntimeForPort(systemInfo, options.port)) {
         throw new Error(
-          `Port ${options.port} is used by OpenChamber Desktop app. Tunnel attach requires a CLI instance from \`openchamber serve\`.`
+          `Port ${options.port} is used by Pichamber Desktop app. Tunnel attach requires a CLI instance from \`pichamber serve\`.`
         );
       }
     }
@@ -190,7 +190,7 @@ async function resolveTargetInstance({
       const started = running.find((entry) => entry.port === options.port);
       if (started) return { ...started, autoStarted: true };
     }
-    throw new Error(`No running OpenChamber instance found on port ${options.port}.`);
+    throw new Error(`No running Pichamber instance found on port ${options.port}.`);
   }
 
   if (rejectDesktopRuntime) {
@@ -212,7 +212,7 @@ async function resolveTargetInstance({
 
     if (attachableEntries.length > 1) {
       const ports = attachableEntries.map((entry) => entry.port).join(', ');
-      throw new Error(`Multiple attachable OpenChamber instances found: ${ports}. Use --port <port> or --all.`);
+      throw new Error(`Multiple attachable Pichamber instances found: ${ports}. Use --port <port> or --all.`);
     }
 
     if (allowAutoStart) {
@@ -229,10 +229,10 @@ async function resolveTargetInstance({
     }
 
     if (sawDesktop) {
-      throw new Error('Only OpenChamber Desktop instance(s) detected. Tunnel attach requires a CLI instance from `openchamber serve`.');
+      throw new Error('Only Pichamber Desktop instance(s) detected. Tunnel attach requires a CLI instance from `pichamber serve`.');
     }
 
-    throw new Error('No attachable OpenChamber instance found. Start one with `openchamber serve`.');
+    throw new Error('No attachable Pichamber instance found. Start one with `pichamber serve`.');
   }
 
   if (running.length === 1) {
@@ -251,11 +251,11 @@ async function resolveTargetInstance({
       const started = running.find((entry) => entry.port === startedPort) || getLatestInstance(running);
       if (started) return { ...started, autoStarted: true };
     }
-    throw new Error('No running OpenChamber instance found. Start one with `openchamber serve`.');
+    throw new Error('No running Pichamber instance found. Start one with `pichamber serve`.');
   }
 
   const ports = running.map((entry) => entry.port).join(', ');
-  throw new Error(`Multiple OpenChamber instances found: ${ports}. Use --port <port> or --all.`);
+  throw new Error(`Multiple Pichamber instances found: ${ports}. Use --port <port> or --all.`);
 }
 
 async function resolveTunnelReadEntries(options) {
@@ -264,13 +264,13 @@ async function resolveTunnelReadEntries(options) {
   if (options.explicitPort) {
     const found = running.find((entry) => entry.port === options.port);
     if (!found) {
-      throw new Error(`No running OpenChamber instance found on port ${options.port}.`);
+      throw new Error(`No running Pichamber instance found on port ${options.port}.`);
     }
     return [found];
   }
 
   if (running.length === 0) {
-    throw new Error('No running OpenChamber instance found. Start one with `openchamber serve`.');
+    throw new Error('No running Pichamber instance found. Start one with `pichamber serve`.');
   }
 
   return running;
@@ -329,10 +329,10 @@ async function handleTunnelProfileSubcommand(options, action, { boldText, ensure
     if (!isQuietMode(options)) {
       clackIntro('Tunnel Profile');
       logStatus('info', 'Available subcommands', 'list, show, add, remove');
-      clackLog.step('List profiles: `openchamber tunnel profile list`');
-      clackLog.step('Show one profile: `openchamber tunnel profile show --name <name>`');
-      clackLog.step('Add profile: `openchamber tunnel profile add --provider cloudflare --mode managed-remote --name <name> --hostname <host> --token <token>`');
-      clackLog.step('Remove profile: `openchamber tunnel profile remove --name <name>`');
+      clackLog.step('List profiles: `pichamber tunnel profile list`');
+      clackLog.step('Show one profile: `pichamber tunnel profile show --name <name>`');
+      clackLog.step('Add profile: `pichamber tunnel profile add --provider cloudflare --mode managed-remote --name <name> --hostname <host> --token <token>`');
+      clackLog.step('Remove profile: `pichamber tunnel profile remove --name <name>`');
       clackOutro('Choose a subcommand');
     }
     return;
@@ -575,7 +575,7 @@ async function handleTunnelProfileSubcommand(options, action, { boldText, ensure
     clackIntro(boldText('Tunnel Profile Saved'));
     logStatus('success', `${added.name} (${added.provider}/${added.mode})`, `${added.hostname} ${formatProfileTokenStatus(added, options.showSecrets)}`);
     clackOutro('save complete');
-    logStatus('info', '[START_PROFILE]', `openchamber tunnel start --profile ${added.name}`);
+    logStatus('info', '[START_PROFILE]', `pichamber tunnel start --profile ${added.name}`);
     clackOutro('');
     return;
   }
@@ -615,7 +615,7 @@ async function handleTunnelProfileSubcommand(options, action, { boldText, ensure
   const suggestion = findClosestMatch(sub, knownProfileActions);
   const hint = suggestion ? ` Did you mean '${suggestion}'?` : '';
   throw new TunnelCliError(
-    `Unknown tunnel profile subcommand '${sub}'.${hint} Use 'openchamber tunnel help'.`,
+    `Unknown tunnel profile subcommand '${sub}'.${hint} Use 'pichamber tunnel help'.`,
     EXIT_CODE.USAGE_ERROR
   );
 }
@@ -971,16 +971,16 @@ async function tunnelCommand(options, subcommand, action, deps) {
           logStatus('error', `port ${entry.port} — No running instance`);
         }
         if (desktopUnavailablePorts.length > 0) {
-          clackLog.message('Only CLI instances (openchamber serve) support tunneling.');
+          clackLog.message('Only CLI instances (pichamber serve) support tunneling.');
         }
 
         if (cliPorts.length === 0 && unavailablePorts.length === 0) {
-          logStatus('warning', 'No running instances found', 'Start one with `openchamber serve`.');
+          logStatus('warning', 'No running instances found', 'Start one with `pichamber serve`.');
           clackOutro('No ports available');
           return;
         }
         if (cliPorts.length === 0) {
-          logStatus('warning', 'No CLI instances available for tunneling', 'Start one with `openchamber serve`.');
+          logStatus('warning', 'No CLI instances available for tunneling', 'Start one with `pichamber serve`.');
           clackOutro('No CLI ports available');
           return;
         }
@@ -1081,9 +1081,9 @@ async function tunnelCommand(options, subcommand, action, deps) {
                 key: 'managed-remote-port',
                 code: '[PORT_MISMATCH]',
                 lines: [
-                  'Cloudflare target must match the active OpenChamber CLI port.',
+                  'Cloudflare target must match the active Pichamber CLI port.',
                   'Example: `http://127.0.0.1:<port>`',
-                  'If CLI picked a different port, update Cloudflare or run `openchamber serve --port <port>`.',
+                  'If CLI picked a different port, update Cloudflare or run `pichamber serve --port <port>`.',
                 ],
               });
             }
@@ -1436,7 +1436,7 @@ async function tunnelCommand(options, subcommand, action, deps) {
             const safeInstances = runningInstances.filter((entry) => !isUnsafeBrowserPort(entry.port));
             if (safeInstances.length === 0) {
               throw new TunnelCliError(
-                'All discovered OpenChamber instance ports are browser-unsafe. Start or target a safe port (3000, 5173, 8080, or high ephemeral).',
+                'All discovered Pichamber instance ports are browser-unsafe. Start or target a safe port (3000, 5173, 8080, or high ephemeral).',
                 EXIT_CODE.USAGE_ERROR,
               );
             }
@@ -1453,13 +1453,13 @@ async function tunnelCommand(options, subcommand, action, deps) {
 
             if (attachableSafeInstances.length === 0) {
               throw new TunnelCliError(
-                'No attachable OpenChamber CLI instances found on safe ports. Start one with `openchamber serve --port 3000`.',
+                'No attachable Pichamber CLI instances found on safe ports. Start one with `pichamber serve --port 3000`.',
                 EXIT_CODE.USAGE_ERROR,
               );
             }
 
             const selectedPort = await clackSelect({
-              message: 'Select OpenChamber instance port',
+              message: 'Select Pichamber instance port',
               options: attachableSafeInstances.map((entry) => ({
                 value: entry.port,
                 label: `port ${entry.port}`,
@@ -1488,7 +1488,7 @@ async function tunnelCommand(options, subcommand, action, deps) {
           logStatus(
             'info',
             `Using auto-started instance on port ${instance.port}`,
-            `logs: openchamber logs -p ${instance.port}`,
+            `logs: pichamber logs -p ${instance.port}`,
           );
         }
 
@@ -1503,7 +1503,7 @@ async function tunnelCommand(options, subcommand, action, deps) {
 
         if (instance?.autoStarted) {
           const healthProgress = await createProgress(options, { max: 60 });
-          healthProgress?.start(`Waiting for OpenChamber on port ${instance.port} to become healthy (up to 60s)...`);
+          healthProgress?.start(`Waiting for Pichamber on port ${instance.port} to become healthy (up to 60s)...`);
           let progressedSeconds = 0;
           const healthy = await waitForServerHealth(instance.port, {
             timeoutMs: 60000,
@@ -1515,7 +1515,7 @@ async function tunnelCommand(options, subcommand, action, deps) {
               if (delta > 0) {
                 healthProgress.advance(delta);
                 progressedSeconds = elapsedSeconds;
-                healthProgress.message(`Waiting for OpenChamber health (${progressedSeconds}s / 60s)...`);
+                healthProgress.message(`Waiting for Pichamber health (${progressedSeconds}s / 60s)...`);
               }
               if (complete && progressedSeconds < 60) {
                 const remaining = 60 - progressedSeconds;
@@ -1527,12 +1527,12 @@ async function tunnelCommand(options, subcommand, action, deps) {
             },
           });
           if (!healthy) {
-            healthProgress?.stop('OpenChamber is still starting');
+            healthProgress?.stop('Pichamber is still starting');
             throw new Error(
-              `OpenChamber on port ${instance.port} is still starting after 60s. Startup time can vary by machine performance. ` +
+              `Pichamber on port ${instance.port} is still starting after 60s. Startup time can vary by machine performance. ` +
               `Wait another minute, then check health with \`curl -fsS ${buildLocalUrl(instance.port, '/health')}\`. ` +
-              `If health is OK, retry tunnel start with \`openchamber tunnel start --port ${instance.port}\`. ` +
-              `For diagnostics run \`openchamber logs -p ${instance.port}\`.`
+              `If health is OK, retry tunnel start with \`pichamber tunnel start --port ${instance.port}\`. ` +
+              `For diagnostics run \`pichamber logs -p ${instance.port}\`.`
             );
           }
           healthProgress?.stop(`Instance ${instance.port} is healthy`);
@@ -1584,12 +1584,12 @@ async function tunnelCommand(options, subcommand, action, deps) {
           if (error instanceof Error && /\/api\/openchamber\/tunnel\/start/.test(error.message) && /timed out/.test(error.message)) {
             spin?.error('Tunnel start timed out');
             throw new Error(
-              `Tunnel start timed out after 60s. cloudflared may still be starting; check with \`openchamber tunnel status --port ${instance.port}\`. Run \`openchamber logs -p ${instance.port}\` for details.`
+              `Tunnel start timed out after 60s. cloudflared may still be starting; check with \`pichamber tunnel status --port ${instance.port}\`. Run \`pichamber logs -p ${instance.port}\` for details.`
             );
           }
           spin?.error('Tunnel start failed');
           const message = error instanceof Error ? error.message : String(error);
-          throw new Error(`${message} Run \`openchamber logs -p ${instance.port}\` for details.`);
+          throw new Error(`${message} Run \`pichamber logs -p ${instance.port}\` for details.`);
         }
 
         if (!response.ok || !body?.ok) {
@@ -1598,8 +1598,8 @@ async function tunnelCommand(options, subcommand, action, deps) {
             // Only an instance this command did not start can lack a password;
             // `--ui-password` here cannot change a server that is already running.
             throw new Error(
-              `OpenChamber on port ${instance.port} runs without a UI password, which a public tunnel requires. `
-              + `Stop it with \`openchamber stop -p ${instance.port}\`, then run tunnel start again: `
+              `Pichamber on port ${instance.port} runs without a UI password, which a public tunnel requires. `
+              + `Stop it with \`pichamber stop -p ${instance.port}\`, then run tunnel start again: `
               + 'the instance it starts gets a UI password.'
             );
           }
@@ -1608,7 +1608,7 @@ async function tunnelCommand(options, subcommand, action, deps) {
           const userError = isCloudflareTimeout
             ? `Cloudflare quick tunnel request timed out. ${baseError}`
             : baseError;
-          throw new Error(`${userError} Run \`openchamber logs -p ${instance.port}\` for details.`);
+          throw new Error(`${userError} Run \`pichamber logs -p ${instance.port}\` for details.`);
         }
 
         // Avoid duplicate "Tunnel started" lines: spinner completion is implied by
@@ -1658,15 +1658,15 @@ async function tunnelCommand(options, subcommand, action, deps) {
           clackOutro('');
 
           const optionalTips = [
-            { line: 'Check status', detail: 'openchamber tunnel status' },
-            { line: 'Stop tunnel', detail: 'openchamber tunnel stop' },
+            { line: 'Check status', detail: 'pichamber tunnel status' },
+            { line: 'Stop tunnel', detail: 'pichamber tunnel stop' },
             { line: 'If needed, repeat with same settings', detail: replayCommand },
           ];
 
           if (!selectedProfile && mode === 'managed-remote' && typeof hostname === 'string' && hostname.trim().length > 0) {
             const profileSaveCommand = buildTunnelProfileAddCommand({ provider, hostname });
             optionalTips.push({ line: 'Optional: save reusable profile (stores hostname + token locally)', detail: profileSaveCommand });
-            optionalTips.push({ line: 'Start from saved profile', detail: 'openchamber tunnel start --profile <name>' });
+            optionalTips.push({ line: 'Start from saved profile', detail: 'pichamber tunnel start --profile <name>' });
           }
 
           console.log('');
@@ -1769,7 +1769,7 @@ async function tunnelCommand(options, subcommand, action, deps) {
         const suggestion = findClosestMatch(subcommand, knownTunnelSubcommands);
         const hint = suggestion ? ` Did you mean '${suggestion}'?` : '';
         throw new TunnelCliError(
-          `Unknown tunnel subcommand '${subcommand}'.${hint} Use 'openchamber tunnel help'.`,
+          `Unknown tunnel subcommand '${subcommand}'.${hint} Use 'pichamber tunnel help'.`,
           EXIT_CODE.USAGE_ERROR
         );
       }

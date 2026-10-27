@@ -1,6 +1,5 @@
 import type { SidebarSection } from '@/constants/sidebar';
 import type { IconName } from '@/components/icon/icons';
-import { isIsolatedSpacesPageVisible } from '@/lib/spaces/release';
 
 export type SettingsPageSlug =
   | 'home'
@@ -44,7 +43,7 @@ export interface SettingsRuntimeContext {
   isWeb: boolean;
   isDesktop: boolean;
   isMobile: boolean;
-  /** Whether this runtime has Jev routing, which needs the OpenChamber server. */
+  /** Whether this runtime has Jev routing, which needs the Pichamber server. */
   routingAvailable: boolean;
   /** The server runs in enterprise mode: pages for what it refuses are hidden. */
   enterpriseMode: boolean;
@@ -101,25 +100,11 @@ export const SETTINGS_PAGE_METADATA: readonly SettingsPageMeta[] = [
     keywords: ['provider', 'providers', 'models', 'model', 'api key', 'api keys', 'openai', 'anthropic', 'ollama', 'credentials'],
   },
   {
-    slug: 'web-search',
-    title: 'Web search',
-    group: 'opencode',
-    kind: 'single',
-    keywords: ['web search', 'websearch', 'search', 'internet', 'exa', 'tavily', 'firecrawl', 'parallel', 'tinyfish'],
-  },
-  {
     slug: 'usage',
     title: 'Usage',
     group: 'general',
     kind: 'split',
     keywords: ['quota', 'billing', 'tokens', 'usage', 'limits'],
-  },
-  {
-    slug: 'agents',
-    title: 'Agents',
-    group: 'opencode',
-    kind: 'split',
-    keywords: ['agent', 'agents', 'prompts', 'tools', 'permissions'],
   },
   {
     slug: 'behavior',
@@ -228,15 +213,6 @@ export const SETTINGS_PAGE_METADATA: readonly SettingsPageMeta[] = [
   { slug: 'notifications', title: 'Notifications', group: 'general', kind: 'single', keywords: ['alerts', 'native', 'summary', 'summarization'], },
   { slug: 'voice', title: 'Voice', group: 'general', kind: 'single', keywords: ['tts', 'speech', 'voice'], isAvailable: (ctx) => !ctx.isVSCode },
   { slug: 'tunnel', title: 'External Tunnel', group: 'projects', kind: 'single', keywords: ['tunnel', 'external', 'cloudflare', 'qr', 'remote', 'mobile', 'share'], isAvailable: (ctx) => !ctx.isVSCode && !ctx.enterpriseMode },
-  {
-    slug: 'isolated-spaces',
-    title: 'Isolated spaces',
-    group: 'projects',
-    kind: 'single',
-    keywords: ['isolated', 'space', 'spaces', 'container', 'docker', 'colima', 'sandbox', 'disk', 'clean up', 'image'],
-    // Never in VS Code (decision 16 of the design); before the feature's first release only with the key on.
-    isAvailable: (ctx) => !ctx.isVSCode && isIsolatedSpacesPageVisible(),
-  },
   { slug: 'about', title: 'About', group: 'general', kind: 'single', keywords: ['about', 'version', 'updates', 'release', 'changelog'], isAvailable: (ctx) => ctx.isMobile && !ctx.isVSCode },
   { slug: 'integrations', title: 'Integrations', group: 'general', kind: 'single', keywords: ['integration', 'connect', 'oauth', 'github', 'linear', 'extension', 'claude', 'plugin'], isAvailable: (ctx) => !ctx.isVSCode },
   {

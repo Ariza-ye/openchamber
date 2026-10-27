@@ -15,7 +15,7 @@ type LoadState =
   | { state: 'failed' };
 
 /**
- * Variables for everything OpenChamber starts: OpenCode, Git, the terminal and
+ * Variables for everything Pichamber starts: OpenCode, Git, the terminal and
  * project actions. OpenCode reads its environment once, at start, so a change
  * reaches it after a restart; Git and the terminal get it on their next run.
  */

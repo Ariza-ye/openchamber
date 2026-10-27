@@ -15,10 +15,10 @@ import {
 test('prefers APPIMAGE path for Linux autostart Exec', () => {
   assert.equal(
     resolveLinuxLaunchExecutable({
-      env: { APPIMAGE: '/home/user/OpenChamber.AppImage' },
-      execPath: '/tmp/.mount_OpenChXXXX/openchamber',
+      env: { APPIMAGE: '/home/user/Pichamber.AppImage' },
+      execPath: '/tmp/.mount_PichXXXX/pichamber',
     }),
-    '/home/user/OpenChamber.AppImage',
+    '/home/user/Pichamber.AppImage',
   );
 });
 
@@ -43,7 +43,7 @@ test('writes and removes the XDG autostart file', async () => {
     const enabled = await setLinuxAutostartEnabled({
       enabled: true,
       backgroundArg: '--background',
-      env: { ...env, APPIMAGE: '/opt/OpenChamber.AppImage' },
+      env: { ...env, APPIMAGE: '/opt/Pichamber.AppImage' },
       homeDir,
     });
     assert.equal(enabled.enabled, true);
@@ -51,7 +51,7 @@ test('writes and removes the XDG autostart file', async () => {
     assert.equal(await readLinuxAutostartEnabled({ env, homeDir }), true);
 
     const contents = await fs.readFile(filePath, 'utf8');
-    assert.match(contents, /Exec=\/opt\/OpenChamber\.AppImage --background/);
+    assert.match(contents, /Exec=\/opt\/Pichamber\.AppImage --background/);
 
     const disabled = await setLinuxAutostartEnabled({
       enabled: false,

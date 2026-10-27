@@ -106,7 +106,7 @@ beforeEach(() => {
 
 describe('runtime routing responses', () => {
   const routingFailureSchema = z.object({ message: z.string(), status: z.number() })
-  const html = () => new Response('<!doctype html><title>OpenChamber</title>', { status: 200, headers: { 'content-type': 'text/html; charset=utf-8' } })
+  const html = () => new Response('<!doctype html><title>Pichamber</title>', { status: 200, headers: { 'content-type': 'text/html; charset=utf-8' } })
   const rejectedMessage = async (params: Parameters<typeof opencodeClient.sendMessage>[0]) => {
     try {
       await opencodeClient.sendMessage(params)
@@ -155,7 +155,7 @@ describe('runtime routing responses', () => {
 })
 
 describe("request fidelity", () => {
-  test("project creation uses the OpenChamber directory route", async () => {
+  test("project creation uses the Pichamber directory route", async () => {
     responses.push(json({ success: true, restarted: false, path: "/repo/new" }))
     expect(await opencodeClient.createDirectory("/repo/new", { asProject: true }))
       .toEqual({ success: true, path: "/repo/new" })
@@ -164,7 +164,7 @@ describe("request fidelity", () => {
     expect(requests[0].body).toEqual({ path: "/repo/new", create: true })
   })
 
-  test("project activation uses the OpenChamber directory route without creation", async () => {
+  test("project activation uses the Pichamber directory route without creation", async () => {
     const result = { success: true, restarted: false, path: "/repo/existing" }
     responses.push(json(result))
     expect(await opencodeClient.setOpenCodeWorkingDirectory("/repo/existing")).toEqual(result)

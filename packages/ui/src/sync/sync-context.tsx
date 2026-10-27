@@ -613,7 +613,7 @@ const isUiFocused = (): boolean => (
 )
 
 /**
- * OpenChamber's own notification frame: the agent-completion notice for
+ * Pichamber's own notification frame: the agent-completion notice for
  * desktop, VS Code and mobile (the web surface has its own stream), plus the
  * toast raised when a managed OpenCode restart interrupted a turn.
  */
@@ -3433,17 +3433,6 @@ export function useSessionMessagesSelector<T>(
     })
   }, [sessionID, store, watchParts])
   return React.useSyncExternalStore(subscribe, getSnapshot, getSnapshot)
-}
-
-/** Check whether the message list for a session has been loaded into sync state. */
-export function useSessionMessagesResolved(sessionID: string, directory?: string): boolean {
-  return useDirectorySync(
-    useCallback((state: State) => {
-      if (!sessionID) return false
-      return Object.prototype.hasOwnProperty.call(state.message, sessionID)
-    }, [sessionID]),
-    directory,
-  )
 }
 
 const EMPTY_PARTS_BY_MESSAGE: Record<string, Part[]> = {}

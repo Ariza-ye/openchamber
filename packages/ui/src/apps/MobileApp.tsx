@@ -1,8 +1,6 @@
-import { OpenCodeCompatibilityGate } from '@/components/update/OpenCodeCompatibilityGate';
 import React from 'react';
 
 import { AboutSettings } from '@/components/sections/openchamber/AboutSettings';
-import { OpenCodeUpdateToast } from '@/components/update/OpenCodeUpdateToast';
 import { MobileAppUpdateToast } from '@/components/update/MobileAppUpdateToast';
 import { ConfigUpdateOverlay } from '@/components/ui/ConfigUpdateOverlay';
 import { Button } from '@/components/ui/button';
@@ -310,7 +308,7 @@ const MobileShell: React.FC<{ onActiveConnectionDeleted: () => void }> = ({ onAc
     [openChangesSurface, openFilesSurface, openSettingsSurface, openSurface],
   );
 
-  // Expose the shell's panel-opening actions to the deep-link layer so openchamber:// URLs
+  // Expose the shell's panel-opening actions to the deep-link layer so pichamber:// URLs
   // (and notification taps / widgets) can navigate to these surfaces. Session and
   // new-session intents resolve directly against the store, so they aren't wired here.
   const deepLinkHandlers = React.useMemo(
@@ -1321,7 +1319,7 @@ function MobileAppContent({ apis }: MobileAppProps) {
   // (document.hasFocus() is unreliable) and leaked while the app was open; the in-app SSE
   // notification dispatch is no-op'd for native in renderMobileApp.
   useNativePushRegistration({ enabled: isNativeMobileApp && isConnected });
-  // Single native deep-link entry point: notification taps AND the openchamber:// URL
+  // Single native deep-link entry point: notification taps AND the pichamber:// URL
   // scheme (widgets, Live Activities, external links). Registered unconditionally so a
   // cold-launch tap/open isn't lost on the connect/splash screen; intents stash until
   // the app is ready (connected + initialized) and shell handlers are registered.
@@ -1447,7 +1445,6 @@ function MobileAppContent({ apis }: MobileAppProps) {
                   shell (and sync) still mounts and warms up underneath. */}
               <AppStartupOverlay ready={!isNativeMobileApp || !lastSessionRestorePending} animated />
               <SyncAppEffects backgroundWorkEnabled={isInitialized} />
-              <OpenCodeUpdateToast />
               <MobileAppUpdateToast />
               <MobileShell onActiveConnectionDeleted={() => {
                 suppressAutoConnectUntilManualConnect();
@@ -1468,18 +1465,9 @@ function MobileAppContent({ apis }: MobileAppProps) {
 }
 
 export function MobileApp(props: MobileAppProps) {
-  const endpoint = React.useSyncExternalStore(
-    (notify) => subscribeRuntimeEndpointChanged(() => notify()),
-    getRuntimeApiBaseUrl,
-    getRuntimeApiBaseUrl,
-  );
   // Native connection selection must mount before there is a server to probe.
   // The tree keeps one shape across connect/disconnect: a remount on every
   // connect re-ran the cold-launch re-probe, and its fast-timeout verdict on a
   // slow server dropped the runtime again, looping connect → drop → connect.
-  return (
-    <OpenCodeCompatibilityGate enabled={!isCapacitorMobileApp() || Boolean(endpoint)}>
-      <MobileAppContent {...props} />
-    </OpenCodeCompatibilityGate>
-  );
+  return <MobileAppContent {...props} />;
 }

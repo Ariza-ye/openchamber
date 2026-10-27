@@ -279,7 +279,7 @@ const SETTINGS_SEARCH_ITEMS: readonly SettingsSearchItem[] = [
     titleKey: 'settings.openchamber.visual.field.sessionReviewOffer',
     descriptionKey: 'settings.openchamber.visual.field.sessionReviewOfferInfo',
     keywords: ['review', 'walkthrough', 'changes', 'diff', 'jev', 'classification'],
-    // Jev runs on the OpenChamber server; VS Code has no such offer.
+    // Jev runs on the Pichamber server; VS Code has no such offer.
     isAvailable: (ctx) => !ctx.isVSCode,
   },
   {
@@ -696,40 +696,19 @@ const SETTINGS_SEARCH_ITEMS: readonly SettingsSearchItem[] = [
     isAvailable: (ctx) => ctx.isDesktopLocalOrigin,
   },
   {
-    id: 'sessions.opencode-binary',
-    page: 'general',
-    titleKey: 'settings.openchamber.opencodeCli.field.binaryPath',
-    keywords: ['opencode', 'cli', 'binary', 'path'],
-    isAvailable: (ctx) => !ctx.isVSCode,
-  },
-  {
     id: 'general.desktop-cli',
     page: 'general',
     titleKey: 'settings.desktopCli.title',
     descriptionKey: 'settings.desktopCli.info',
-    keywords: ['chamber', 'openchamber', 'cli', 'command', 'terminal', 'path', 'register', 'uninstall'],
+    keywords: ['chamber', 'pichamber', 'openchamber', 'cli', 'command', 'terminal', 'path', 'register', 'uninstall'],
     isAvailable: (ctx) => ctx.isDesktop && ctx.isDesktopLocalOrigin && (ctx.isMac || ctx.isLinux),
-  },
-  {
-    id: 'sessions.opencode-restart',
-    page: 'general',
-    titleKey: 'settings.openchamber.opencodeCli.actions.restart',
-    keywords: ['opencode', 'restart', 'reload', 'plugin'],
-    isAvailable: (ctx) => !ctx.isVSCode,
   },
   {
     id: 'general.environment-variables',
     page: 'general',
     titleKey: 'settings.environment.user.title',
     descriptionKey: 'settings.environment.user.info',
-    keywords: ['environment', 'env', 'variables', 'api key', 'token', 'secret', 'opencode', 'terminal', 'git'],
-    isAvailable: (ctx) => !ctx.isVSCode,
-  },
-  {
-    id: 'sessions.opencode-update-notifications',
-    page: 'general',
-    titleKey: 'settings.openchamber.opencodeCli.field.showUpdateNotifications',
-    keywords: ['opencode', 'cli', 'updates'],
+    keywords: ['environment', 'env', 'variables', 'api key', 'token', 'secret', 'pi', 'terminal', 'git'],
     isAvailable: (ctx) => !ctx.isVSCode,
   },
   {
@@ -1567,7 +1546,6 @@ export function buildSettingsSearchResults({
     if (!pageMeta || (pageMeta.isAvailable && !pageMeta.isAvailable(runtimeCtx)) || (item.isAvailable && !item.isAvailable(runtimeCtx))) {
       return [];
     }
-
     const title = t(item.titleKey);
     const description = item.descriptionKey ? t(item.descriptionKey) : null;
     const haystack = normalizeSearchText([

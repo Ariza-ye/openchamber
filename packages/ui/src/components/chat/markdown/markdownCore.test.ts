@@ -104,16 +104,16 @@ describe('markdown sanitization', () => {
     expect(html).not.toContain('href="ms-msdt:/id%20PCWDiagnostic"');
   });
 
-  test('keeps session links, including pasted ones, and strips other OpenChamber routes', () => {
+  test('keeps session links, including pasted ones, and strips other Pichamber routes', () => {
     const html = renderMarkdownSync([
-      'Pasted: openchamber://session/ses_abc?message=msg_123',
-      '[labelled](openchamber://session/ses_abc)',
-      '[pairing](openchamber://connect?v=2&p=secret)',
+      'Pasted: pichamber://session/ses_abc?message=msg_123',
+      '[labelled](pichamber://session/ses_abc)',
+      '[pairing](pichamber://connect?v=2&p=secret)',
     ].join('\n\n'), 'inline');
 
-    expect(html).toContain('href="openchamber://session/ses_abc?message=msg_123"');
-    expect(html).toContain('href="openchamber://session/ses_abc"');
-    expect(html).not.toContain('href="openchamber://connect');
+    expect(html).toContain('href="pichamber://session/ses_abc?message=msg_123"');
+    expect(html).toContain('href="pichamber://session/ses_abc"');
+    expect(html).not.toContain('href="pichamber://connect');
   });
 
   test('renders an attachment citation as a labelled chip without a link', () => {
@@ -550,7 +550,7 @@ describe('Escaped brackets versus display math', () => {
   // math mid-sentence, so math only wins when it owns its line.
   test('keeps escaped brackets inside a link as link text', () => {
     const html = renderMarkdownSync(
-      '[OpenChamber session completed: OPE-316 \\[Bug\\] Opening files](https://example.com/?session=ses_1)',
+      '[Pichamber session completed: OPE-316 \\[Bug\\] Opening files](https://example.com/?session=ses_1)',
     );
     expect(html).toContain('href="https://example.com/?session=ses_1"');
     expect(html).toContain('[Bug]');
@@ -567,7 +567,7 @@ describe('Escaped brackets versus display math', () => {
   // one link while we used to split it into three blocks.
   test('renders a Linear comment with an escaped-bracket title as one link', () => {
     const html = renderMarkdownSync(
-      '[OpenChamber session completed: OPE-316 \\[Bug\\] Opening files with template-literal'
+      '[Pichamber session completed: OPE-316 \\[Bug\\] Opening files with template-literal'
       + ' code triggers catastrophic backtracking → renderer OOM → black/frozen desktop app'
       + ' (v1.17.2)](http://127.0.0.1:63418/?session=ses_fb0bb916effe26bQ1Ofr6Rv4Ei)',
     );

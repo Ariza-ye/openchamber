@@ -37,20 +37,6 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Get bundled OpenCode CLI version
-        id: opencode_cli_version
-        run: |
-          VERSION=$(node -p "require('./packages/electron/package.json').opencodeCli.version")
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-
-      - name: Cache bundled OpenCode CLI artifact
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
-        with:
-          path: packages/electron/.cache/opencode-cli
-          key: opencode-cli-${{ runner.os }}-arm64-${{ steps.opencode_cli_version.outputs.version }}
-          restore-keys: |
-            opencode-cli-${{ runner.os }}-arm64-
-
       - name: Install Apple Certificate
         env:
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
@@ -82,12 +68,9 @@ jobs:
           ELECTRON_BUILDER_ARCH: arm64
         run: |
           bun run build:web-assets
-          bun run prepare:opencode-cli
-          bun run verify:opencode-cli
           bun run bundle:main
           bun run rebuild:native
           ./node_modules/.bin/electron-builder --mac --arm64 --publish=never
-          bun run verify:opencode-cli:packaged
 
       - name: Prepare DMG artifact
         run: |
@@ -96,7 +79,7 @@ jobs:
           DMG_PATH="packages/electron/dist/*.dmg"
           if ls $DMG_PATH 1> /dev/null 2>&1; then
             DMG_FILE=$(ls $DMG_PATH | head -n 1)
-            DMG_NAME="OpenChamber_Electron_${{ inputs.macos_version }}_arm64.dmg"
+            DMG_NAME="Pichamber_Electron_${{ inputs.macos_version }}_arm64.dmg"
             cp "$DMG_FILE" "artifacts/$DMG_NAME"
           else
             echo "Error: DMG file not found at $DMG_PATH"

@@ -3,7 +3,7 @@
  * actions, and pinned draft starters.
  *
  * A project's setup is the merge of two files the server (or the VS Code
- * extension host) owns: the personal one in `~/.config/openchamber/projects/`
+ * extension host) owns: the personal one in `~/.config/pichamber/projects/`
  * and, when a team shares it, `<repo>/.openchamber/project.json`. The merged
  * view says what runs; its `shared` and `personal` blocks say where each
  * entry came from, so a Settings page edits the personal block and never

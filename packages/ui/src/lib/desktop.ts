@@ -166,19 +166,6 @@ export const getMiniChatRuntimeArgs = (): { apiBaseUrl: string; clientToken: str
   runtimeKey: getRuntimeKey(),
 });
 
-// This reads the current native CLI preflight, never a persisted boot hint. Compare the
-// endpoint again after IPC so a runtime switch cannot reuse another host's state.
-export const hasCompatibleManagedDesktopOpenCode = async (): Promise<boolean> => {
-  if (!isDesktopShell() || !isDesktopLocalOriginActive()) return false;
-  const apiBaseUrl = getRuntimeApiBaseUrl();
-  try {
-    const result = z.boolean().safeParse(await invokeDesktop('desktop_managed_opencode_compatible', { apiBaseUrl }));
-    return result.success && result.data && apiBaseUrl === getRuntimeApiBaseUrl();
-  } catch {
-    return false;
-  }
-};
-
 type LaunchAtLoginStatus = {
   supported: boolean;
   enabled: boolean;
@@ -585,7 +572,7 @@ export const unregisterDesktopCli = async (): Promise<DesktopCliStatus> => {
 };
 
 /**
- * Session links (`openchamber://session/...`) that reached the desktop app
+ * Session links (`pichamber://session/...`) that reached the desktop app
  * before this window could listen for them — the link that launched the app,
  * or "open in main window" from a closed main window. Taking them removes
  * them; outside the desktop local page there are none.
@@ -612,8 +599,8 @@ type PendingDesktopHostAction = z.infer<typeof pendingHostActionsSchema>[number]
 
 /**
  * Host work the desktop shell hands to the main window: a pairing link the user
- * confirmed (`openchamber://connect`), or a relay-capable host to activate
- * (`openchamber://host/<id>`). Taking them removes them.
+ * confirmed (`pichamber://connect`), or a relay-capable host to activate
+ * (`pichamber://host/<id>`). Taking them removes them.
  */
 export const takePendingDesktopHostActions = async (): Promise<PendingDesktopHostAction[]> => {
   // The shell answers only the main window's local page, whichever instance

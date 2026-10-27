@@ -310,12 +310,12 @@ const sanitizeModelRefs = (...args) => settingsNormalizationRuntime.sanitizeMode
 const sanitizeSkillCatalogs = (...args) => settingsNormalizationRuntime.sanitizeSkillCatalogs(...args);
 const sanitizeProjects = (...args) => settingsNormalizationRuntime.sanitizeProjects(...args);
 
-// Every OpenChamber-owned file and folder hangs off one root: the default
-// `~/.config/openchamber`, or `OPENCHAMBER_DATA_DIR` when set. The user
+// Every Pichamber-owned file and folder hangs off one root: the default
+// `~/.config/pichamber`, or `OPENCHAMBER_DATA_DIR` when set. The user
 // folders (`projects/`, `themes/`, `speech-models/`) are copied into a custom
 // root once at startup (`migrateLegacyUserDirs`), because they used to ignore
 // the variable.
-const OPENCHAMBER_DEFAULT_CONFIG_ROOT = path.join(os.homedir(), '.config', 'openchamber');
+const OPENCHAMBER_DEFAULT_CONFIG_ROOT = path.join(os.homedir(), '.config', 'pichamber');
 const OPENCHAMBER_USER_CONFIG_ROOT = process.env.OPENCHAMBER_DATA_DIR
   ? path.resolve(process.env.OPENCHAMBER_DATA_DIR)
   : OPENCHAMBER_DEFAULT_CONFIG_ROOT;
@@ -542,7 +542,7 @@ const broadcastGlobalUiEvent = createGlobalUiEventBroadcaster({
 });
 const broadcastUiNotification = (...args) => notificationEmitterRuntime.broadcastUiNotification(...args);
 
-// OpenChamber-owned events (queue changes, archive state) travel on the shared
+// Pichamber-owned events (queue changes, archive state) travel on the shared
 // control stream, not on OpenCode's event proxy. One broadcaster so every owner
 // reaches the same clients.
 const broadcastOpenChamberUiEvent = createGlobalUiEventBroadcaster({
@@ -552,10 +552,10 @@ const broadcastOpenChamberUiEvent = createGlobalUiEventBroadcaster({
 });
 
 /**
- * Per-session OpenChamber state (goal progress, the assist recap, the
+ * Per-session Pichamber state (goal progress, the assist recap, the
  * obligatory-context cursor, pinned notes) lives in OpenCode's session
  * metadata. The store merge-patches it there and migrates what older
- * OpenChamber versions kept in `sessions-metadata.json`.
+ * Pichamber versions kept in `sessions-metadata.json`.
  */
 const sessionMetadataStore = createSessionMetadataStore({
   dataDir: OPENCHAMBER_DATA_DIR,
@@ -1032,7 +1032,7 @@ const sessionKnowledgeRuntime = createSessionKnowledgeRuntime({
   },
   readSessionMetadata: readStoredSessionMetadata,
   // Pins and the delivered-signature cursor are read from and written to
-  // OpenChamber's own store; nothing here talks to OpenCode any more.
+  // Pichamber's own store; nothing here talks to OpenCode any more.
   persistSessionMetadata: (sessionID, directory, patch) => persistSessionMetadataPatch(sessionID, patch, { directory }),
 });
 
@@ -1101,7 +1101,7 @@ const messageQueueRuntime = createMessageQueueRuntime({
   buildOpenCodeUrl,
   getOpenCodeAuthHeaders,
   sessionKnowledgeRuntime,
-  // OpenCode's event SSE proxy cannot carry OpenChamber-owned events. Use the
+  // OpenCode's event SSE proxy cannot carry Pichamber-owned events. Use the
   // shared control stream for SSE clients and the existing WS fan-out.
   broadcastGlobalUiEvent: broadcastOpenChamberUiEvent,
   resolveAutoSelection: (send) => routingRuntime.resolveAutoSelection(send),
@@ -1162,7 +1162,7 @@ globalMessageStreamHub.subscribeEvent((event) => {
   // The hub translates v2 wire events into the server's vocabulary once; these
   // consumers were written against it and stay unaware of the wire shape.
   for (const payload of event?.translated?.() ?? []) {
-    // The user cancelled the turn: stop the OpenChamber tool actions that
+    // The user cancelled the turn: stop the Pichamber tool actions that
     // turn still has running (a browser action, a memory write). OpenCode 2
     // gives the plugin no abort signal, so this is where the cancel lands.
     if (payload.type === 'session.idle' && payload.properties?.aborted === true) {
@@ -1179,7 +1179,7 @@ globalMessageStreamHub.subscribeEvent((event) => {
 
 /**
  * Browser bridges hand us the raw v2 wire payload (they forward it untouched to
- * the client). The synthetic OpenChamber frames the UI also expects are derived
+ * the client). The synthetic Pichamber frames the UI also expects are derived
  * from the translated event, so the translation happens here.
  */
 const processForwardedEventPayload = (payload, emitSyntheticEvent) => {
@@ -1297,7 +1297,7 @@ const waitForOpenCodePort = (...args) => serverUtilsRuntime.waitForOpenCodePort(
 const buildAugmentedPath = (...args) => serverUtilsRuntime.buildAugmentedPath(...args);
 const buildManagedOpenCodePath = (...args) => serverUtilsRuntime.buildManagedOpenCodePath(...args);
 
-// Variables from Settings for the processes OpenChamber starts: the managed
+// Variables from Settings for the processes Pichamber starts: the managed
 // OpenCode, Git, the terminal and command execution (lib/environment).
 const environmentStore = createEnvironmentStore({
   filePath: path.join(OPENCHAMBER_USER_CONFIG_ROOT, 'environment.json'),
@@ -1533,6 +1533,9 @@ configureOpenCodeCredentials(openCodeCredentialSource({
 configureProjectStartCommandSource(openCodeProjectStartCommandSource({ buildOpenCodeUrl, getOpenCodeAuthHeaders }));
 
 const getOpenCodeCompatibility = async () => {
+  // The pi adapter reports the OpenCode wire version it implements, so the
+  // compatibility gate passes for the same reason an external OpenCode passes:
+  // `/api/info` answers with a supported 2.x version.
   if (isExternalOpenCode || ENV_SKIP_OPENCODE_START) {
     const base = ENV_CONFIGURED_OPENCODE_HOST?.origin || openCodeBaseUrl || `http://127.0.0.1:${openCodePort || ENV_EFFECTIVE_PORT}`;
     const version = await readExternalOpenCodeVersion(base, getOpenCodeAuthHeaders()).catch(() => null);
@@ -1561,10 +1564,65 @@ const getOpenCodeUpgradeCapability = () => {
 
 const restartOpenCode = (...args) => openCodeLifecycleRuntime.restartOpenCode(...args);
 const waitForOpenCodeReady = (...args) => openCodeLifecycleRuntime.waitForOpenCodeReady(...args);
+
 const waitForAgentPresence = (...args) => openCodeLifecycleRuntime.waitForAgentPresence(...args);
 const refreshOpenCodeAfterConfigChange = (...args) => openCodeLifecycleRuntime.refreshOpenCodeAfterConfigChange(...args);
 const startHealthMonitoring = () => openCodeLifecycleRuntime.startHealthMonitoring(HEALTH_CHECK_INTERVAL);
 const triggerHealthCheck = () => openCodeLifecycleRuntime.triggerHealthCheck();
+
+/**
+ * The pi backend, when `agentBackend` is `pi`.
+ *
+ * pi has no HTTP server, so the adapter in `lib/pi-backend` serves OpenCode's
+ * `/api/*` on a loopback port and drives `pi --mode rpc` behind it. The rest of
+ * the server keeps talking to `openCodePort` and cannot tell the difference.
+ *
+ * `isExternalOpenCode` is set on purpose: Pichamber does not own a child it
+ * must kill and restart on a port here, the adapter lives in this process, so
+ * the lifecycle's restart paths leave it alone. Shutdown closes it through
+ * `closePiBackend`.
+ */
+let piBackendRuntime = null;
+let piBackendStarting = null;
+
+const startPiBackendAtStartup = async () => {
+  if (piBackendStarting) return piBackendStarting;
+  piBackendStarting = (async () => {
+    const settings = await readSettingsFromDiskMigrated().catch(() => null);
+    const configuredBinary = String(settings?.piBinary ?? '').trim();
+    const env = { ...getLoginShellEnvSnapshot(), ...process.env, PATH: buildManagedOpenCodePath() };
+    const { startPiBackend } = await import('./lib/pi-backend/server.js');
+    const { resolvePiAgentDir } = await import('./lib/pi-backend/paths.js');
+    piBackendRuntime = await startPiBackend({
+      express,
+      binary: configuredBinary || 'pi',
+      env,
+      agentDir: resolvePiAgentDir(env),
+    });
+    openCodeBaseUrl = piBackendRuntime.baseUrl;
+    setOpenCodePort(piBackendRuntime.port);
+    isExternalOpenCode = true;
+    isOpenCodeReady = true;
+    openCodeNotReadySince = 0;
+    lastOpenCodeError = null;
+    syncToHmrState();
+    return piBackendRuntime;
+  })().finally(() => {
+    piBackendStarting = null;
+  });
+  return piBackendStarting;
+};
+
+const closePiBackend = async () => {
+  const runtime = piBackendRuntime;
+  piBackendRuntime = null;
+  if (!runtime) return;
+  try {
+    await runtime.close();
+  } catch (error) {
+    console.warn(`[pi] backend shutdown failed: ${error?.message ?? error}`);
+  }
+};
 const scheduledChatsScope = createChatsScope(OPENCHAMBER_CHATS_DIR);
 const scheduledTasksRuntime = createScheduledTasksRuntime({
   projectConfigRuntime,
@@ -1681,7 +1739,7 @@ const openChamberSessionService = createOpenChamberSessionService({
   worktreeBootstrapStore,
   hydrateWorktreeCheckout: featureRoutesRuntime.hydrateBoundCheckout,
   createChangeRequestWorktree: featureRoutesRuntime.createChangeRequestWorktree,
-  // OpenCode 2.x has no archive route, so the state is OpenChamber's own and
+  // OpenCode 2.x has no archive route, so the state is Pichamber's own and
   // lives beside the instance it describes.
   dataDir: OPENCHAMBER_DATA_DIR,
   sessionMetadataStore,
@@ -1690,7 +1748,7 @@ const openChamberSessionService = createOpenChamberSessionService({
   resolveAutoSelection: (input) => routingRuntime.resolveAutoSelection(input),
   isAutoReady: async () => (await routingRuntime.describe()).autoReady,
 });
-// Browser actions are published to whichever OpenChamber clients are connected;
+// Browser actions are published to whichever Pichamber clients are connected;
 // the one owning the browser panel answers. `emitRequest` returns the number of
 // clients reached so the broker can fail fast when nobody is listening.
 const browserControlBroker = createBrowserControlBroker({
@@ -1739,7 +1797,7 @@ const emitBrowserProviderResetEvent = ({ guestId, guestName }) => {
   }
 };
 // Every browser action passes through here: the in-app view by default, or an
-// extension service chosen in Settings → OpenChamber Tools.
+// extension service chosen in Settings → Pichamber Tools.
 const browserControlRouter = createBrowserControlRouter({
   broker: browserControlBroker,
   readSettings: () => readSettingsFromDiskMigrated(),
@@ -1841,7 +1899,7 @@ const openChamberControlService = createOpenChamberControlService({
   notifyUser: async (input) => {
     const settings = await readSettingsFromDiskMigrated().catch(() => null);
     if (settings?.agentNotifyToolEnabled !== true) {
-      return { status: 403, body: { error: 'The notify tool is turned off in OpenChamber settings' } };
+      return { status: 403, body: { error: 'The notify tool is turned off in Pichamber settings' } };
     }
     return pluginNotificationEmitter.emit(input);
   },
@@ -1872,15 +1930,28 @@ const ensureGlobalWatcherStarted = async () => {
 
   return globalWatcherStartPromise;
 };
-const bootstrapOpenCodeAtStartup = async (...args) => {
-  await openCodeLifecycleRuntime.bootstrapOpenCodeAtStartup(...args);
+const bootstrapOpenCodeAtStartup = async () => {
+  // pi serves the `/api/*` contract from the adapter in `lib/pi-backend`;
+  // everything below (proxy, event hub, health, credentials) is shared.
+  try {
+    await startPiBackendAtStartup();
+    console.log('[pi] agent backend ready');
+  } catch (error) {
+    // A failed pi start must not leave the UI waiting on a backend that will
+    // never answer.
+    console.error(`Failed to start the pi backend: ${error?.message ?? error}`);
+    lastOpenCodeError = error instanceof Error ? error.message : String(error);
+    isOpenCodeReady = false;
+    openCodeNotReadySince = Date.now();
+    syncToHmrState();
+  }
   scheduleOpenCodeApiDetection();
   if (openCodeLifecycleState.openCodeProcess && !openCodeLifecycleState.isExternalOpenCode) {
     startHealthMonitoring();
   }
   // The global watcher used to start only for desktop notifications; the
   // session-assist runtime also rides its event hub, so it now starts
-  // unconditionally once OpenCode is up.
+  // unconditionally once the backend is up.
   void ensureGlobalWatcherStarted().catch((error) => {
     console.warn(`Global event watcher startup failed: ${error?.message || error}`);
   });
@@ -1924,6 +1995,7 @@ const gracefulShutdownRuntime = createGracefulShutdownRuntime({
   },
   shouldSkipOpenCodeStop: () => ENV_SKIP_OPENCODE_START || isExternalOpenCode,
   getOpenCodePort: () => openCodePort,
+  closeAgentBackend: () => closePiBackend(),
   getOpenCodeProcess: () => openCodeProcess,
   setOpenCodeProcess: (value) => {
     openCodeProcess = value;
@@ -2134,7 +2206,7 @@ async function main(options = {}) {
     ? options.desktopUpdater
     : null;
 
-  console.log(`Starting OpenChamber on port ${port === 0 ? 'auto' : port}`);
+  console.log(`Starting Pichamber on port ${port === 0 ? 'auto' : port}`);
 
   // Voice enumeration is independent from route registration. Start it now,
   // but do not hold server listen or managed OpenCode startup on `say -v "?"`.
@@ -2178,7 +2250,7 @@ async function main(options = {}) {
     saveIdleStop: (setting) => persistSettings({ isolatedSpacesIdleStop: setting }),
     archive: spaceArchive,
     // What the host says to the login issuer when it renews a browser login for a space.
-    userAgent: `OpenChamber/${OPENCHAMBER_VERSION}`,
+    userAgent: `Pichamber/${OPENCHAMBER_VERSION}`,
   });
   const startupSettings = await readSettingsFromDiskMigrated().catch(() => null);
   if (startupSettings?.isolatedSpacesEnabled === true) {
@@ -2241,7 +2313,7 @@ async function main(options = {}) {
       // The packaged desktop UI (openchamber-ui://) and the dev UI sit on a
       // different origin, so every custom request header must be listed here or
       // the browser refuses the request at preflight, before it reaches a route.
-      res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization,Accept,X-Requested-With,Cache-Control,X-OpenCode-Directory,X-OpenCode-Directory-Encoding,Ngrok-Skip-Browser-Warning,X-OpenChamber-Surface,X-OpenChamber-Provider,X-OpenChamber-Model,X-OpenChamber-Part-Shells');
+      res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization,Accept,X-Requested-With,Cache-Control,X-OpenCode-Directory,X-OpenCode-Directory-Encoding,Ngrok-Skip-Browser-Warning,X-Pichamber-Surface,X-Pichamber-Provider,X-Pichamber-Model,X-Pichamber-Part-Shells');
       res.setHeader('Access-Control-Expose-Headers', 'x-next-cursor');
       res.setHeader('Vary', 'Origin');
       if (req.method === 'OPTIONS') {
@@ -2346,9 +2418,9 @@ async function main(options = {}) {
     getServerLabel: () => {
       try {
         const name = os.hostname();
-        return typeof name === 'string' && name.trim().length > 0 ? name.trim() : 'OpenChamber';
+        return typeof name === 'string' && name.trim().length > 0 ? name.trim() : 'Pichamber';
       } catch {
-        return 'OpenChamber';
+        return 'Pichamber';
       }
     },
     readSettingsFromDiskMigrated,
@@ -2553,7 +2625,7 @@ async function main(options = {}) {
     buildOpenCodeUrl,
     getOpenCodeAuthHeaders,
     getOpenCodePort: () => openCodePort,
-    // Dev-server discovery must not offer OpenChamber's own listeners back to
+    // Dev-server discovery must not offer Pichamber's own listeners back to
     // the user as something to preview.
     getOwnPorts: () => [port, openCodePort].filter((value) => Number.isInteger(value) && value > 0),
     getActivePort: () => {
@@ -2668,7 +2740,7 @@ async function main(options = {}) {
   // device/session exists, stop it (and clear a stale enabled flag) otherwise.
   void relayService.reconcile();
 
-  // Relay demand can change outside our routes: `openchamber connect-url
+  // Relay demand can change outside our routes: `pichamber connect-url
   // --relay` writes a pending relay session straight to the on-disk store, and
   // pending sessions expire without any request hitting us. Poll reconcile so a
   // headless instance picks the relay up (or drops it) within a minute.

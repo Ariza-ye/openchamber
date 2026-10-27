@@ -10,7 +10,7 @@ const script = fileURLToPath(new URL('./finalize-latest-yml.mjs', import.meta.ur
 
 const manifest = (platform, architecture, extension) => `version: 1.2.3
 files:
-  - url: OpenChamber-1.2.3-${platform}-${architecture}.${extension}
+  - url: Pichamber-1.2.3-${platform}-${architecture}.${extension}
     sha512: ${architecture}-checksum
     size: 123
 releaseDate: '2026-07-30T00:00:00.000Z'

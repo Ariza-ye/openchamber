@@ -175,7 +175,7 @@ export type ContextPart = {
 
 /**
  * The model-facing text for a context payload. The wording intentionally
- * matches what OpenChamber sent before parts carried metadata, so model
+ * matches what Pichamber sent before parts carried metadata, so model
  * behavior does not change with the transport format.
  */
 export function formatContextText(payload: ContextPartPayload): string {

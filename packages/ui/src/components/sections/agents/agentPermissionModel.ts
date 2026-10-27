@@ -42,7 +42,7 @@ export const BUILTIN_ACTIONS = [
   'external_directory',
 ] as const;
 
-/** OpenChamber's own agent tools, shown so their rules are discoverable. */
+/** Pichamber's own agent tools, shown so their rules are discoverable. */
 export const OPENCHAMBER_ACTIONS = ['openchamber', 'openchamber_web', 'openchamber_memory', 'openchamber_knowledge', 'openchamber_notify', 'openchamber_render'] as const;
 
 /**

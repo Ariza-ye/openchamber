@@ -84,7 +84,7 @@ describe('prepareUserMarkdownContent', () => {
             attachments: [{ filename: 'OpenChamber_2026@2x.png', iconId: 'png' }],
         });
 
-        expect(content).toContain('[OpenChamber\\_2026@2x.png](#openchamber-attachment:png:OpenChamber_2026%402x.png)');
+        expect(content).toContain('[Pichamber\\_2026@2x.png](#openchamber-attachment:png:OpenChamber_2026%402x.png)');
         expect(content).toContain('[notes]');
         expect(content).toContain('[docs](https://example.com)');
     });

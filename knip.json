@@ -20,7 +20,6 @@
     },
     "packages/ui": {
       "entry": [
-        "src/apps/renderVSCodeApp.tsx",
         "src/**/*.bench.{ts,tsx}",
         "src/**/*.{test,spec}.{js,cjs,mjs,jsx,ts,tsx}",
         "src/**/__tests__/**/*.{js,cjs,mjs,jsx,ts,tsx}"
@@ -61,17 +60,7 @@
         "scripts/**/*.{js,cjs,mjs}"
       ]
     },
-    "packages/vscode": {
-      "entry": [
-        "webview/main.tsx",
-        "src/**/*.{test,spec}.{js,cjs,mjs,ts,tsx}",
-        "webview/**/*.{test,spec}.{js,cjs,mjs,ts,tsx}"
-      ],
-      "project": [
-        "src/**/*.{ts,tsx}",
-        "webview/**/*.{ts,tsx}"
-      ]
-    },
+
     "packages/sdk": {
       "entry": [
         "src/index.ts",

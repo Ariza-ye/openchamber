@@ -148,7 +148,7 @@ export type SyncEvent =
    * an explicit reload). Everything read from it is now suspect.
    */
   | { type: "location.shutdown"; properties: Record<never, never> }
-  // OpenChamber's own server frames that ride the same stream.
+  // Pichamber's own server frames that ride the same stream.
   | { type: "openchamber.notification"; properties: OpenchamberNotification }
   // `modes` is the policy; `sessions` is its on/off view for clients from before the modes.
   | { type: "openchamber.permission-auto-accept"; properties: { sessions: Record<string, boolean>; modes?: Record<string, "ask" | "safety" | "auto">; revision?: number } }
@@ -159,7 +159,7 @@ export type SyncEvent =
   /** That page stopped waiting: answered, answered in the chat, or its turn ended. */
   | { type: "openchamber.page-settled"; properties: { sessionID: string; pageID: string } }
 
-/** Agent-completion / restart notices the OpenChamber server publishes for non-web runtimes. */
+/** Agent-completion / restart notices the Pichamber server publishes for non-web runtimes. */
 export type OpenchamberNotification = {
   kind?: string
   sessionId?: string
@@ -843,11 +843,11 @@ export function translateWireEvent(event: OpenCodeEvent): SyncEvent[] {
     // `installation.update-available` is the one the UI acts on.
     case "installation.updated":
       return []
-    // Catalogs OpenChamber does not surface as lists of their own.
+    // Catalogs Pichamber does not surface as lists of their own.
     case "models-dev.refreshed":
     case "reference.updated":
       return []
-    // Resources of an MCP server; OpenChamber shows connection status only
+    // Resources of an MCP server; Pichamber shows connection status only
     // (`mcp.status.changed`).
     case "mcp.resources.changed":
       return []
@@ -855,7 +855,7 @@ export function translateWireEvent(event: OpenCodeEvent): SyncEvent[] {
     // browsers refresh from tool and step results instead (`lib/fileTreeChanges`).
     case "filesystem.changed":
       return []
-    // Worktrees go through OpenChamber's own git API, not OpenCode's.
+    // Worktrees go through Pichamber's own git API, not OpenCode's.
     case "worktree.updated":
     case "worktree.resolved":
       return []

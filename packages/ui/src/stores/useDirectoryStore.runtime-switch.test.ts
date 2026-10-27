@@ -76,7 +76,7 @@ mock.module('@/lib/opencode/client', () => ({
     getFilesystemHomeInfo: async () => {
       const boundTo = clientBoundTo;
       await holdLookup;
-      if (boundTo === 'local') return { home: MAC_HOME, chatsRoot: `${MAC_HOME}/.config/openchamber/chats` };
+      if (boundTo === 'local') return { home: MAC_HOME, chatsRoot: `${MAC_HOME}/.config/pichamber/chats` };
       if (!loggedInOnRemote) throw new Error('Failed to resolve the chats root (401)');
       return { home: REMOTE_HOME, chatsRoot: REMOTE_CHATS };
     },

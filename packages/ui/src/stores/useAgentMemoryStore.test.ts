@@ -102,7 +102,7 @@ describe('load', () => {
     readImpl = () => new Promise((resolve) => {
       pending.resolve = resolve;
     });
-    const chatsPath = '/Users/test/.config/openchamber/chats';
+    const chatsPath = '/Users/test/.config/pichamber/chats';
     const loadingChats = useAgentMemoryStore.getState().load(chatsPath);
 
     const switched = useAgentMemoryStore.getState();
@@ -119,7 +119,7 @@ describe('load', () => {
     await useAgentMemoryStore.getState().load('/workspace/openchamber');
     readImpl = async () => { throw new Error('offline'); };
 
-    await useAgentMemoryStore.getState().load('/Users/test/.config/openchamber/chats');
+    await useAgentMemoryStore.getState().load('/Users/test/.config/pichamber/chats');
 
     const state = useAgentMemoryStore.getState();
     expect(state.project).toEqual([]);

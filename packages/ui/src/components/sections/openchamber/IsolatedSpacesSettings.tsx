@@ -136,7 +136,7 @@ type TurnOffNotice = { kind: 'stops'; count: number } | { kind: 'unknown' };
  */
 /**
  * The spaces whose project is no longer registered here (journey step 9, and
- * decision 12): removed from OpenChamber or added again under another path, so no project menu
+ * decision 12): removed from Pichamber or added again under another path, so no project menu
  * leads to them. Listed only when there are any, with the folder each was made for and the same
  * actions as a space's group. A read that fails lists nothing here rather than saying there are
  * none: this list is a way out, not the spaces' status.

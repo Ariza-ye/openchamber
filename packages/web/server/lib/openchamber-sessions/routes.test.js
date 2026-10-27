@@ -127,7 +127,7 @@ vi.mock('../git/index.js', () => ({
 }));
 
 /**
- * Archive state is OpenChamber's own now, so the routes take a store rather
+ * Archive state is Pichamber's own now, so the routes take a store rather
  * than talking to OpenCode. The tests use an in-memory one with the same
  * contract as `archive-store.js`.
  */
@@ -352,7 +352,7 @@ describe('openchamber session routes', () => {
     });
   });
 
-  describe('session metadata OpenChamber owns', () => {
+  describe('session metadata Pichamber owns', () => {
     it('merges a patch onto the OpenCode record and writes it back with PATCH', async () => {
       sessionGetMock.mockImplementationOnce(async ({ sessionID }) => ({
         id: sessionID,
@@ -719,7 +719,7 @@ describe('openchamber session routes', () => {
     const originalFetch = globalThis.fetch;
     globalThis.fetch = vi.fn(async (url) => {
       if (String(url).endsWith('/prompt')) {
-        return new Response('<!doctype html><title>OpenChamber</title>', {
+        return new Response('<!doctype html><title>Pichamber</title>', {
           status: 200,
           headers: { 'content-type': 'text/html; charset=utf-8' },
         });

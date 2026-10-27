@@ -53,7 +53,7 @@ describe.skipIf(process.platform === 'win32')('FILLER_PROGRAM, run', () => {
 echo "$@" > npm-args.txt
 [ -f fail-npm ] && exit 3
 mkdir -p node_modules/.bin node_modules/@opencode/plugin node_modules/@opencode/cli node_modules/bun
-touch node_modules/.bin/openchamber node_modules/.bin/opencode
+touch node_modules/.bin/pichamber node_modules/.bin/opencode
 [ -f skip-plugin ] || echo '{}' > node_modules/@opencode/plugin/package.json
 echo "import fs from 'node:fs'; fs.writeFileSync('postinstall-ran', 'yes');" > node_modules/@opencode/cli/postinstall.mjs
 echo "require('node:fs').writeFileSync('install-ran', 'yes');" > node_modules/bun/install.js

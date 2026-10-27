@@ -1,7 +1,7 @@
 // A project's setup — worktree setup commands, project actions, pinned draft
 // starters — comes from two files:
 //
-// - the personal file `~/.config/openchamber/projects/<projectId>.json`
+// - the personal file `~/.config/pichamber/projects/<projectId>.json`
 //   (client-owned keys; server-owned `version` / `scheduledTasks` live beside
 //   them and are never touched here), and
 // - the shared file `<repo>/.openchamber/project.json`, committed by a team so

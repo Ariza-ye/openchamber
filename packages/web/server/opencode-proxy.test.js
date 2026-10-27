@@ -809,7 +809,7 @@ describe('OpenCode proxy SSE forwarding', () => {
     expect(single).toEqual(message);
   });
 
-  it('folds OpenChamber-owned archive state and metadata onto sessions it serves', async () => {
+  it('folds Pichamber-owned archive state and metadata onto sessions it serves', async () => {
     const upstream = express();
     upstream.get('/api/session', (_req, res) => {
       res.json({

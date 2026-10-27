@@ -286,7 +286,7 @@ jobs:
       - name: Install opencode
         if: steps.pr.outputs.draft == 'false' && steps.safety.outputs.safe == 'true' && steps.throttle.outputs.skip != 'true'
         run: |
-          version="$(node -p "require('./packages/electron/package.json').opencodeCli.version")"
+          version="2.0.29"
           npm install -g "@opencode/cli@${version}"
           opencode --version
 

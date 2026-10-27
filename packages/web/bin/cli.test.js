@@ -229,10 +229,10 @@ describe('cli args', () => {
   });
 
   it('parses explicit connect-url server overrides', () => {
-    const parsed = parseArgs(['connect-url', '--server', 'https://openchamber.example.com', '--port', '3002']);
+    const parsed = parseArgs(['connect-url', '--server', 'https://pichamber.example.com', '--port', '3002']);
 
     expect(parsed.command).toBe('connect-url');
-    expect(parsed.options.server).toBe('https://openchamber.example.com');
+    expect(parsed.options.server).toBe('https://pichamber.example.com');
     expect(parsed.options.port).toBe(3002);
   });
 
@@ -684,7 +684,7 @@ describe('cli API target resolution', () => {
       discoverDesktopInstance: async () => null,
       discoverLifecycleInstances: async () => [{ port: 3001 }, { port: 3002 }],
       isServerHealthReady: async () => false,
-    })).rejects.toThrow('Multiple OpenChamber instances are running');
+    })).rejects.toThrow('Multiple Pichamber instances are running');
   });
 });
 
@@ -771,7 +771,7 @@ describe('serve host resolution', () => {
     }
   });
 
-  it('ignores an OPENCHAMBER_HOST that OpenChamber put into the shell', () => {
+  it('ignores an OPENCHAMBER_HOST that Pichamber put into the shell', () => {
     const previous = { OPENCHAMBER_HOST: process.env.OPENCHAMBER_HOST, [INJECTED_ENV_KEY]: process.env[INJECTED_ENV_KEY] };
     delete process.env[INJECTED_ENV_KEY];
     delete process.env.OPENCHAMBER_HOST;
@@ -1038,8 +1038,8 @@ describe('cli entry detection', () => {
   });
 
   it('accepts wrapper binary name fallback when requested', () => {
-    const wrapperPath = '/home/user/.local/bin/openchamber';
-    expect(isModuleCliExecution(wrapperPath, moduleUrl, undefined, 'openchamber')).toBe(true);
+    const wrapperPath = '/home/user/.local/bin/pichamber';
+    expect(isModuleCliExecution(wrapperPath, moduleUrl, undefined, 'pichamber')).toBe(true);
   });
 
   it('normalizes direct paths when realpath fails', () => {
@@ -1053,7 +1053,7 @@ describe('cli entry detection', () => {
 });
 
 describe('isOpenchamberCmdline', () => {
-  it('accepts OpenChamber CLI and daemon cmdlines', () => {
+  it('accepts Pichamber CLI and daemon cmdlines', () => {
     expect(isOpenchamberCmdline('node /x/@openchamber/web/bin/cli.js serve')).toBe(true);
     expect(isOpenchamberCmdline('node /x/@openchamber/web/server/index.js --port 9090')).toBe(true);
     expect(isOpenchamberCmdline('bun /home/u/projects/openchamber/packages/web/server/index.js --port 3001')).toBe(true);
@@ -1076,7 +1076,7 @@ describe('isOpenchamberProcessRunning', () => {
   // platforms a live but unrelated process (a recycled stale PID) must read as
   // not-running so it can't trip the "already running" guard (issue #1721).
   it.skipIf(process.platform !== 'linux' && process.platform !== 'darwin')(
-    'returns false for a live non-OpenChamber PID',
+    'returns false for a live non-Pichamber PID',
     async () => {
       const child = spawn('sleep', ['30'], { stdio: 'ignore' });
       try {
@@ -1215,7 +1215,7 @@ describe('lifecycle instance discovery', () => {
     });
   });
 
-  it('uses the live system-info pid instead of a stale OpenChamber-looking pid-file pid', async () => {
+  it('uses the live system-info pid instead of a stale Pichamber-looking pid-file pid', async () => {
     await withTempOpenChamberDataDir(async () => {
       const port = 45127;
       const stalePid = 12348;
@@ -1322,7 +1322,7 @@ describe('lifecycle instance discovery', () => {
     });
   });
 
-  it('discovers an explicit live OpenChamber port without a pid-file registry entry', async () => {
+  it('discovers an explicit live Pichamber port without a pid-file registry entry', async () => {
     await withTempOpenChamberDataDir(async () => {
       const port = 45125;
       const instances = await discoverLifecycleInstances(
@@ -1361,7 +1361,7 @@ describe('lifecycle instance discovery', () => {
 });
 
 describe('lifecycle commands with unmanaged explicit ports', () => {
-  it('serve refuses to start on a live OpenChamber port without requiring pid files', async () => {
+  it('serve refuses to start on a live Pichamber port without requiring pid files', async () => {
     await withTempOpenChamberDataDir(async () => {
       const server = await startMockOpenChamberServer();
       try {
@@ -1505,7 +1505,7 @@ describe('lifecycle commands with unmanaged explicit ports', () => {
 describe('Windows startup task command builder', () => {
   it('default-path length stays under 200 chars', () => {
     const cmd = buildWindowsStartupTaskCommand(
-      'C:\\Users\\test\\.config\\openchamber\\bin\\OpenChamber.ps1'
+      'C:\\Users\\test\\.config\\pichamber\\bin\\Pichamber.ps1'
     );
     expect(cmd).toMatch(/^powershell\.exe -NoProfile -ExecutionPolicy Bypass -File /);
     expect(cmd.length).toBeLessThan(200);
@@ -1517,7 +1517,7 @@ describe('Windows startup task command builder', () => {
     const longPath =
       'C:\\Users\\' +
       'a'.repeat(139) +
-      '\\.config\\openchamber\\bin\\OpenChamber.ps1';
+      '\\.config\\pichamber\\bin\\Pichamber.ps1';
     expect(longPath.length).toBeGreaterThanOrEqual(180);
 
     const cmd = buildWindowsStartupTaskCommand(longPath);
@@ -1543,7 +1543,7 @@ describe('startup command lingering output', () => {
     enabled: true,
     active: true,
     activeState: 'active',
-    servicePath: '/home/alice/.config/systemd/user/openchamber.service',
+    servicePath: '/home/alice/.config/systemd/user/pichamber.service',
     lingerEnabled,
     lingerUser,
   });
