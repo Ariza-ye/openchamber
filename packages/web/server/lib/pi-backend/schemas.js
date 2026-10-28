@@ -302,6 +302,7 @@ const endpointModelSchema = z.object({
   name: z.string().optional(),
   api: z.string().optional(),
   reasoning: z.boolean().optional(),
+  thinkingLevelMap: z.record(z.string(), z.string().nullable()).optional(),
   input: z.array(z.string()).optional(),
   cost: z.record(z.string(), z.unknown()).optional(),
   contextWindow: z.number().optional(),

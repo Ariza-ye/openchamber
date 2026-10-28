@@ -31,9 +31,11 @@ import { promisify } from 'node:util';
 
 import { readPiCommands, readPiSkills } from './config.js';
 import { createPiEventTranslator } from './event-translator.js';
+import { generatePiText } from './generate.js';
 import { piSessionDirFor, resolvePiAgentDir } from './paths.js';
 import { PI_AGENT_ID, projectIdForDirectory, projectSessionFile, projectSessionFileMessages } from './projection.js';
 import { findPiSessionFile, listSessionFilesNewestFirst, readSession, statOf } from './session-store.js';
+import { modelVariantIds } from './thinking.js';
 import {
   parseJsonWith,
   piAuthFileSchema,
@@ -73,12 +75,17 @@ const readGitBranch = async (directory) => {
   }
 };
 
+/** A percent-escape in the directory header: the SDK URI-encodes it and sends no marker. */
+const PERCENT_ESCAPE = /%[0-9a-fA-F]{2}/;
+
 /** The directory a request is scoped to: header first, then query, then `fallback`. */
 const requestDirectory = (req, fallback = process.cwd()) => {
   const header = req.get?.('x-opencode-directory');
   if (header?.trim()) {
     const raw = header.trim();
-    if (req.get?.('x-opencode-directory-encoding') === 'uri') {
+    // Read the header the way OpenCode does, so an encoded path reaches `fs`
+    // and `cwd` as the directory it names (`spaces/dispatcher.js` has the rule).
+    if (req.get?.('x-opencode-directory-encoding') === 'uri' || PERCENT_ESCAPE.test(raw)) {
       try {
         return decodeURIComponent(raw);
       } catch {
@@ -118,7 +125,7 @@ const projectProviders = (configured, cached) => {
   return providers;
 };
 
-const modelInfo = ({ providerID, id, name, api, input, cost, contextWindow, maxTokens }) => ({
+const modelInfo = ({ providerID, id, name, api, input, cost, contextWindow, maxTokens, reasoning, thinkingLevelMap }) => ({
   id,
   modelID: id,
   providerID,
@@ -126,7 +133,7 @@ const modelInfo = ({ providerID, id, name, api, input, cost, contextWindow, maxT
   family: providerID,
   ...(api ? { package: api } : undefined),
   capabilities: { tools: true, input: input ?? ['text'], output: ['text'] },
-  variants: [],
+  variants: modelVariantIds({ reasoning, thinkingLevelMap }).map((level) => ({ id: level })),
   time: { released: 0 },
   cost: [{
     input: cost?.input ?? 0,
@@ -154,6 +161,8 @@ const projectModels = (configured, cached) => {
         cost: resolved.cost ?? model.cost,
         contextWindow: resolved.contextWindow ?? model.contextWindow,
         maxTokens: resolved.maxTokens ?? model.maxTokens,
+        reasoning: resolved.reasoning ?? model.reasoning,
+        thinkingLevelMap: resolved.thinkingLevelMap ?? model.thinkingLevelMap,
       }));
     }
   }
@@ -476,6 +485,8 @@ export const createPiApiApp = ({
         cost: stored?.cost,
         contextWindow: stored?.contextWindow,
         maxTokens: stored?.maxTokens,
+        reasoning: stored?.reasoning,
+        thinkingLevelMap: stored?.thinkingLevelMap,
       }));
     }
     return { configured: endpoints, cached, models };
@@ -527,6 +538,40 @@ export const createPiApiApp = ({
 
   app.get('/api/credential', async (_req, res) => {
     res.json({ data: projectCredentials(await readJsonFile(path.join(agentDir, 'auth.json'), piAuthFileSchema, {})) });
+  });
+
+  // ---------------------------------------------------------------------------
+  // Generation
+  // ---------------------------------------------------------------------------
+
+  /**
+   * One answer from one model, for Pichamber's small-model routes.
+   *
+   * The prompt already carries the instructions, so this is a single `pi
+   * --print` run with no session and no tools. The failure body names pi's own
+   * reason, which `small-model` shows instead of its generic advice.
+   */
+  app.post('/api/experimental/generate', async (req, res) => {
+    const prompt = typeof req.body?.prompt === 'string' ? req.body.prompt : '';
+    const providerID = String(req.body?.model?.providerID ?? '');
+    const modelID = String(req.body?.model?.id ?? '');
+    if (!prompt.trim()) return jsonError(res, 400, 'A prompt is required');
+    if (!providerID || !modelID) return jsonError(res, 400, 'A model is required');
+    try {
+      const text = await generatePiText({
+        binary,
+        env,
+        providerID,
+        modelID,
+        prompt,
+        directory: requestDirectory(req),
+      });
+      res.json({ data: { text } });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      log.error(`[pi] generate failed: ${message}`);
+      res.status(503).json({ message, code: 'small-model-unavailable', statusCode: 503 });
+    }
   });
 
   // ---------------------------------------------------------------------------
@@ -640,10 +685,14 @@ export const createPiApiApp = ({
     if (!filePath) return jsonError(res, 404, 'Session not found');
     const providerID = String(req.body?.model?.providerID ?? '');
     const modelID = String(req.body?.model?.id ?? '');
+    const variant = typeof req.body?.model?.variant === 'string' ? req.body.model.variant.trim() : '';
     if (!providerID || !modelID) return jsonError(res, 400, 'A model is required');
     const entry = runtime.ensure({ sessionID, directory, sessionFile: filePath });
     try {
       await entry.process?.request({ type: 'set_model', provider: providerID, modelId: modelID });
+      // pi picks a level for the new model on its own; a named variant is the
+      // user's choice and has to outrank that.
+      if (variant) await entry.process?.request({ type: 'set_thinking_level', level: variant });
       res.status(204).end();
     } catch (error) {
       jsonError(res, 503, error instanceof Error ? error.message : 'Could not switch the model');
@@ -652,6 +701,30 @@ export const createPiApiApp = ({
 
   // pi has one agent; a switch is accepted and has no effect.
   app.post('/api/session/:sessionID/agent', (_req, res) => res.status(204).end());
+
+  app.post('/api/session/:sessionID/generate', async (req, res) => {
+    const { sessionID } = req.params;
+    const prompt = req.body?.prompt;
+    if (typeof prompt !== 'string' || !prompt.trim()) return jsonError(res, 400, 'A prompt is required');
+    const directory = sessionDirectories.get(sessionID) ?? requestDirectory(req);
+    const filePath = await fileFor(sessionID, directory);
+    if (!filePath) return jsonError(res, 404, 'Session not found');
+    let temporaryDirectory;
+    try {
+      const { header } = await readSession(filePath);
+      if (!header?.cwd) throw new Error('Session directory is unavailable');
+      temporaryDirectory = await fs.mkdtemp(path.join(os.tmpdir(), 'pichamber-generate-'));
+      const sessionFile = path.join(temporaryDirectory, 'session.jsonl');
+      await fs.copyFile(filePath, sessionFile);
+      const text = await generatePiText({ binary, env, sessionFile, prompt, directory: header.cwd });
+      res.json({ data: { text } });
+    } catch (error) {
+      log.error('[pi] session generation failed:', error instanceof Error ? error.message : String(error));
+      res.status(503).json({ message: 'Could not generate text from the session' });
+    } finally {
+      if (temporaryDirectory) await fs.rm(temporaryDirectory, { recursive: true, force: true });
+    }
+  });
 
   app.post('/api/session/:sessionID/prompt', async (req, res) => {
     const { sessionID } = req.params;

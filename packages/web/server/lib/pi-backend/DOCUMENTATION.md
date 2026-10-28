@@ -30,6 +30,10 @@ there is no OpenCode fallback.
   `SessionMessageInfo`.
 - `session-store.js` — reading pi's session JSONL files: listing, the active
   branch, and finding a session by id.
+- `thinking.js` — the thinking levels a model accepts, projected as the UI's
+  model variants.
+- `generate.js` — one `pi --print` run: the transport behind Pichamber's
+  small-model routes.
 - `config.js` — pi's `settings.json`, `models.json`, `models-store.json`,
   `auth.json`, `mcp.json`, prompt templates, skills and extensions.
 - `routes.js` — Pichamber's own `/api/pi/*` routes for the Settings pages.
@@ -56,6 +60,21 @@ there is no OpenCode fallback.
   before the first prompt.
 - **Unsupported is empty, not faked.** pi has one agent, no permission prompts,
   no forms and no inbox; those routes return well-formed empty results.
+- **Thinking levels travel as model variants.** The composer's effort picker
+  reads `variants` from `/api/model`, so `thinking.js` lists the levels pi would
+  accept for each model; a model without `reasoning` lists none. A session's
+  `POST /api/session/:id/model` with a `variant` sends `set_thinking_level`
+  after `set_model`, and without one leaves pi's own level choice alone.
+- **Background generation runs pi once.** `/api/experimental/generate` answers
+  Pichamber's small-model routes with a `pi --print` child: no session file, no
+  tools, no `AGENTS.md`, the prompt on stdin and the assistant text on stdout.
+  Code that needs an answer signed by a model without touching a transcript
+  goes there. `/api/session/:id/generate` runs against a temporary copy of the
+  session file, preserving its active branch and model without changing the
+  original transcript; the copy is removed after the child exits.
+- **The directory header is read the way OpenCode reads it.** The SDK sends
+  `x-opencode-directory` URI-encoded with no marker, so a percent escape means
+  encoded; `spaces/dispatcher.js` follows the same rule.
 - **Credentials never leave `config.js`.** Only provider ids and credential
   type are returned; `GET /api/credential` projects `auth.json` into the shape
   quota, voice and routing read.
